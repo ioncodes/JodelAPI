@@ -10,13 +10,15 @@ using System.IO;
 
 namespace JodelAPI
 {
-    public static class Main
+    public static class API
     {
         public static string accessToken = "";
         public static string latitude = "";
         public static string longitude = "";
 
         private static string lastPostID = "";
+        private static List<Tuple<string, string>> jodelCache = new List<Tuple<string, string>>();
+        
 
         public static List<Tuple<string, string>> GetFirstJodels()
         {
@@ -59,6 +61,7 @@ namespace JodelAPI
             List<Tuple<string, string>> allJodels = new List<Tuple<string, string>>();
             allJodels = GetFirstJodels();
             allJodels.AddRange(GetNextJodels());
+            jodelCache = allJodels;
             return allJodels;
         }
 
@@ -82,13 +85,31 @@ namespace JodelAPI
             }
         }
 
-        public static void Upvote(List<Tuple<string, string>> list, int indexOfItem)
+        public static void Upvote(int indexOfItem)
         {
-            string postID = FilterItem(list, indexOfItem, false);
+            string postID = FilterItem(jodelCache, indexOfItem, false);
 
             using (var client = new WebClient())
             {
                 client.UploadData("https://api.go-tellm.com/api/v2/posts/" + postID + "/upvote?access_token=" + accessToken, "PUT", new byte[] { });
+            }
+        }
+
+        public static void Downvote(string postID)
+        {
+            using (var client = new WebClient())
+            {
+                client.UploadData("https://api.go-tellm.com/api/v2/posts/" + postID + "/downvote?access_token=" + accessToken, "PUT", new byte[] { });
+            }
+        }
+
+        public static void Downvote(int indexOfItem)
+        {
+            string postID = FilterItem(jodelCache, indexOfItem, false);
+
+            using (var client = new WebClient())
+            {
+                client.UploadData("https://api.go-tellm.com/api/v2/posts/" + postID + "/downvote?access_token=" + accessToken, "PUT", new byte[] { });
             }
         }
 
