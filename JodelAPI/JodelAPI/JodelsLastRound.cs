@@ -38,6 +38,7 @@ namespace JodelAPI
             public string user_handle { get; set; }
             public int? child_count { get; set; }
             public List<object> children { get; set; }
+            public string image_url { get; set; }
         }
 
         public class RootObject
