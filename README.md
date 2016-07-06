@@ -6,7 +6,7 @@
 The API is using 3 paramters in general: lat, lng, access_token.
 lat: This is the latitude of your location.
 lng: This is the longitude of your location.
-access_token: This one is kinda difficult to obtain. It's the "password"/"key" to use the API and as authentication for your own Jodels. To obtain your own key, use mitmproxy and open the Jodel app. (Tutorial coming soon!)
+access_token: In the app, navigate to the options and click on "write us", then scroll down to "client info". There is something called "access_token=". The token is the string after the "=".
 
 
 ### Getting the Jodels
