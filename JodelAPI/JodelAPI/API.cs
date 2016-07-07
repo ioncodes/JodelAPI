@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Web;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace JodelAPI
 {
@@ -15,6 +17,8 @@ namespace JodelAPI
         public static string accessToken = "";
         public static string latitude = "";
         public static string longitude = "";
+        public static string countryCode = "";
+        public static string city = "";
 
         private static List<Tuple<string, string, string, bool>> jodelCache = new List<Tuple<string, string, string, bool>>(); // postid, message, hexcolor, isImage
         private static string lastPostID = "";
@@ -135,18 +139,69 @@ namespace JodelAPI
             return Convert.ToInt32(GetPageContent("https://api.go-tellm.com/api/v2/users/karma?access_token=" + accessToken));
         }
 
-        public static void PostJodel()
+        public static void PostJodel(string message, string color = "FFFFFF")
         {
+            if(message.Length > 230)
+            {
+                throw new Exception("Error posting Jodel: Message is more than 230 characters!");
+            }
 
+            string jsonRaw = @"{ color: """ + color + @""",location:{ loc_accuracy:""0.0"",city:"""+city+@""",loc_coordinates:{ lat:""" + latitude + @""",lng: """ + longitude + @"""},country:""" + countryCode + @""",name:"""+city+@"""},message:"""+message+@"""}";
+            string json = JObject.Parse(jsonRaw).ToString();
+
+            if (IsValidJson(json))
+            {
+                GetPageContentPOST("https://api.go-tellm.com/api/v2/posts/", json, true);
+            }
+            else
+            {
+                throw new Exception("Error posting jodel: JSON Object invalid!");
+            }
         }
 
-        //public static List<Tuple<string, string>> SortMostCommented()
-        //{
+        public static List<Tuple<string, string, string, int>> GetComments(string postID)
+        {
+            string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/"+postID+"?access_token="+accessToken);
+            Comments.RootObject com = JsonConvert.DeserializeObject<Comments.RootObject>(plainJson);
+            List<Tuple<string, string, string, int>> comments = new List<Tuple<string, string, string, int>>(); // postID, message, user_handle, votecount
 
-        //    return mostCommented;
-        //}
+            foreach(var c in com.children)
+            {
+                comments.Add(new Tuple<string, string, string, int>(c.post_id, c.message, c.user_handle, c.vote_count));
+            }
+
+            return comments;
+        }
+
+        public static string GenerateAccessToken() //Not working
+        {
+            string payload = @"{
+                client_id: ""81e8a76e-1e02-4d17-9ba0-8a7020261b26"",
+                   device_uid: """ + SHA256(RandomString(5, true)) + @""",
+                   location:
+                       {
+                    loc_accuracy: ""19.0"",
+                        city: """ + city + @""",
+                        loc_coordinates:
+                            {
+                        lat: """ + latitude + @""",
+                             lng: """ + longitude + @"""},
+                        country: """+countryCode+@"""}}";
 
 
+            string json_payload = JObject.Parse(payload).ToString();
+
+            if(IsValidJson(json_payload))
+            {
+                return GetPageContentPOST("https://api.go-tellm.com/api/v2/users/", json_payload, false);
+            }
+            else
+            {
+                throw new Exception("Error generating access token: JSON Object invalid!");
+            }
+        }
+
+        
         private static string GetPageContent(string link)
         {
             string html = string.Empty;
@@ -158,6 +213,95 @@ namespace JodelAPI
                 html = sr.ReadToEnd();
             }
             return html;
+        }
+
+        private static string GetPageContentPOST(string link, string post, bool bearer)
+        {
+            var request = (HttpWebRequest)WebRequest.Create(link);
+
+            var data = Encoding.ASCII.GetBytes(post);
+
+            request.Method = "POST";
+            request.ContentType = "application/json; charset=UTF-8";
+            request.ContentLength = data.Length;
+            request.UserAgent = "Jodel/65000 Dalvik/2.1.0 (Linux; U; Android 5.1.1; D6503 Build/23.4.A.1.232)";
+            request.Accept = "gzip";
+            request.KeepAlive = true;
+
+            if(bearer)
+            {
+                request.Headers.Add("Authorization", "Bearer " + accessToken);
+            }
+
+            using (var stream = request.GetRequestStream())
+            {
+                stream.Write(data, 0, data.Length);
+            }
+
+            var response = (HttpWebResponse)request.GetResponse();
+
+            var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+            return responseString;
+        }
+
+        private static string SHA256(string value)
+        {
+            StringBuilder Sb = new StringBuilder();
+
+            using (SHA256 hash = SHA256Managed.Create())
+            {
+                Encoding enc = Encoding.UTF8;
+                Byte[] result = hash.ComputeHash(enc.GetBytes(value));
+
+                foreach (Byte b in result)
+                    Sb.Append(b.ToString("x2"));
+            }
+
+            return Sb.ToString();
+        }
+
+        private static string RandomString(int size, bool lowerCase)
+        {
+            StringBuilder builder = new StringBuilder();
+            Random random = new Random();
+            char ch;
+            for (int i = 1; i < size + 1; i++)
+            {
+                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                builder.Append(ch);
+            }
+            if (lowerCase)
+                return builder.ToString().ToLower();
+            else
+                return builder.ToString();
+        }
+
+        private static bool IsValidJson(string strInput)
+        {
+            strInput = strInput.Trim();
+            if ((strInput.StartsWith("{") && strInput.EndsWith("}")) || //For object
+                (strInput.StartsWith("[") && strInput.EndsWith("]"))) //For array
+            {
+                try
+                {
+                    var obj = JToken.Parse(strInput);
+                    return true;
+                }
+                catch (JsonReaderException jex)
+                {
+                    //Exception in parsing json
+                    return false;
+                }
+                catch (Exception ex) //some other exception
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
