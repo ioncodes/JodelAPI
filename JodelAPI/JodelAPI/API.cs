@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
-using System.Web;
 using System.IO;
 using System.Security.Cryptography;
 
@@ -20,15 +18,15 @@ namespace JodelAPI
         public static string countryCode = "";
         public static string city = "";
 
-        private static List<Tuple<string, string, string, bool>> jodelCache = new List<Tuple<string, string, string, bool>>(); // postid, message, hexcolor, isImage
+        private static List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> jodelCache = new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>>(); // postid, message, hexcolor, isImage, votecount, lat, lng, name
         private static string lastPostID = "";
 
 
-        public static List<Tuple<string, string, string, bool>> GetFirstJodels()
+        public static List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> GetFirstJodels()
         {
             string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/location/combo?lat=" + latitude + "&lng=" + longitude + "&access_token=" + accessToken);
             JodelsFirstRound.RootObject jfr = JsonConvert.DeserializeObject<JodelsFirstRound.RootObject>(plainJson);
-            List<Tuple<string, string, string, bool>> temp = new List<Tuple<string, string, string, bool>>(); // List<post_id,message>
+            List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> temp = new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>>(); // List<post_id,message>
             int i = 0;
             foreach (var item in jfr.recent)
             {
@@ -40,7 +38,7 @@ namespace JodelAPI
                     isURL = true;
                 }
 
-                temp.Add(new Tuple<string, string, string, bool>(item.post_id, msg, item.color, isURL));
+                temp.Add(new Tuple<string, string, string, bool, int, string, string, Tuple<string>>(item.post_id, msg, item.color, isURL, item.vote_count, item.location.loc_coordinates.lat.ToString(), item.location.loc_coordinates.lng.ToString(), new Tuple<string>(item.location.name)));
 
                 i++;
             }
@@ -50,9 +48,9 @@ namespace JodelAPI
             return temp;
         }
 
-        public static List<Tuple<string, string, string, bool>> GetNextJodels()
+        public static List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> GetNextJodels()
         {
-            List<Tuple<string, string, string, bool>> temp = new List<Tuple<string, string, string, bool>>(); // List<counter,post_id,message>
+            List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> temp = new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>>(); // List<counter,post_id,message>
             for (int e = 0; e < 3; e++)
             {
                 string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/location?lng=" + longitude + "&lat=" + latitude + "&after=" + lastPostID + "&access_token=" + accessToken + "&limit=1000000");
@@ -68,7 +66,7 @@ namespace JodelAPI
                         isURL = true;
                     }
 
-                    temp.Add(new Tuple<string, string, string, bool>(item.post_id, msg, item.color, isURL));
+                    temp.Add(new Tuple<string, string, string, bool, int, string, string, Tuple<string>>(item.post_id, msg, item.color, isURL, item.vote_count, item.location.loc_coordinates.lat.ToString(), item.location.loc_coordinates.lng.ToString(), new Tuple<string>(item.location.name)));
                     i++;
                 }
 
@@ -77,16 +75,16 @@ namespace JodelAPI
             return temp;
         }
 
-        public static List<Tuple<string, string, string, bool>> GetAllJodels()
+        public static List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> GetAllJodels()
         {
-            List<Tuple<string, string, string, bool>> allJodels = new List<Tuple<string, string, string, bool>>();
+            List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> allJodels = new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>>();
             allJodels = GetFirstJodels();
             allJodels.AddRange(GetNextJodels());
             jodelCache = allJodels;
             return allJodels;
         }
 
-        public static string FilterItem(List<Tuple<string, string, string, bool>> unfiltered, int index, bool filterMessage)
+        public static string FilterItem(List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> unfiltered, int index, bool filterMessage)
         {
             if (!filterMessage)
             {
@@ -136,7 +134,9 @@ namespace JodelAPI
 
         public static int GetKarma()
         {
-            return Convert.ToInt32(GetPageContent("https://api.go-tellm.com/api/v2/users/karma?access_token=" + accessToken));
+            string resp = GetPageContent("https://api.go-tellm.com/api/v2/users/karma?access_token=" + accessToken);
+            string result = resp.Substring(resp.LastIndexOf(':') + 1);
+            return Convert.ToInt32(result.Replace("}","").Replace("\"",""));
         }
 
         public static void PostJodel(string message, string color = "FFFFFF")
