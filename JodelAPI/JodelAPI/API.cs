@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System.Net;
 using System.IO;
 using System.Security.Cryptography;
+using System.Net.Security;
 
 namespace JodelAPI
 {
@@ -17,6 +18,7 @@ namespace JodelAPI
         public static string longitude = "";
         public static string countryCode = "";
         public static string city = "";
+        private const string key = "XpOTPTszrtNioQQAnrREKwjtWESeUMlPQcsxmbkC";
 
         private static List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> jodelCache = new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>>(); // postid, message, hexcolor, isImage, votecount, lat, lng, name
         private static string lastPostID = "";
@@ -98,9 +100,29 @@ namespace JodelAPI
 
         public static void Upvote(string postID)
         {
+            DateTime dt = DateTime.UtcNow;
+
+            string stringified_payload =
+                @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postID + "/" + "upvote/%" + accessToken + "%" + $"{dt:s}Z" + "%%";
+
+            var keyByte = Encoding.UTF8.GetBytes(key);
+            var hmacsha1 = new HMACSHA1(keyByte);
+            hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringified_payload));
+
             using (var client = new WebClient())
             {
-                client.UploadData("https://api.go-tellm.com/api/v2/posts/" + postID + "/upvote?access_token=" + accessToken, "PUT", new byte[] { });
+                client.Headers.Add("Content-Type", "application/json");
+                client.Headers.Add("User-Agent", "Jodel/4.11.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); //TODO: Randomize
+                client.Headers.Add("Accept", "*/*");
+                client.Headers.Add("Accept-Encoding", "gzip, deflate");
+                client.Headers.Add("X-Client-Type", "android_4.11.2");
+                client.Headers.Add("X-Api-Version", "0.2");
+                client.Headers.Add("X-Timestamp", $"{dt:s}Z");
+                client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
+                client.Headers.Add("Authorization", "Bearer " + accessToken);
+                client.Encoding = Encoding.UTF8;
+                client.UploadData(
+                    "https://api.go-tellm.com/api/v2/posts/" + postID + "/" + "upvote/", "PUT", new byte[] { });
             }
         }
 
@@ -116,9 +138,29 @@ namespace JodelAPI
 
         public static void Downvote(string postID)
         {
+            DateTime dt = DateTime.UtcNow;
+
+            string stringified_payload =
+                @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postID + "/" + "downvote/%" + accessToken + "%" + $"{dt:s}Z" + "%%";
+
+            var keyByte = Encoding.UTF8.GetBytes(key);
+            var hmacsha1 = new HMACSHA1(keyByte);
+            hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringified_payload));
+
             using (var client = new WebClient())
             {
-                client.UploadData("https://api.go-tellm.com/api/v2/posts/" + postID + "/downvote?access_token=" + accessToken, "PUT", new byte[] { });
+                client.Headers.Add("Content-Type", "application/json");
+                client.Headers.Add("User-Agent", "Jodel/4.11.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); //TODO: Randomize
+                client.Headers.Add("Accept", "*/*");
+                client.Headers.Add("Accept-Encoding", "gzip, deflate");
+                client.Headers.Add("X-Client-Type", "android_4.11.2");
+                client.Headers.Add("X-Api-Version", "0.2");
+                client.Headers.Add("X-Timestamp", $"{dt:s}Z");
+                client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
+                client.Headers.Add("Authorization", "Bearer " + accessToken);
+                client.Encoding = Encoding.UTF8;
+                client.UploadData(
+                    "https://api.go-tellm.com/api/v2/posts/" + postID + "/" + "downvote/", "PUT", new byte[] { });
             }
         }
 
@@ -151,7 +193,7 @@ namespace JodelAPI
 
             if (IsValidJson(json))
             {
-                GetPageContentPOST("https://api.go-tellm.com/api/v2/posts/", json, true);
+                GetPageContentPOST("https://api.go-tellm.com/api/v2/posts/", json, true, null, null);
             }
             else
             {
@@ -173,35 +215,34 @@ namespace JodelAPI
             return comments;
         }
 
-        public static string GenerateAccessToken() //Not working
+        public static string GenerateAccessToken()
         {
-            string payload = @"{
-                client_id: ""81e8a76e-1e02-4d17-9ba0-8a7020261b26"",
-                   device_uid: """ + SHA256(RandomString(5, true)) + @""",
-                   location:
-                       {
-                    loc_accuracy: ""19.0"",
-                        city: """ + city + @""",
-                        loc_coordinates:
-                            {
-                        lat: """ + latitude + @""",
-                             lng: """ + longitude + @"""},
-                        country: """+countryCode+@"""}}";
+            DateTime dt = DateTime.UtcNow;
 
+            string device_uid = SHA256(RandomString(5, true));
 
-            string json_payload = JObject.Parse(payload).ToString();
+            string stringified_payload
+                = @"POST%api.go-tellm.com%443%/api/v2/users/%%" + $"{dt:s}Z" + @"%%{""device_uid"": """ + device_uid +
+            @""", ""location"": {""city"": ""Zurich"", ""loc_accuracy"": 100, ""loc_coordinates"": {""lat"": 47.3667, ""lng"": 8.55}, ""country"": ""CH""}, " +
+            @"""client_id"": ""81e8a76e-1e02-4d17-9ba0-8a7020261b26""}";
 
-            if(IsValidJson(json_payload))
+            string payload = @"{""device_uid"": """ + device_uid + @""", ""location"": {""city"": ""Zurich"", ""loc_accuracy"": 100, ""loc_coordinates"": " +
+            @"{""lat"": 47.3667, ""lng"": 8.55}, ""country"": ""CH""}, ""client_id"": ""81e8a76e-1e02-4d17-9ba0-8a7020261b26""}";
+
+            var keyByte = Encoding.UTF8.GetBytes(key);
+            using (var hmacsha1 = new HMACSHA1(keyByte))
             {
-                return GetPageContentPOST("https://api.go-tellm.com/api/v2/users/", json_payload, false);
-            }
-            else
-            {
-                throw new Exception("Error generating access token: JSON Object invalid!");
+                hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringified_payload));
+
+                return GetPageContentPOST("https://api.go-tellm.com/api/v2/users/", payload, false, ByteToString(hmacsha1.Hash), $"{dt:s}Z");
             }
         }
 
-        
+        static string ByteToString(byte[] buff)
+        {
+            return buff.Aggregate("", (current, t) => current + t.ToString("X2"));
+        }
+
         private static string GetPageContent(string link)
         {
             string html = string.Empty;
@@ -215,23 +256,32 @@ namespace JodelAPI
             return html;
         }
 
-        private static string GetPageContentPOST(string link, string post, bool bearer)
+        private static string GetPageContentPOST(string link, string post, bool bearer, string hmac, string timestamp)
         {
             var request = (HttpWebRequest)WebRequest.Create(link);
 
-            var data = Encoding.ASCII.GetBytes(post);
+            var data = Encoding.UTF8.GetBytes(post);
 
             request.Method = "POST";
-            request.ContentType = "application/json; charset=UTF-8";
-            request.ContentLength = data.Length;
-            request.UserAgent = "Jodel/65000 Dalvik/2.1.0 (Linux; U; Android 5.1.1; D6503 Build/23.4.A.1.232)";
-            request.Accept = "gzip";
+            request.ContentType = "application/json";
+            request.ContentLength = data.LongLength;
+            request.UserAgent = "Jodel/4.11.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"; //TODO: Randomize
             request.KeepAlive = true;
+            request.Accept = "*/*";
+            request.Headers.Add("Accept-Encoding", "gzip, deflate");
+            request.Headers.Add("X-Client-Type", "android_4.11.2");
+            request.Headers.Add("X-Api-Version", "0.2");
+            if (timestamp != null)
+                request.Headers.Add("X-Timestamp", timestamp);
+            if (hmac != null)
+                request.Headers.Add("X-Authorization", "HMAC " + hmac);
 
-            if(bearer)
+            if (bearer)
             {
                 request.Headers.Add("Authorization", "Bearer " + accessToken);
             }
+            request.ServicePoint.Expect100Continue = false;
+            request.AuthenticationLevel = AuthenticationLevel.None;
 
             using (var stream = request.GetRequestStream())
             {
@@ -242,6 +292,11 @@ namespace JodelAPI
 
             var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
+            if (hmac != null)
+            {
+                var responseJson = JsonConvert.DeserializeObject<dynamic>(responseString); // ugly solution, may throw exception if no access token is responded
+                responseString = responseJson.access_token;
+            }
             return responseString;
         }
 
