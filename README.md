@@ -1,5 +1,9 @@
 # JodelAPI
 [WIP] API for the Jodel app in .NET
+With this commit we'd like to introduce version 0.9 which will be updated soon to version 1.0! 
+Well... What's new boss? Good question!
+Jodel changed their authentication system not long ago. We are glad to tell you that we've been able to reverse it!
+The most important fix in this version is that we finally go GenerateAccessToken working!
 
 ## How the private Jodel API works...
 
@@ -29,7 +33,7 @@ Visit this link: http://jodel-app.wikia.com/
 
 ## Documentation
 
-Jodels are returned as List<Tuple<string, string, string, bool>> which is this: postID, message, hexcolor, isImage
+Jodels are returned as new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> which is this: postid, message, hexcolor, isImage, votecount, lat, lng, name
 Comments are returned as List<Tuple<string, string, string, int>> which is this: postID, message, user_handle, vote_count
 
 # Setup
@@ -62,14 +66,15 @@ GetKarma() will return an int with your amount of Karma.
 
 # Posting
 
-PostJodel(string message, string color) --> message is the text to post and color is optional; you can pass the background color, but it must be one of the official ones.
+PostJodel(string message) --> message is the text to post
 
 TODO: PostComment
 
 
 # Access Token
 
-With GenerateAccessToken you will be able to generate a new token; it's not working at the moment.
+We were able to reverse their new Authentication system and now GenerateAccessToken() works! It returns a string containing the token.
+Keep in mind that spamming the function will get your IP banned!
 
 
 # Helpers
