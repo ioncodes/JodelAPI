@@ -181,23 +181,22 @@ namespace JodelAPI
             return Convert.ToInt32(result.Replace("}","").Replace("\"",""));
         }
 
-        public static void PostJodel(string message, string color = "FFFFFF")
+        public static void PostJodel(string message)
         {
-            if(message.Length > 230)
-            {
-                throw new Exception("Error posting Jodel: Message is more than 230 characters!");
-            }
+            DateTime dt = DateTime.UtcNow;
 
-            string jsonRaw = @"{ color: """ + color + @""",location:{ loc_accuracy:""0.0"",city:"""+city+@""",loc_coordinates:{ lat:""" + latitude + @""",lng: """ + longitude + @"""},country:""" + countryCode + @""",name:"""+city+@"""},message:"""+message+@"""}";
-            string json = JObject.Parse(jsonRaw).ToString();
+            string stringified_payload
+                = @"POST%api.go-tellm.com%443%/api/v2/posts/%" + accessToken + "%" + $"{dt:s}Z" + @"%%{""color"": ""06A3CB"", ""location"": {""loc_accuracy"": 1, ""city"": ""München"", ""loc_coordinates"": {""lat"": 48.134730, ""lng"": 11.581316}, ""country"": ""DE"", ""name"": ""München""}, ""message"": """ + message + @"""}";
 
-            if (IsValidJson(json))
+            string payload = @"{""color"": ""06A3CB"", ""location"": {""loc_accuracy"": 1, ""city"": ""München"", ""loc_coordinates"": " +
+            @"{""lat"": 48.134730, ""lng"": 11.581316}, ""country"": ""DE"", ""name"": ""München""}, ""message"": """ + message + @"""}";
+
+            var keyByte = Encoding.UTF8.GetBytes(key);
+            using (var hmacsha1 = new HMACSHA1(keyByte))
             {
-                GetPageContentPOST("https://api.go-tellm.com/api/v2/posts/", json, true, null, null);
-            }
-            else
-            {
-                throw new Exception("Error posting jodel: JSON Object invalid!");
+                hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringified_payload));
+
+                GetPageContentPOST("https://api.go-tellm.com/api/v2/posts/", payload, true, ByteToString(hmacsha1.Hash), $"{dt:s}Z");
             }
         }
 
