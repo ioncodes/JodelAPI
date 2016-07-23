@@ -12,6 +12,8 @@ lat: This is the latitude of your location.
 lng: This is the longitude of your location.
 access_token: In the app, navigate to the options and click on "write us", then scroll down to "client info". There is something called "access_token=". The token is the string after the "=".
 
+UPDATE: Since the authsystem changed, this theory might be outdated. At this time I share this (look in the code for more info): It uses a HMAC auth.
+
 
 ### Getting the Jodels
 
@@ -33,17 +35,29 @@ Visit this link: http://jodel-app.wikia.com/
 
 ## Documentation
 
-Jodels are returned as new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> which is this: postid, message, hexcolor, isImage, votecount, lat, lng, name
-Comments are returned as List<Tuple<string, string, string, int>> which is this: postID, message, user_handle, vote_count
+Jodels are returned as new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> which is this: 
+
+postid, message, hexcolor, isImage, votecount, lat, lng, name
+
+
+Comments are returned as List<Tuple<string, string, string, int>> which is this: 
+
+postID, message, user_handle, vote_count
 
 # Setup
 
 Add the vars properly:
 
+
+
 public static string accessToken = "";
+
 public static string latitude = "";
+
 public static string longitude = "";
+
 public static string countryCode = "";
+
 public static string city = "";
 
 Add the namespace "JodelAPI" and the baseclass is called "API".
@@ -80,7 +94,11 @@ Keep in mind that spamming the function will get your IP banned!
 # Helpers
 
 If you're not familiar with Tuples you can just use the simple function "FilterItem()". It can only handle the jodel List<> and only filter between postID and message.
+
 Usage:
+
 FilterItem(List<> jodels, int index, bool filterMessage);
+
 index = position in the List<>
+
 filterMessage = if true then it filters the message, else it will return the postID
