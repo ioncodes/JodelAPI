@@ -35,12 +35,12 @@ Visit this link: http://jodel-app.wikia.com/
 
 ## Documentation
 
-Jodels are returned as new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> which is this: 
+Jodels are returned as new ```List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>>``` which is this: 
 
 postid, message, hexcolor, isImage, votecount, lat, lng, name
 
 
-Comments are returned as List<Tuple<string, string, string, int>> which is this: 
+Comments are returned as ```List<Tuple<string, string, string, int>>``` which is this: 
 
 postID, message, user_handle, vote_count
 
