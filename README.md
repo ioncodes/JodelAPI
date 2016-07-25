@@ -46,22 +46,21 @@ postID, message, user_handle, vote_count
 
 # Setup
 
-Add the vars properly:
+Add the vars and namespace properly:
 
+```c#
+using JodelAPI;
 
+// ...
 
 public static string accessToken = "";
-
 public static string latitude = "";
-
 public static string longitude = "";
-
 public static string countryCode = "";
-
 public static string city = "";
+```
 
-Add the namespace "JodelAPI" and the baseclass is called "API".
-
+Baseclass is called 'API'.
 
 # Get Jodels
 
@@ -96,9 +95,9 @@ Keep in mind that spamming the function will get your IP banned!
 If you're not familiar with Tuples you can just use the simple function "FilterItem()". It can only handle the jodel List<> and only filter between postID and message.
 
 Usage:
-
+```c#
 FilterItem(List<> jodels, int index, bool filterMessage);
-
+```
 index = position in the List<>
 
 filterMessage = if true then it filters the message, else it will return the postID
