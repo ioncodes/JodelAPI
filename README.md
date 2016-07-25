@@ -2,6 +2,7 @@
 [WIP] API for the Jodel app in .NET
 With this commit we'd like to introduce version 0.9 which will be updated soon to version 1.0! 
 Well... What's new boss? Good question!
+
 Jodel changed their authentication system not long ago. We are glad to tell you that we've been able to reverse it!
 The most important fix in this version is that we finally go GenerateAccessToken working!
 
