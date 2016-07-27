@@ -55,11 +55,11 @@ using JodelAPI;
 
 // ...
 
-public static string accessToken = "";
-public static string latitude = "";
-public static string longitude = "";
-public static string countryCode = "";
-public static string city = "";
+public static string AccessToken = "";
+public static string Latitude = "";
+public static string Longitude = "";
+public static string CountryCode = "";
+public static string City = "";
 ```
 
 Baseclass is called 'API'.
@@ -83,14 +83,18 @@ GetKarma() will return an int with your amount of Karma.
 
 # Posting
 
-PostJodel(string message) --> message is the text to post
+PostJodel(string message, PostColor colorParam = PostColor.Random, string postId = null);
+
+message: message to post.
+
+colorParam: Color from enum for post.
+
+postId: add postID if it is a comment, otherwise don't change it.
 
 
 ## Posting a Comment
 
-TODO: Implement
-
-In general, just add "ancestor" and the referenced postID to your json payload at first in your json object.
+Set the postId (see above).
 
 
 # Access Token
