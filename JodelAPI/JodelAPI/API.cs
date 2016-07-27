@@ -183,14 +183,17 @@ namespace JodelAPI
             return Convert.ToInt32(result.Replace("}","").Replace("\"",""));
         }
 
-        public static void PostJodel(string message, PostColor colorParam = PostColor.Random, string postId = null)
+        public static void PostJodel(string message, PostColor colorParam = PostColor.Random, string postID = null)
         {
             DateTime dt = DateTime.UtcNow;
 
             var color = GetColor(colorParam);
 
             string jsonCommentFragment = string.Empty;
-            jsonCommentFragment = @"""ancestor"": """ + postId + @""", ";
+            if (postID != null)
+            {
+                jsonCommentFragment = @"""ancestor"": """ + postID + @""", ";
+            }
 
             string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/posts/%" + AccessToken + "%" + $"{dt:s}Z" + @"%%{""color"": """ + color + @""", " + jsonCommentFragment + @"""message"": """ + message + @""", ""location"": {""loc_accuracy"": 1, ""city"": """ + City + @""", ""loc_coordinates"": {""lat"": " + Latitude + @", ""lng"": " + Longitude + @"}, ""country"": """ + CountryCode + @""", ""name"": """ + City + @"""}}";
 
