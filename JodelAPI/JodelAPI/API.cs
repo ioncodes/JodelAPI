@@ -1,28 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Net;
-using System.IO;
-using System.Security.Cryptography;
-using System.Net.Security;
 
 namespace JodelAPI
 {
     public static class API
     {
-        public static string AccessToken = "";
-        public static string Latitude = "";
-        public static string Longitude = "";
-        public static string CountryCode = "";
-        public static string City = "";
-        private const string Key = "XpOTPTszrtNioQQAnrREKwjtWESeUMlPQcsxmbkC";
-
-        private static List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> _jodelCache = new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>>(); // postid, message, hexcolor, isImage, votecount, lat, lng, name
-        private static string _lastPostId = "";
-
         public enum PostColor
         {
             Orange,
@@ -34,6 +23,17 @@ namespace JodelAPI
             Random
         }
 
+
+        private const string Key = "XpOTPTszrtNioQQAnrREKwjtWESeUMlPQcsxmbkC";
+
+        public static string AccessToken = "";
+        public static string Latitude = "";
+        public static string Longitude = "";
+        public static string CountryCode = "";
+        public static string City = "";
+        private static List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> _jodelCache = new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>>(); // postid, message, hexcolor, isImage, votecount, lat, lng, name
+        private static string _lastPostId = "";
+
         public static List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> GetFirstJodels()
         {
             string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/location/combo?lat=" + Latitude + "&lng=" + Longitude + "&access_token=" + AccessToken);
@@ -43,14 +43,14 @@ namespace JodelAPI
             foreach (var item in jfr.recent)
             {
                 string msg = item.message;
-                bool isURL = false;
+                bool isUrl = false;
                 if (msg == "Jodel")
                 {
                     msg = "http:"+item.image_url;
-                    isURL = true;
+                    isUrl = true;
                 }
 
-                temp.Add(new Tuple<string, string, string, bool, int, string, string, Tuple<string>>(item.post_id, msg, item.color, isURL, item.vote_count, item.location.loc_coordinates.lat.ToString(), item.location.loc_coordinates.lng.ToString(), new Tuple<string>(item.location.name)));
+                temp.Add(new Tuple<string, string, string, bool, int, string, string, Tuple<string>>(item.post_id, msg, item.color, isUrl, item.vote_count, item.location.loc_coordinates.lat.ToString(), item.location.loc_coordinates.lng.ToString(), new Tuple<string>(item.location.name)));
 
                 i++;
             }
@@ -71,14 +71,14 @@ namespace JodelAPI
                 foreach (var item in jlr.posts)
                 {
                     string msg = item.message;
-                    bool isURL = false;
+                    bool isUrl = false;
                     if (msg == "Jodel")
                     {
                         msg = "http:" + item.image_url; // WELL THERE IS NO IMAGE_URL!!!!???
-                        isURL = true;
+                        isUrl = true;
                     }
 
-                    temp.Add(new Tuple<string, string, string, bool, int, string, string, Tuple<string>>(item.post_id, msg, item.color, isURL, item.vote_count, item.location.loc_coordinates.lat.ToString(), item.location.loc_coordinates.lng.ToString(), new Tuple<string>(item.location.name)));
+                    temp.Add(new Tuple<string, string, string, bool, int, string, string, Tuple<string>>(item.post_id, msg, item.color, isUrl, item.vote_count, item.location.loc_coordinates.lat.ToString(), item.location.loc_coordinates.lng.ToString(), new Tuple<string>(item.location.name)));
                     i++;
                 }
 
@@ -89,8 +89,7 @@ namespace JodelAPI
 
         public static List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> GetAllJodels()
         {
-            List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> allJodels = new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>>();
-            allJodels = GetFirstJodels();
+            var allJodels = GetFirstJodels();
             allJodels.AddRange(GetNextJodels());
             _jodelCache = allJodels;
             return allJodels;
@@ -98,26 +97,19 @@ namespace JodelAPI
 
         public static string FilterItem(List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> unfiltered, int index, bool filterMessage)
         {
-            if (!filterMessage)
-            {
-                return unfiltered[index].Item1;
-            }
-            else
-            {
-                return unfiltered[index].Item2;
-            }
+            return !filterMessage ? unfiltered[index].Item1 : unfiltered[index].Item2;
         }
 
-        public static void Upvote(string postID)
+        public static void Upvote(string postId)
         {
             DateTime dt = DateTime.UtcNow;
 
-            string stringified_payload =
-                @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postID + "/" + "upvote/%" + AccessToken + "%" + $"{dt:s}Z" + "%%";
+            string stringifiedPayload =
+                @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "/" + "upvote/%" + AccessToken + "%" + $"{dt:s}Z" + "%%";
 
             var keyByte = Encoding.UTF8.GetBytes(Key);
             var hmacsha1 = new HMACSHA1(keyByte);
-            hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringified_payload));
+            hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
             using (var client = new WebClient())
             {
@@ -132,30 +124,30 @@ namespace JodelAPI
                 client.Headers.Add("Authorization", "Bearer " + AccessToken);
                 client.Encoding = Encoding.UTF8;
                 client.UploadData(
-                    "https://api.go-tellm.com/api/v2/posts/" + postID + "/" + "upvote/", "PUT", new byte[] { });
+                    "https://api.go-tellm.com/api/v2/posts/" + postId + "/" + "upvote/", "PUT", new byte[] { });
             }
         }
 
         public static void Upvote(int indexOfItem)
         {
-            string postID = FilterItem(_jodelCache, indexOfItem, false);
+            string postId = FilterItem(_jodelCache, indexOfItem, false);
 
             using (var client = new WebClient())
             {
-                client.UploadData("https://api.go-tellm.com/api/v2/posts/" + postID + "/upvote?access_token=" + AccessToken, "PUT", new byte[] { });
+                client.UploadData("https://api.go-tellm.com/api/v2/posts/" + postId + "/upvote?access_token=" + AccessToken, "PUT", new byte[] { });
             }
         } // cached List<> only
 
-        public static void Downvote(string postID)
+        public static void Downvote(string postId)
         {
             DateTime dt = DateTime.UtcNow;
 
-            string stringified_payload =
-                @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postID + "/" + "downvote/%" + AccessToken + "%" + $"{dt:s}Z" + "%%";
+            string stringifiedPayload =
+                @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "/" + "downvote/%" + AccessToken + "%" + $"{dt:s}Z" + "%%";
 
             var keyByte = Encoding.UTF8.GetBytes(Key);
             var hmacsha1 = new HMACSHA1(keyByte);
-            hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringified_payload));
+            hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
             using (var client = new WebClient())
             {
@@ -170,17 +162,17 @@ namespace JodelAPI
                 client.Headers.Add("Authorization", "Bearer " + AccessToken);
                 client.Encoding = Encoding.UTF8;
                 client.UploadData(
-                    "https://api.go-tellm.com/api/v2/posts/" + postID + "/" + "downvote/", "PUT", new byte[] { });
+                    "https://api.go-tellm.com/api/v2/posts/" + postId + "/" + "downvote/", "PUT", new byte[] { });
             }
         }
 
         public static void Downvote(int indexOfItem)
         {
-            string postID = FilterItem(_jodelCache, indexOfItem, false);
+            string postId = FilterItem(_jodelCache, indexOfItem, false);
 
             using (var client = new WebClient())
             {
-                client.UploadData("https://api.go-tellm.com/api/v2/posts/" + postID + "/downvote?access_token=" + AccessToken, "PUT", new byte[] { });
+                client.UploadData("https://api.go-tellm.com/api/v2/posts/" + postId + "/downvote?access_token=" + AccessToken, "PUT", new byte[] { });
             }
         } // cached List<> only
 
@@ -191,73 +183,67 @@ namespace JodelAPI
             return Convert.ToInt32(result.Replace("}","").Replace("\"",""));
         }
 
-        public static void PostJodel(string message, string postID = null, PostColor colorParam = PostColor.Random)
+        public static void PostJodel(string message, string postId = null, PostColor colorParam = PostColor.Random)
         {
             DateTime dt = DateTime.UtcNow;
 
             var color = GetColor(colorParam);
 
             string jsonCommentFragment = string.Empty;
-            jsonCommentFragment = @"""ancestor"": """ + postID + @""", ";
+            jsonCommentFragment = @"""ancestor"": """ + postId + @""", ";
 
-            string stringified_payload = @"POST%api.go-tellm.com%443%/api/v2/posts/%" + AccessToken + "%" + $"{dt:s}Z" + @"%%{""color"": """ + color + @""", " + jsonCommentFragment + @"""message"": """ + message + @""", ""location"": {""loc_accuracy"": 1, ""city"": """ + City + @""", ""loc_coordinates"": {""lat"": " + Latitude + @", ""lng"": " + Longitude + @"}, ""country"": """ + CountryCode + @""", ""name"": """ + City + @"""}}";
+            string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/posts/%" + AccessToken + "%" + $"{dt:s}Z" + @"%%{""color"": """ + color + @""", " + jsonCommentFragment + @"""message"": """ + message + @""", ""location"": {""loc_accuracy"": 1, ""city"": """ + City + @""", ""loc_coordinates"": {""lat"": " + Latitude + @", ""lng"": " + Longitude + @"}, ""country"": """ + CountryCode + @""", ""name"": """ + City + @"""}}";
 
             string payload = @"{""color"": """ + color + @""", " + jsonCommentFragment + @"""message"": """ + message + @""", ""location"": {""loc_accuracy"": 1, ""city"": """ + City + @""", ""loc_coordinates"": " + @"{""lat"": " + Latitude + @", ""lng"": " + Longitude + @"}, ""country"": """ + CountryCode + @""", ""name"": """ + City + @"""}}";
 
             var keyByte = Encoding.UTF8.GetBytes(Key);
             using (var hmacsha1 = new HMACSHA1(keyByte))
             {
-                hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringified_payload));
+                hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
-                GetPageContentPOST("https://api.go-tellm.com/api/v2/posts/", payload, true, ByteToString(hmacsha1.Hash), $"{dt:s}Z");
+                GetPageContentPost("https://api.go-tellm.com/api/v2/posts/", payload, true, ByteToString(hmacsha1.Hash), $"{dt:s}Z");
             }
         }
 
-        public static List<Tuple<string, string, string, int>> GetComments(string postID)
+        public static List<Tuple<string, string, string, int>> GetComments(string postId)
         {
-            string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/"+postID+"?access_token="+AccessToken);
+            string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/"+postId+"?access_token="+AccessToken);
             Comments.RootObject com = JsonConvert.DeserializeObject<Comments.RootObject>(plainJson);
-            List<Tuple<string, string, string, int>> comments = new List<Tuple<string, string, string, int>>(); // postID, message, user_handle, votecount
 
-            foreach(var c in com.children)
-            {
-                comments.Add(new Tuple<string, string, string, int>(c.post_id, c.message, c.user_handle, c.vote_count));
-            }
-
-            return comments;
+            return com.children.Select(c => new Tuple<string, string, string, int>(c.post_id, c.message, c.user_handle, c.vote_count)).ToList();
         }
 
         public static string GenerateAccessToken()
         {
             DateTime dt = DateTime.UtcNow;
 
-            string device_uid = SHA256(RandomString(5, true));
+            string deviceUid = Sha256(RandomString(5, true));
 
-            string stringified_payload
-                = @"POST%api.go-tellm.com%443%/api/v2/users/%%" + $"{dt:s}Z" + @"%%{""device_uid"": """ + device_uid +
+            string stringifiedPayload
+                = @"POST%api.go-tellm.com%443%/api/v2/users/%%" + $"{dt:s}Z" + @"%%{""device_uid"": """ + deviceUid +
             @""", ""location"": {""city"": ""Zurich"", ""loc_accuracy"": 100, ""loc_coordinates"": {""lat"": 47.3667, ""lng"": 8.55}, ""country"": ""CH""}, " +
             @"""client_id"": ""81e8a76e-1e02-4d17-9ba0-8a7020261b26""}";
 
-            string payload = @"{""device_uid"": """ + device_uid + @""", ""location"": {""city"": ""Zurich"", ""loc_accuracy"": 100, ""loc_coordinates"": " +
+            string payload = @"{""device_uid"": """ + deviceUid + @""", ""location"": {""city"": ""Zurich"", ""loc_accuracy"": 100, ""loc_coordinates"": " +
             @"{""lat"": 47.3667, ""lng"": 8.55}, ""country"": ""CH""}, ""client_id"": ""81e8a76e-1e02-4d17-9ba0-8a7020261b26""}";
 
             var keyByte = Encoding.UTF8.GetBytes(Key);
             using (var hmacsha1 = new HMACSHA1(keyByte))
             {
-                hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringified_payload));
+                hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
-                return GetPageContentPOST("https://api.go-tellm.com/api/v2/users/", payload, false, ByteToString(hmacsha1.Hash), $"{dt:s}Z");
+                return GetPageContentPost("https://api.go-tellm.com/api/v2/users/", payload, false, ByteToString(hmacsha1.Hash), $"{dt:s}Z");
             }
         }
 
-        static string ByteToString(byte[] buff)
+        private static string ByteToString(byte[] buff)
         {
             return buff.Aggregate("", (current, t) => current + t.ToString("X2"));
         }
 
         private static string GetPageContent(string link)
         {
-            string html = string.Empty;
+            string html;
             WebRequest request = WebRequest.Create(link);
             WebResponse response = request.GetResponse();
             Stream data = response.GetResponseStream();
@@ -268,7 +254,7 @@ namespace JodelAPI
             return html;
         }
 
-        private static string GetPageContentPOST(string link, string post, bool bearer, string hmac, string timestamp)
+        private static string GetPageContentPost(string link, string post, bool bearer, string hmac, string timestamp)
         {
             var request = (HttpWebRequest)WebRequest.Create(link);
 
@@ -312,36 +298,32 @@ namespace JodelAPI
             return responseString;
         }
 
-        private static string SHA256(string value)
+        private static string Sha256(string value)
         {
-            StringBuilder Sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
 
-            using (SHA256 hash = SHA256Managed.Create())
+            using (SHA256 hash = SHA256.Create())
             {
                 Encoding enc = Encoding.UTF8;
-                Byte[] result = hash.ComputeHash(enc.GetBytes(value));
+                byte[] result = hash.ComputeHash(enc.GetBytes(value));
 
-                foreach (Byte b in result)
-                    Sb.Append(b.ToString("x2"));
+                foreach (byte b in result)
+                    sb.Append(b.ToString("x2"));
             }
 
-            return Sb.ToString();
+            return sb.ToString();
         }
 
         private static string RandomString(int size, bool lowerCase)
         {
             StringBuilder builder = new StringBuilder();
             Random random = new Random();
-            char ch;
             for (int i = 1; i < size + 1; i++)
             {
-                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                var ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
                 builder.Append(ch);
             }
-            if (lowerCase)
-                return builder.ToString().ToLower();
-            else
-                return builder.ToString();
+            return lowerCase ? builder.ToString().ToLower() : builder.ToString();
         }
 
         private static string GetColor(PostColor c)
