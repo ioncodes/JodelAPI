@@ -183,7 +183,7 @@ namespace JodelAPI
             return Convert.ToInt32(result.Replace("}","").Replace("\"",""));
         }
 
-        public static void PostJodel(string message, string postId = null, PostColor colorParam = PostColor.Random)
+        public static void PostJodel(string message, PostColor colorParam = PostColor.Random, string postId = null)
         {
             DateTime dt = DateTime.UtcNow;
 
