@@ -25,6 +25,7 @@ namespace JodelAPI
 
 
         private const string Key = "XpOTPTszrtNioQQAnrREKwjtWESeUMlPQcsxmbkC";
+        private const string ClientId = "81e8a76e-1e02-4d17-9ba0-8a7020261b26";
 
         public static string AccessToken = "";
         public static string Latitude = "";
@@ -222,20 +223,24 @@ namespace JodelAPI
 
             string deviceUid = Sha256(RandomString(5, true));
 
-            string stringifiedPayload
-                = @"POST%api.go-tellm.com%443%/api/v2/users/%%" + $"{dt:s}Z" + @"%%{""device_uid"": """ + deviceUid +
-            @""", ""location"": {""city"": ""Zurich"", ""loc_accuracy"": 100, ""loc_coordinates"": {""lat"": 47.3667, ""lng"": 8.55}, ""country"": ""CH""}, " +
-            @"""client_id"": ""81e8a76e-1e02-4d17-9ba0-8a7020261b26""}";
+            string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/users/%%" + $"{dt:s}Z" +
+                                        @"%%{""device_uid"": """ + deviceUid + @""", ""location"": {""city"": """ + City + 
+                                        @""", ""loc_accuracy"": 100, ""loc_coordinates"": {""lat"": " + Latitude +
+                                        @", ""lng"": " + Longitude + @"}, ""country"": """ + CountryCode + @"""}, " +
+                                        @"""client_id"": """ + ClientId + @"""}";
 
-            string payload = @"{""device_uid"": """ + deviceUid + @""", ""location"": {""city"": ""Zurich"", ""loc_accuracy"": 100, ""loc_coordinates"": " +
-            @"{""lat"": 47.3667, ""lng"": 8.55}, ""country"": ""CH""}, ""client_id"": ""81e8a76e-1e02-4d17-9ba0-8a7020261b26""}";
+            string payload = @"{""device_uid"": """ + deviceUid + @""", ""location"": {""city"": """ + City +
+                             @""", ""loc_accuracy"": 100, ""loc_coordinates"": " + @"{""lat"": " + Latitude +
+                             @", ""lng"": " + Longitude + @"}, ""country"": """ + CountryCode +
+                             @"""}, ""client_id"": """ + ClientId + @"""}";
 
             var keyByte = Encoding.UTF8.GetBytes(Key);
             using (var hmacsha1 = new HMACSHA1(keyByte))
             {
                 hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
-                return GetPageContentPost("https://api.go-tellm.com/api/v2/users/", payload, false, ByteToString(hmacsha1.Hash), $"{dt:s}Z");
+                return GetPageContentPost("https://api.go-tellm.com/api/v2/users/", payload, false,
+                    ByteToString(hmacsha1.Hash), $"{dt:s}Z");
             }
         }
 
