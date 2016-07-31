@@ -236,7 +236,29 @@ namespace JodelAPI
 
             return com.children.Select(c => new Comments()
             {
-                PostId = c.post_id, Message = c.message, UserHandle = c.user_handle, VoteCount = c.vote_count
+                PostId = c.post_id,
+                Message = c.message,
+                UserHandle = c.user_handle,
+                VoteCount = c.vote_count
+            }).ToList();
+        }
+
+        public static List<ModerationQueue> GetModerationQueue()
+        {
+            string plainJson = GetPageContent("https://api.go-tellm.com/api/v3/moderation/?access_token=" + AccessToken);
+            JsonModeration.RootObject queue = JsonConvert.DeserializeObject<JsonModeration.RootObject>(plainJson);
+            return queue.posts.Select(item => new ModerationQueue()
+            {
+                PostId = item.post_id,
+                FlagCount = item.flag_count,
+                FlagReason = item.flag_reason,
+                HexColor = item.color,
+                Message = item.message,
+                ParentId = item.parent_id,
+                TaskId = item.task_id,
+                UserHandle = item.user_handle,
+                VoteCount = item.vote_count
+
             }).ToList();
         }
 

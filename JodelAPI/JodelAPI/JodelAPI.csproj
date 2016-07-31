@@ -49,6 +49,8 @@
     <Compile Include="JsonJodelsFirstRound.cs" />
     <Compile Include="JsonJodelsLastRound.cs" />
     <Compile Include="API.cs" />
+    <Compile Include="JsonModeration.cs" />
+    <Compile Include="ModerationQueue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
