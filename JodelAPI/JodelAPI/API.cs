@@ -32,14 +32,15 @@ namespace JodelAPI
         public static string Longitude = "";
         public static string CountryCode = "";
         public static string City = "";
-        private static List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> _jodelCache = new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>>(); // postid, message, hexcolor, isImage, votecount, lat, lng, name
+        private static List<Jodels> _jodelCache = new List<Jodels>(); // postid, message, hexcolor, isImage, votecount, lat, lng, name
         private static string _lastPostId = "";
 
-        public static List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> GetFirstJodels()
+        public static List<Jodels> GetFirstJodels()
         {
             string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/location/combo?lat=" + Latitude + "&lng=" + Longitude + "&access_token=" + AccessToken);
-            JodelsFirstRound.RootObject jfr = JsonConvert.DeserializeObject<JodelsFirstRound.RootObject>(plainJson);
-            List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> temp = new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>>(); // List<post_id,message>
+            JsonJodelsFirstRound.RootObject jfr = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(plainJson);
+            List<Jodels> temp = new List<Jodels>(); // List<post_id,message>
+
             int i = 0;
             foreach (var item in jfr.recent)
             {
@@ -51,23 +52,35 @@ namespace JodelAPI
                     isUrl = true;
                 }
 
-                temp.Add(new Tuple<string, string, string, bool, int, string, string, Tuple<string>>(item.post_id, msg, item.color, isUrl, item.vote_count, item.location.loc_coordinates.lat.ToString(), item.location.loc_coordinates.lng.ToString(), new Tuple<string>(item.location.name)));
+                Jodels objJodels = new Jodels
+                {
+                    PostId = item.post_id,
+                    Message = msg,
+                    HexColor = item.color,
+                    IsImage = isUrl,
+                    VoteCount = item.vote_count,
+                    Latitude = item.location.loc_coordinates.lat.ToString(),
+                    Longitude = item.location.loc_coordinates.lng.ToString(),
+                    LocationName = item.location.name
+                };
+
+                temp.Add(objJodels);
 
                 i++;
             }
 
-            _lastPostId = FilterItem(temp, temp.IndexOf(temp.Last()), false); // Set the last post_id for next jodels
+            _lastPostId = temp.Last().PostId; // Set the last post_id for next jodels
 
             return temp;
         }
 
-        public static List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> GetNextJodels()
+        public static List<Jodels> GetNextJodels()
         {
-            List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> temp = new List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>>(); // List<counter,post_id,message>
+            List<Jodels> temp = new List<Jodels>();
             for (int e = 0; e < 3; e++)
             {
                 string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/location?lng=" + Longitude + "&lat=" + Latitude + "&after=" + _lastPostId + "&access_token=" + AccessToken + "&limit=1000000");
-                JodelsLastRound.RootObject jlr = JsonConvert.DeserializeObject<JodelsLastRound.RootObject>(plainJson);
+                JsonJodelsLastRound.RootObject jlr = JsonConvert.DeserializeObject<JsonJodelsLastRound.RootObject>(plainJson);
                 int i = 0;
                 foreach (var item in jlr.posts)
                 {
@@ -79,16 +92,28 @@ namespace JodelAPI
                         isUrl = true;
                     }
 
-                    temp.Add(new Tuple<string, string, string, bool, int, string, string, Tuple<string>>(item.post_id, msg, item.color, isUrl, item.vote_count, item.location.loc_coordinates.lat.ToString(), item.location.loc_coordinates.lng.ToString(), new Tuple<string>(item.location.name)));
+                    Jodels objJodels = new Jodels
+                    {
+                        PostId = item.post_id,
+                        Message = msg,
+                        HexColor = item.color,
+                        IsImage = isUrl,
+                        VoteCount = item.vote_count,
+                        Latitude = item.location.loc_coordinates.lat.ToString(),
+                        Longitude = item.location.loc_coordinates.lng.ToString(),
+                        LocationName = item.location.name
+                    };
+
+                    temp.Add(objJodels);
                     i++;
                 }
 
-                _lastPostId = FilterItem(temp, temp.IndexOf(temp.Last()), false); // Set the last post_id for next jodels
+                _lastPostId = temp.Last().PostId; // Set the last post_id for next jodels
             }
             return temp;
         }
 
-        public static List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> GetAllJodels()
+        public static List<Jodels> GetAllJodels()
         {
             var allJodels = GetFirstJodels();
             allJodels.AddRange(GetNextJodels());
@@ -96,12 +121,7 @@ namespace JodelAPI
             return allJodels;
         }
 
-        public static string FilterItem(List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>> unfiltered, int index, bool filterMessage)
-        {
-            return !filterMessage ? unfiltered[index].Item1 : unfiltered[index].Item2;
-        }
-
-        public static void Upvote(string postId)
+       public static void Upvote(string postId)
         {
             DateTime dt = DateTime.UtcNow;
 
@@ -131,7 +151,7 @@ namespace JodelAPI
 
         public static void Upvote(int indexOfItem)
         {
-            string postId = FilterItem(_jodelCache, indexOfItem, false);
+            string postId = _jodelCache[indexOfItem].PostId;
 
             using (var client = new WebClient())
             {
@@ -169,7 +189,7 @@ namespace JodelAPI
 
         public static void Downvote(int indexOfItem)
         {
-            string postId = FilterItem(_jodelCache, indexOfItem, false);
+            string postId = _jodelCache[indexOfItem].PostId;
 
             using (var client = new WebClient())
             {
@@ -209,12 +229,15 @@ namespace JodelAPI
             }
         }
 
-        public static List<Tuple<string, string, string, int>> GetComments(string postId)
+        public static List<Comments> GetComments(string postId)
         {
             string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/"+postId+"?access_token="+AccessToken);
-            Comments.RootObject com = JsonConvert.DeserializeObject<Comments.RootObject>(plainJson);
+            JsonComments.RootObject com = JsonConvert.DeserializeObject<JsonComments.RootObject>(plainJson);
 
-            return com.children.Select(c => new Tuple<string, string, string, int>(c.post_id, c.message, c.user_handle, c.vote_count)).ToList();
+            return com.children.Select(c => new Comments()
+            {
+                PostId = c.post_id, Message = c.message, UserHandle = c.user_handle, VoteCount = c.vote_count
+            }).ToList();
         }
 
         public static string GenerateAccessToken()

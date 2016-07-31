@@ -44,8 +44,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Comments.cs" />
-    <Compile Include="JodelsFirstRound.cs" />
-    <Compile Include="JodelsLastRound.cs" />
+    <Compile Include="Jodels.cs" />
+    <Compile Include="JsonComments.cs" />
+    <Compile Include="JsonJodelsFirstRound.cs" />
+    <Compile Include="JsonJodelsLastRound.cs" />
     <Compile Include="API.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

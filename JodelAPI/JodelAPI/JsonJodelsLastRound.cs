@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JodelAPI
 {
-    class JodelsLastRound
+    class JsonJodelsLastRound
     {
         public class LocCoordinates
         {
