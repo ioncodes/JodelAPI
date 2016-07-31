@@ -1,4 +1,10 @@
 # JodelAPI
+
+Build Status: [![Build status](https://ci.appveyor.com/api/projects/status/2dx3f591ubmp978t/branch/master?svg=true)](https://ci.appveyor.com/project/ioncodes/jodelapi/branch/master)
+
+Download JodelAPI.dll: https://ci.appveyor.com/api/projects/ioncodes/jodelapi/artifacts/JodelAPI/JodelAPI/bin/Debug/JodelAPI.dll
+Download Newtonsoft.Json.dll: https://ci.appveyor.com/api/projects/ioncodes/jodelapi/artifacts/JodelAPI/JodelAPI/bin/Debug/Newtonsoft.Json.dll
+
 [WIP] API for the Jodel app in .NET
 
 With this commit we'd like to introduce version 0.9 which will soon be updated to version 1.0!
