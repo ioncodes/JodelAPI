@@ -113,6 +113,23 @@ postId: add postID if it is a comment, otherwise don't change it.
 
 Set the postId (see above).
 
+## Colors
+
+The following colors are currently accepted by the Jodel server:
+
+```
+public enum PostColor
+{
+   Orange,
+   Yellow,
+   Red,
+   Blue,
+   Bluegreyish,
+   Green,
+   Random
+}
+```
+
 # Access Token
 
 We were able to reverse their new Authentication system and now GenerateAccessToken() works! It returns a string containing the token.
