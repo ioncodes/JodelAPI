@@ -5,12 +5,14 @@ Build Status: [![Build status](https://ci.appveyor.com/api/projects/status/2dx3f
 Download JodelAPI.dll: https://ci.appveyor.com/api/projects/ioncodes/jodelapi/artifacts/JodelAPI/JodelAPI/bin/Debug/JodelAPI.dll
 Download Newtonsoft.Json.dll: https://ci.appveyor.com/api/projects/ioncodes/jodelapi/artifacts/JodelAPI/JodelAPI/bin/Debug/Newtonsoft.Json.dll
 
+Alternatively download it via NuGet package manager!
+
 [WIP] API for the Jodel app in .NET
 
-With this commit we'd like to introduce version 0.9 which will soon be updated to version 1.0!
-Well... What's new, boss? Good question!
+We're proud to announce that our JodelAPI finally reached revision 1.0!
+Let's talk about the current state of things:
 
-Jodel changed their authentication system few time ago. We are glad to tell you that we've been able to reverse it! The most important fix in this version is that we finally got GenerateAccessToken working!
+Jodel changed their authentication system few time ago. We applied the new authentication system to our API and you are able to generate access tokens and post whatever you want!
 
 ## How the private Jodel API works...
 
@@ -20,7 +22,6 @@ lng: This is the longitude of your location.
 access_token: In the app, navigate to the options and click on "write us", then scroll down to "client info". There is something called "access_token=". The token is the string after the "=". Alternatively you can gather it by performing a mitm.
 
 Each PUT/POST request needs to be a signed request. This is accomplished by using a HMAC hash that is built from the stringified payload of the desired request.
-
 
 ### Getting the Jodels
 
@@ -35,22 +36,35 @@ Notice: Instead of providing your access token as a parameter, you can always se
 
 GET: "https://api.go-tellm.com/api/v2/users/karma?access_token={ACCESS_TOKEN}"
 
-
 ### More
 
 Visit this link: http://jodel-app.wikia.com/
 
-
 ## Documentation
 
-Jodels are returned as new ```List<Tuple<string, string, string, bool, int, string, string, Tuple<string>>>``` which is this:
+Jodels are returned as ```List<Jodels>```.
 
-postid, message, hexcolor, isImage, votecount, lat, lng, name
+```
+public string PostId { get; set; }
+public string Message { get; set; }
+public string HexColor { get; set; }
+public bool IsImage { get; set; }
+public int VoteCount { get; set; }
+public string Latitude { get; set; }
+public string Longitude { get; set; }
+public string LocationName { get; set; }
+```
 
+Comments are returned as ```List<Comments>```.
 
-Comments are returned as ```List<Tuple<string, string, string, int>>``` which is this:
+```
+public string PostId { get; set; }
+public string Message { get; set; }
+public string UserHandle { get; set; }
+public int VoteCount { get; set; }
+```
 
-postID, message, user_handle, vote_count
+The lists both contain formatted json objects.
 
 # Setup
 
@@ -74,7 +88,6 @@ Baseclass is called 'API'.
 
 Use GetAllJodels();
 
-
 # Upvote & Downvote
 
 You can use Upvote() and Downvote(). Remember that you can pass the postID (string) or the index (int) from the List as argument.
@@ -86,7 +99,6 @@ Voting more than 199 times in a row will get your IP banned!
 
 GetKarma() will return an int with your amount of Karma.
 
-
 # Posting
 
 PostJodel(string message, PostColor colorParam = PostColor.Random, string postId = null);
@@ -97,26 +109,29 @@ colorParam: Color from enum for post.
 
 postId: add postID if it is a comment, otherwise don't change it.
 
-
 ## Posting a Comment
 
 Set the postId (see above).
-
 
 # Access Token
 
 We were able to reverse their new Authentication system and now GenerateAccessToken() works! It returns a string containing the token.
 Notice: Spamming the function (>60 times) will get your IP banned!
 
+# Moderation
 
-# Helpers
+You can now queue reported Jodel posts through our API! Please note that you will only be able to do this if you reached about 30k Karma and got your moderation enrollment.
 
-If you're not familiar with Tuples you can just use the simple function "FilterItem()". It can only handle the jodel List<> and only filter between postID and message.
+Posts are returned as ```List<ModerationQueue>```.
 
-Usage:
-```c#
-FilterItem(List<> jodels, int index, bool filterMessage);
 ```
-index = position in the List<>
-
-filterMessage = if true then it filters the message, else it will return the postID
+public string PostId { get; set; }
+public string Message { get; set; }
+public int VoteCount { get; set; }
+public string HexColor { get; set; }
+public string UserHandle { get; set; }
+public int TaskId { get; set; }
+public int FlagCount { get; set; }
+public string ParentId { get; set; }
+public int FlagReason { get; set; }
+```
