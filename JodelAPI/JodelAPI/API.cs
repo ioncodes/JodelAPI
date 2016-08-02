@@ -23,6 +23,13 @@ namespace JodelAPI
             Random
         }
 
+        public enum Decision
+        {
+            Allow = 0,
+            Block = 2,
+            DontKnow = 1
+        }
+
 
         private const string Key = "pNsUaphGEfqqZJJIKHjfxAReDqdCTIIuaIVGaowG";
         private const string ClientId = "81e8a76e-1e02-4d17-9ba0-8a7020261b26";
@@ -291,6 +298,39 @@ namespace JodelAPI
 
                 return GetPageContentPost("https://api.go-tellm.com/api/v2/users/", payload, false,
                     ByteToString(hmacsha1.Hash), $"{dt:s}Z");
+            }
+        }
+
+        public static void FlagJodel(int taskId, Decision decision)
+        {
+            DateTime dt = DateTime.UtcNow;
+
+            string dec = Convert.ChangeType(decision, decision.GetTypeCode())?.ToString(); // get int from enum.
+            string stringifiedPayload = @"{	""task_id"": """ + taskId + 
+                                        @""", ""location"": { ""country"": """ + CountryCode + 
+                                        @""", ""name"": ""unknown"", ""loc_accuracy"": ""1"", ""loc_coordinates"": { ""lat"": """ + Latitude + 
+                                        @""", ""lng"": """ + Longitude + 
+                                        @""" }, ""city"": """ + City + 
+                                        @""" }, ""decision"": """ + dec + 
+                                        @""" }";
+
+
+            var keyByte = Encoding.UTF8.GetBytes(Key);
+            var hmacsha1 = new HMACSHA1(keyByte);
+            hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
+
+            using (var client = new WebClient())
+            {
+                client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
+                client.Headers.Add("User-Agent", "Jodel/4.12.5 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); //TODO: Randomize
+                client.Headers.Add("Accept-Encoding", "gzip");
+                client.Headers.Add("X-Client-Type", "android_4.12.5");
+                client.Headers.Add("X-Api-Version", "0.2");
+                client.Headers.Add("X-Timestamp", $"{dt:s}Z");
+                client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
+                client.Encoding = Encoding.UTF8;
+                client.UploadString(
+                    "https://api.go-tellm.com/api/v3/moderation?access_token=" + AccessToken, stringifiedPayload);
             }
         }
 
