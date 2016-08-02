@@ -164,3 +164,9 @@ public enum Decision
    DontKnow = 1
 } // ignore the numbers, they are for internal use.
 ```
+
+# General
+
+## FilterByChannel
+
+```FilterByChannel(List<Jodels> jodels, string channel)``` will return a new ```List<Jodels>```, but all jodels contain the specified keyword in "channel". If you're an IRC veteran, feel free to put a '#' in front of the name, I'm removing it anyways :D
