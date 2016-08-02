@@ -39,7 +39,6 @@ namespace JodelAPI
         public static string Longitude = "";
         public static string CountryCode = "";
         public static string City = "";
-        private static List<Jodels> _jodelCache = new List<Jodels>(); // postid, message, hexcolor, isImage, votecount, lat, lng, name
         private static string _lastPostId = "";
 
         public static List<Jodels> GetFirstJodels()
@@ -124,7 +123,6 @@ namespace JodelAPI
         {
             var allJodels = GetFirstJodels();
             allJodels.AddRange(GetNextJodels());
-            _jodelCache = allJodels;
             return allJodels;
         }
 
@@ -155,16 +153,6 @@ namespace JodelAPI
             }
         }
 
-        public static void Upvote(int indexOfItem)
-        {
-            string postId = _jodelCache[indexOfItem].PostId;
-
-            using (var client = new WebClient())
-            {
-                client.UploadData("https://api.go-tellm.com/api/v2/posts/" + postId + "/upvote?access_token=" + AccessToken, "PUT", new byte[] { });
-            }
-        } // cached List<> only
-
         public static void Downvote(string postId)
         {
             DateTime dt = DateTime.UtcNow;
@@ -191,16 +179,6 @@ namespace JodelAPI
                     "https://api.go-tellm.com/api/v2/posts/" + postId + "/" + "downvote/", "PUT", new byte[] { });
             }
         }
-
-        public static void Downvote(int indexOfItem)
-        {
-            string postId = _jodelCache[indexOfItem].PostId;
-
-            using (var client = new WebClient())
-            {
-                client.UploadData("https://api.go-tellm.com/api/v2/posts/" + postId + "/downvote?access_token=" + AccessToken, "PUT", new byte[] { });
-            }
-        } // cached List<> only
 
         public static int GetKarma()
         {
@@ -332,6 +310,24 @@ namespace JodelAPI
                 client.UploadString(
                     "https://api.go-tellm.com/api/v3/moderation?access_token=" + AccessToken, stringifiedPayload);
             }
+        }
+
+        public static List<Jodels> FilterByChannel(List<Jodels> jodels, string channel) // Get's all jodels containing the word
+        {
+            if (channel[0] == '#')
+            {
+                channel = channel.Remove(0, 1);
+            }
+
+            List<Jodels> temp = (
+                from jodel in jodels
+                where jodel.Message.Contains(channel)
+                select new Jodels()
+                {
+                    PostId = jodel.PostId, HexColor = jodel.HexColor, IsImage = jodel.IsImage, Latitude = jodel.Latitude, Longitude = jodel.Longitude, LocationName = jodel.LocationName, Message = jodel.Message, VoteCount = jodel.VoteCount
+                }).ToList();
+
+            return temp;
         }
 
         private static string ByteToString(byte[] buff)
