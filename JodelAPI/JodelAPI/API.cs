@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Device.Location;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -330,6 +332,19 @@ namespace JodelAPI
             return temp;
         }
 
+        public static Coordinates GetLocation()
+        {
+            return GetCoords();
+        }
+
+        public static void SetCurrentLocation()
+        {
+            var coord = GetCoords();
+
+            Latitude = coord.Latitude;
+            Longitude = coord.Longitude;
+        }
+
         private static string ByteToString(byte[] buff)
         {
             return buff.Aggregate("", (current, t) => current + t.ToString("X2"));
@@ -440,6 +455,24 @@ namespace JodelAPI
                 default:
                     throw new ArgumentOutOfRangeException(nameof(c), c, null);
             }
+        }
+
+        private static Coordinates GetCoords()
+        {
+            var watcher = new GeoCoordinateWatcher();
+            Coordinates coord = new Coordinates();
+
+            watcher.PositionChanged += (sender, e) =>
+            {
+                var coordinate = e.Position.Location;
+                coord.Latitude = coordinate.Latitude.ToString(CultureInfo.InvariantCulture);
+                coord.Longitude = coordinate.Longitude.ToString(CultureInfo.InvariantCulture);
+                watcher.Stop();
+            };
+
+            watcher.Start();
+
+            return coord;
         }
     }
 }
