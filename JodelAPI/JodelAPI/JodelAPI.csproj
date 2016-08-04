@@ -44,17 +44,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Comments.cs" />
-    <Compile Include="Coordinates.cs" />
-    <Compile Include="Jodels.cs" />
-    <Compile Include="JsonComments.cs" />
-    <Compile Include="JsonJodelsFirstRound.cs" />
-    <Compile Include="JsonJodelsLastRound.cs" />
+    <Compile Include="Json\JsonGCoordinates.cs" />
+    <Compile Include="Objects\Comments.cs" />
+    <Compile Include="Objects\Coordinates.cs" />
+    <Compile Include="GMaps.cs" />
+    <Compile Include="Objects\Jodels.cs" />
+    <Compile Include="Json\JsonComments.cs" />
+    <Compile Include="Json\JsonJodelsFirstRound.cs" />
+    <Compile Include="Json\JsonJodelsLastRound.cs" />
     <Compile Include="API.cs" />
-    <Compile Include="JsonModeration.cs" />
-    <Compile Include="ModerationQueue.cs" />
+    <Compile Include="Json\JsonModeration.cs" />
+    <Compile Include="Objects\ModerationQueue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

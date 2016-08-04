@@ -17,9 +17,16 @@ namespace Tester
             API.City = "Wettingen";
             API.CountryCode = "CH";
 
+            API.GoogleApiToken = "AIzaSyCeBypvg0wZ_GPdCnyPtyOi52r-N2_V6iw";
+
+            Console.WriteLine("Getting Flagged Jodels and flaging jodel:");
             var list = API.GetModerationQueue();
             Console.WriteLine(list[0].Message);
             API.FlagJodel(list[0].TaskId, API.Decision.Allow);
+            Console.WriteLine("\nGetting coords and setting them as current location:");
+            var coords = API.GetLocation("Flurweg 12, Wettingen, Schweiz");
+            Console.WriteLine("Latitude: " + coords.Latitude + ", Longitude: " + coords.Longitude);
+            API.SetCurrentLocation(coords);
             Console.Read();
         }
     }

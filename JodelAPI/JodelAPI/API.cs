@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Device.Location;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -41,6 +39,7 @@ namespace JodelAPI
         public static string Longitude = "";
         public static string CountryCode = "";
         public static string City = "";
+        public static string GoogleApiToken = "";
         private static string _lastPostId = "";
 
         public static List<Jodels> GetFirstJodels()
@@ -332,18 +331,24 @@ namespace JodelAPI
             return temp;
         }
 
-        public static Coordinates GetLocation()
+        public static Coordinates GetLocation(string location)
         {
-            return GetCoords();
+            return GetCoords(location);
         }
 
-        public static void SetCurrentLocation()
+        public static void SetCurrentLocation(string location)
         {
-            var coord = GetCoords();
+            var coord = GetCoords(location);
 
             Latitude = coord.Latitude;
             Longitude = coord.Longitude;
-        }
+        } // from location name via Google API
+
+        public static void SetCurrentLocation(Coordinates coord)
+        {
+            Latitude = coord.Latitude;
+            Longitude = coord.Longitude;
+        } // from created object
 
         private static string ByteToString(byte[] buff)
         {
@@ -457,20 +462,14 @@ namespace JodelAPI
             }
         }
 
-        private static Coordinates GetCoords()
+        private static Coordinates GetCoords(string address)
         {
-            var watcher = new GeoCoordinateWatcher();
-            Coordinates coord = new Coordinates();
-
-            watcher.PositionChanged += (sender, e) =>
+            string[] coords = address.ToCoordinates();
+            Coordinates coord = new Coordinates
             {
-                var coordinate = e.Position.Location;
-                coord.Latitude = coordinate.Latitude.ToString(CultureInfo.InvariantCulture);
-                coord.Longitude = coordinate.Longitude.ToString(CultureInfo.InvariantCulture);
-                watcher.Stop();
+                Latitude = coords[0],
+                Longitude = coords[1]
             };
-
-            watcher.Start();
 
             return coord;
         }
