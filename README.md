@@ -86,22 +86,21 @@ Baseclass is called 'API'.
 
 # Get Jodels
 
-Use GetAllJodels();
+Use ```GetAllJodels()```;
 
 # Upvote & Downvote
 
-You can use Upvote() and Downvote(). Remember that you can pass the postID (string) or the index (int) from the List as argument.
-BUT: using index is only working with the cached version of the jodels which is automaticaly done after calling GetAllJodels(). (Index option is not yet working. Will be fixed in 1.0!)
+You can use ```Upvote()``` and ```Downvote()```. Remember that you can pass the postID (string) or the index (int) from the List as argument.
 
 Voting more than 199 times in a row will get your IP banned!
 
 # Karma
 
-GetKarma() will return an int with your amount of Karma.
+```GetKarma()``` will return an int with your amount of Karma.
 
 # Posting
 
-PostJodel(string message, PostColor colorParam = PostColor.Random, string postId = null);
+```PostJodel(string message, PostColor colorParam = PostColor.Random, string postId = null);```
 
 message: message to post.
 
@@ -152,3 +151,22 @@ public int FlagCount { get; set; }
 public string ParentId { get; set; }
 public int FlagReason { get; set; }
 ```
+
+## Flaging Jodels
+
+You can flag now Jodels/Comments by calling the function ```FlagJodel(int taskId, Decision decision)```! taskId is the ID retrieved from ```List<ModerationQueue>```
+
+```
+public enum Decision
+{
+   Allow = 0,
+   Block = 2,
+   DontKnow = 1
+} // ignore the numbers, they are for internal use.
+```
+
+# General
+
+## FilterByChannel
+
+```FilterByChannel(List<Jodels> jodels, string channel)``` will return a new ```List<Jodels>```, but all jodels contain the specified keyword in "channel". If you're an IRC veteran, feel free to put a '#' in front of the name, I'm removing it anyways :D
