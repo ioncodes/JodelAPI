@@ -15,14 +15,23 @@ namespace JodelAPI
     {
         public static string[] ToCoordinates(this string address)
         {
-            string api =
-                "https://maps.googleapis.com/maps/api/geocode/json?address=" + address.Replace(" ", "+") + "&key=" + API.GoogleApiToken;
+            string api = "https://maps.googleapis.com/maps/api/geocode/json?address=" + address.Replace(" ", "+");
 
-            WebClient client = new WebClient();
-            client.Encoding = Encoding.UTF8;
+            WebClient client = new WebClient
+            {
+                Encoding = Encoding.UTF8
+            };
             string stringJson = client.DownloadString(api);
 
             var gCoords = JsonConvert.DeserializeObject<JsonGCoordinates.RootObject>(stringJson);
+
+            switch (gCoords.status)
+            {
+                case "ZERO_RESULTS":
+                    throw new LocationNotFoundException("Location has not been found.");
+                case "REQUEST_DENIED":
+                    throw new GoogleApiTokenInvalidException("Invalid Google API Token.");
+            }
 
             return new[]
             {

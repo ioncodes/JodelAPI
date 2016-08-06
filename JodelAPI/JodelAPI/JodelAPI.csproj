@@ -44,6 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\GoogleApiTokenInvalidException.cs" />
+    <Compile Include="Exceptions\GoogleApiTokenEmptyException.cs" />
+    <Compile Include="Exceptions\LocationNotFoundException.cs" />
     <Compile Include="Json\JsonGCoordinates.cs" />
     <Compile Include="Objects\Comments.cs" />
     <Compile Include="Objects\Coordinates.cs" />

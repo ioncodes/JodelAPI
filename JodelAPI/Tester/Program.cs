@@ -17,8 +17,6 @@ namespace Tester
             API.City = "Berlin";
             API.CountryCode = "DE";
 
-            API.GoogleApiToken = "";
-
             Console.WriteLine("Getting Flagged Jodels and flaging jodel:");
             var list = API.GetModerationQueue();
             Console.WriteLine(list[0].Message);
