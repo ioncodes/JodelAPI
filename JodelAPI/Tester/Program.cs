@@ -17,7 +17,7 @@ namespace Tester
             API.City = "Wettingen";
             API.CountryCode = "CH";
 
-            API.GoogleApiToken = "AIzaSyCeBypvg0wZ_GPdCnyPtyOi52r-N2_V6iw";
+            API.GoogleApiToken = "";
 
             Console.WriteLine("Getting Flagged Jodels and flaging jodel:");
             var list = API.GetModerationQueue();
