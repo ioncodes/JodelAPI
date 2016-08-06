@@ -25,12 +25,9 @@ namespace JodelAPI
 
             var gCoords = JsonConvert.DeserializeObject<JsonGCoordinates.RootObject>(stringJson);
 
-            switch (gCoords.status)
+            if (gCoords.status == "ZERO_RESULTS")
             {
-                case "ZERO_RESULTS":
-                    throw new LocationNotFoundException("Location has not been found.");
-                case "REQUEST_DENIED":
-                    throw new GoogleApiTokenInvalidException("Invalid Google API Token.");
+                throw new LocationNotFoundException("Location has not been found.");
             }
 
             return new[]
