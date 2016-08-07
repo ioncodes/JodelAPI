@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,9 +23,9 @@ namespace Tester
             Console.WriteLine(list[0].Message);
             API.FlagJodel(list[0].TaskId, API.Decision.Allow);
             Console.WriteLine("\nGetting coords and setting them as current location:");
-            var coords = API.GetLocation("Berliner 2, Deutschland");
+            var coords = API.GetCoordinates("Berliner 2, Deutschland");
             Console.WriteLine("Latitude: " + coords.Latitude + ", Longitude: " + coords.Longitude);
-            API.SetCurrentLocation(coords);
+            Console.WriteLine(API.CalcDistance(coords, API.GetCoordinates("hamburg, Deutschland"), API.Unit.Meters).ToString(CultureInfo.InvariantCulture));
             Console.Read();
         }
     }

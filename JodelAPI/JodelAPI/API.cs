@@ -30,6 +30,13 @@ namespace JodelAPI
             DontKnow = 1
         }
 
+        public enum Unit
+        {
+            Kilometers,
+            Meters,
+            Miles
+        }
+
 
         private const string Key = "pNsUaphGEfqqZJJIKHjfxAReDqdCTIIuaIVGaowG";
         private const string ClientId = "81e8a76e-1e02-4d17-9ba0-8a7020261b26";
@@ -194,7 +201,7 @@ namespace JodelAPI
 
             var color = GetColor(colorParam);
 
-            string jsonCommentFragment = string.Empty;
+            string jsonCommentFragment = String.Empty;
             if (postID != null)
             {
                 jsonCommentFragment = @"""ancestor"": """ + postID + @""", ";
@@ -331,12 +338,12 @@ namespace JodelAPI
             return temp;
         }
 
-        public static Coordinates GetLocation(string location)
+        public static Coordinates GetCoordinates(string location)
         {
             return GetCoords(location);
         }
 
-        public static void SetCurrentLocation(string location)
+        public static void SetLocation(string location)
         {
             var coord = GetCoords(location);
 
@@ -344,11 +351,31 @@ namespace JodelAPI
             Longitude = coord.Longitude;
         } // from location name via Google API
 
-        public static void SetCurrentLocation(Coordinates coord)
+        public static void SetLocation(Coordinates coord)
         {
             Latitude = coord.Latitude;
             Longitude = coord.Longitude;
         } // from created object
+
+        public static double CalcDistance(Coordinates coord1, Coordinates coord2, Unit unit)
+        {
+            double c1lo = double.Parse(coord1.Longitude, System.Globalization.CultureInfo.InvariantCulture);
+            double c2lo = double.Parse(coord2.Longitude, System.Globalization.CultureInfo.InvariantCulture);
+            double c1la = double.Parse(coord1.Latitude, System.Globalization.CultureInfo.InvariantCulture);
+            double c2la = double.Parse(coord2.Latitude, System.Globalization.CultureInfo.InvariantCulture);
+
+            switch (unit)
+            {
+                case Unit.Kilometers:
+                    return Distance.KilometresBetweenTwoGeographicCoordinates(c1lo, c1la, c2lo, c2la);
+                case Unit.Meters:
+                    return Distance.MetresBetweenTwoGeographicCoordinates(c1lo, c1la, c2lo, c2la);
+                case Unit.Miles:
+                    return Distance.MilesBetweenTwoGeographicCoordinates(c1lo, c1la, c2lo, c2la);
+                default:
+                    throw new InternalException("API Error: Calculating Distance");
+            }
+        }
 
         private static string ByteToString(byte[] buff)
         {

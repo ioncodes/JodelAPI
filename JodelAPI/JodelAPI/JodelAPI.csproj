@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Distance.cs" />
+    <Compile Include="Exceptions\InternalException.cs" />
     <Compile Include="Exceptions\GoogleApiTokenInvalidException.cs" />
     <Compile Include="Exceptions\GoogleApiTokenEmptyException.cs" />
     <Compile Include="Exceptions\LocationNotFoundException.cs" />
