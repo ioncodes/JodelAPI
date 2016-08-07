@@ -12,6 +12,9 @@ namespace JodelAPI
 {
     public static class API
     {
+        /// <summary>
+        /// Colors for Jodels
+        /// </summary>
         public enum PostColor
         {
             Orange,
@@ -23,6 +26,9 @@ namespace JodelAPI
             Random
         }
 
+        /// <summary>
+        /// Decisions for flaging an Jodel
+        /// </summary>
         public enum Decision
         {
             Allow = 0,
@@ -30,6 +36,9 @@ namespace JodelAPI
             DontKnow = 1
         }
 
+        /// <summary>
+        /// Returning unit for calculating distance
+        /// </summary>
         public enum Unit
         {
             Kilometers,
@@ -52,6 +61,7 @@ namespace JodelAPI
         /// <summary>
         /// Gets the first amount of Jodels (internal usage)
         /// </summary>
+        /// <returns>List&lt;Jodels&gt;.</returns>
         public static List<Jodels> GetFirstJodels()
         {
             string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/location/combo?lat=" + Latitude + "&lng=" + Longitude + "&access_token=" + AccessToken);
@@ -94,6 +104,7 @@ namespace JodelAPI
         /// <summary>
         /// Gets the second amount of Jodels (internal usage)
         /// </summary>
+        /// <returns>List&lt;Jodels&gt;.</returns>
         public static List<Jodels> GetNextJodels()
         {
             List<Jodels> temp = new List<Jodels>();
@@ -134,8 +145,9 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Gets all Jodels
+        /// Gets all jodels.
         /// </summary>
+        /// <returns>List&lt;Jodels&gt;.</returns>
         public static List<Jodels> GetAllJodels()
         {
             var allJodels = GetFirstJodels();
@@ -144,8 +156,9 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Upvotes an Jodel
+        /// Upvotes the specified post identifier (Jodel).
         /// </summary>
+        /// <param name="postId">The post identifier.</param>
         public static void Upvote(string postId)
         {
             DateTime dt = DateTime.UtcNow;
@@ -174,8 +187,9 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Downvotes an Jodel
+        /// Downvotes the specified post identifier (Jodel).
         /// </summary>
+        /// <param name="postId">The post identifier.</param>
         public static void Downvote(string postId)
         {
             DateTime dt = DateTime.UtcNow;
@@ -204,8 +218,9 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Gets the amount Karma
+        /// Gets the karma.
         /// </summary>
+        /// <returns>System.Int32.</returns>
         public static int GetKarma()
         {
             string resp = GetPageContent("https://api.go-tellm.com/api/v2/users/karma?access_token=" + AccessToken);
@@ -214,8 +229,11 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Posts an Jodel
+        /// Posts an jodel.
         /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="colorParam">The color parameter.</param>
+        /// <param name="postID">The post identifier.</param>
         public static void PostJodel(string message, PostColor colorParam = PostColor.Random, string postID = null)
         {
             DateTime dt = DateTime.UtcNow;
@@ -249,8 +267,10 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Gets all Comments
+        /// Gets the comments.
         /// </summary>
+        /// <param name="postId">The post identifier.</param>
+        /// <returns>List&lt;Comments&gt;.</returns>
         public static List<Comments> GetComments(string postId)
         {
             string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/" + postId + "?access_token=" + AccessToken);
@@ -266,8 +286,9 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Gets all reported Jodels
+        /// Gets the reported Jodels
         /// </summary>
+        /// <returns>List&lt;ModerationQueue&gt;.</returns>
         public static List<ModerationQueue> GetModerationQueue()
         {
             string plainJson = GetPageContent("https://api.go-tellm.com/api/v3/moderation/?access_token=" + AccessToken);
@@ -288,8 +309,9 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Creates a new Access Token
+        /// Generates an access token.
         /// </summary>
+        /// <returns>System.String.</returns>
         public static string GenerateAccessToken()
         {
             DateTime dt = DateTime.UtcNow;
@@ -318,8 +340,10 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Flags a reported Jodel
+        /// Flags the jodel.
         /// </summary>
+        /// <param name="taskId">The task identifier.</param>
+        /// <param name="decision">The decision.</param>
         public static void FlagJodel(int taskId, Decision decision)
         {
             DateTime dt = DateTime.UtcNow;
@@ -354,8 +378,11 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Filter all Jodels by a string
+        /// Filters the Jodels by a string.
         /// </summary>
+        /// <param name="jodels">The jodels.</param>
+        /// <param name="channel">The name.</param>
+        /// <returns>List&lt;Jodels&gt;.</returns>
         public static List<Jodels> FilterByChannel(List<Jodels> jodels, string channel) // Get's all jodels containing the word
         {
             if (channel[0] == '#')
@@ -375,16 +402,19 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Gets the coordinates from a location via Google API
+        /// Gets the coordinates.
         /// </summary>
+        /// <param name="location">The location.</param>
+        /// <returns>Coordinates.</returns>
         public static Coordinates GetCoordinates(string location)
         {
             return GetCoords(location);
         }
 
         /// <summary>
-        /// Sets Longitude and Latitude with a location name using the Google API
+        /// Sets the location.
         /// </summary>
+        /// <param name="location">The location.</param>
         public static void SetLocation(string location)
         {
             var coord = GetCoords(location);
@@ -394,8 +424,9 @@ namespace JodelAPI
         } // from location name via Google API
 
         /// <summary>
-        /// Sets Longitude and Latitude with a Coordinates object
+        /// Sets the location.
         /// </summary>
+        /// <param name="coord">The coord.</param>
         public static void SetLocation(Coordinates coord)
         {
             Latitude = coord.Latitude;
@@ -403,8 +434,13 @@ namespace JodelAPI
         } // from created object
 
         /// <summary>
-        /// Calculates the distance between 2 Coordinates objects
+        /// Calculates the distance.
         /// </summary>
+        /// <param name="coord1">The coord1.</param>
+        /// <param name="coord2">The coord2.</param>
+        /// <param name="unit">The unit.</param>
+        /// <returns>System.Double.</returns>
+        /// <exception cref="InternalException">API Error: Calculating Distance</exception>
         public static double CalcDistance(Coordinates coord1, Coordinates coord2, Unit unit)
         {
             double c1lo = double.Parse(coord1.Longitude, System.Globalization.CultureInfo.InvariantCulture);
