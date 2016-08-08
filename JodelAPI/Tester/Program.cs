@@ -12,7 +12,7 @@ namespace Tester
     {
         static void Main(string[] args)
         {
-            API.AccessToken = "f863e61d-3548-4d6d-bba7-15253bdc23f6";
+            API.AccessToken = "9a3d3055-c6cf-48df-b072-b08ee1e4c742";
             API.Latitude = "52.30";
             API.Longitude = "13.25";
             API.City = "Berlin";
@@ -26,6 +26,9 @@ namespace Tester
             var coords = API.GetCoordinates("Berliner 2, Deutschland");
             Console.WriteLine("Latitude: " + coords.Latitude + ", Longitude: " + coords.Longitude);
             Console.WriteLine(API.CalcDistance(coords, API.GetCoordinates("hamburg, Deutschland"), API.Unit.Meters).ToString(CultureInfo.InvariantCulture));
+            Console.WriteLine("Reporting Jodel");
+            var jodels = API.GetAllJodels();
+            API.ReportJodel(jodels[0].PostId, API.Reason.Mobbing);
             Console.Read();
         }
     }

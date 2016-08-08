@@ -37,13 +37,25 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Returning unit for calculating distance
+        /// Unit for calculating distance
         /// </summary>
         public enum Unit
         {
             Kilometers,
             Meters,
             Miles
+        }
+
+        /// <summary>
+        /// Reason for reporting Jodels
+        /// </summary>
+        public enum Reason
+        {
+            PersonalData = 1,
+            Mobbing = 2,
+            Spamming = 3,
+            Spoiler = 4,
+            Other = 5
         }
 
 
@@ -370,6 +382,33 @@ namespace JodelAPI
                 client.Encoding = Encoding.UTF8;
                 client.UploadString(
                     "https://api.go-tellm.com/api/v3/moderation/?access_token=" + AccessToken, stringifiedPayload);
+            }
+        }
+
+        public static void ReportJodel(string postId, Reason reason)
+        {
+            DateTime dt = DateTime.UtcNow;
+
+            string rea = Convert.ChangeType(reason, reason.GetTypeCode())?.ToString(); // get int from enum.
+            string stringifiedPayload = @"{""reason_id"":"+rea+"}";
+
+            var keyByte = Encoding.UTF8.GetBytes(Key);
+            var hmacsha1 = new HMACSHA1(keyByte);
+            hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
+
+            using (var client = new WebClient())
+            {
+                client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
+                client.Headers.Add("User-Agent", "Jodel/4.12.5 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)");
+                client.Headers.Add("Accept-Encoding", "gzip");
+                client.Headers.Add("X-Client-Type", "android_4.12.5");
+                client.Headers.Add("X-Api-Version", "0.2");
+                client.Headers.Add("X-Timestamp", $"{dt:s}Z");
+                client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
+                client.Headers.Add("Authorization", "Bearer " + AccessToken);
+                client.Encoding = Encoding.UTF8;
+                client.UploadData(
+                    "https://api.go-tellm.com/api/v2/posts/" + postId + "/" + "flag?" + AccessToken, "PUT", new byte[] { });
             }
         }
 
