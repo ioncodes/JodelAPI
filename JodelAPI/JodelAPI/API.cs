@@ -526,9 +526,13 @@ namespace JodelAPI
             }).ToList();
         }
 
+        /// <summary>
+        /// Gets my comments.
+        /// </summary>
+        /// <returns>List&lt;MyComments&gt;.</returns>
         public static List<MyComments> GetMyComments()
         {
-            string link = "https://api.go-tellm.com/api/v2/posts/mine?limit=150&access_token=" + AccessToken + "&skip=0";
+            string link = "https://api.go-tellm.com/api/v2/posts/mine/replies?skip=0&access_token=" + AccessToken + "&limit=150";
 
             string plainJson = GetPageContent(link);
 
@@ -539,6 +543,7 @@ namespace JodelAPI
                 Message = item.message,
                 HexColor = item.color,
                 VoteCount = item.vote_count,
+                IsOwn = item.post_own.Equals("own"),
                 Latitude = item.location.loc_coordinates.lat.ToString(),
                 Longitude = item.location.loc_coordinates.lng.ToString(),
                 LocationName = item.location.name
