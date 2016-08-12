@@ -35,6 +35,9 @@ namespace Tester
             Console.WriteLine("Getting my comments");
             var myComments = API.GetMyComments();
             Console.WriteLine(myComments[0].Message);
+            Console.WriteLine("Getting my votes");
+            var myVotes = API.GetMyVotes();
+            Console.WriteLine("Jodel: " + myVotes[0].Message);
             Console.Read();
         }
     }

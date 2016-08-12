@@ -550,6 +550,28 @@ namespace JodelAPI
             }).ToList();
         }
 
+        /// <summary>
+        /// Gets my votes.
+        /// </summary>
+        /// <returns>List&lt;MyVotes&gt;.</returns>
+        public static List<MyVotes> GetMyVotes()
+        {
+            string link = "https://api.go-tellm.com/api/v2/posts/mine/votes?limit=150&access_token=" + AccessToken + "&skip=0";
+
+            string plainJson = GetPageContent(link);
+
+            JsonMyVotes.RootObject myVotes = JsonConvert.DeserializeObject<JsonMyVotes.RootObject>(plainJson);
+            return myVotes.posts.Select(item => new MyVotes()
+            {
+                PostId = item.post_id,
+                Message = item.message,
+                HexColor = item.color,
+                VoteCount = item.vote_count,
+                IsOwn = item.post_own.Equals("own"),
+                LocationName = item.location.name
+            }).ToList();
+        }
+
         private static string ByteToString(byte[] buff)
         {
             return buff.Aggregate("", (current, t) => current + t.ToString("X2"));
