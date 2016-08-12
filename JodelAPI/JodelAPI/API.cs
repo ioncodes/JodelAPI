@@ -6,6 +6,8 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography;
 using System.Text;
+using JodelAPI.Objects;
+using JodelAPI.Json;
 using Newtonsoft.Json;
 
 namespace JodelAPI
@@ -513,6 +515,25 @@ namespace JodelAPI
 
             JsonMyJodels.RootObject myJodels = JsonConvert.DeserializeObject<JsonMyJodels.RootObject>(plainJson);
             return myJodels.posts.Select(item => new MyJodels()
+            {
+                PostId = item.post_id,
+                Message = item.message,
+                HexColor = item.color,
+                VoteCount = item.vote_count,
+                Latitude = item.location.loc_coordinates.lat.ToString(),
+                Longitude = item.location.loc_coordinates.lng.ToString(),
+                LocationName = item.location.name
+            }).ToList();
+        }
+
+        public static List<MyComments> GetMyComments()
+        {
+            string link = "https://api.go-tellm.com/api/v2/posts/mine?limit=150&access_token=" + AccessToken + "&skip=0";
+
+            string plainJson = GetPageContent(link);
+
+            JsonMyComments.RootObject myComments = JsonConvert.DeserializeObject<JsonMyComments.RootObject>(plainJson);
+            return myComments.posts.Select(item => new MyComments()
             {
                 PostId = item.post_id,
                 Message = item.message,

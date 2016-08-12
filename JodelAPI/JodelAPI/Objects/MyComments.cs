@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace JodelAPI.Objects
 {
-    public class Comments
+    public class MyComments
     {
-        // post_id, message, user_handle, vote_count
-
         public string PostId { get; set; }
 
         public string Message { get; set; }
