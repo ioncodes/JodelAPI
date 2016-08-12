@@ -50,6 +50,7 @@
     <Compile Include="Exceptions\GoogleApiTokenEmptyException.cs" />
     <Compile Include="Exceptions\LocationNotFoundException.cs" />
     <Compile Include="Json\JsonGCoordinates.cs" />
+    <Compile Include="Json\JsonMyJodels.cs" />
     <Compile Include="Objects\Comments.cs" />
     <Compile Include="Objects\Coordinates.cs" />
     <Compile Include="GMaps.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="API.cs" />
     <Compile Include="Json\JsonModeration.cs" />
     <Compile Include="Objects\ModerationQueue.cs" />
+    <Compile Include="Objects\MyJodels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

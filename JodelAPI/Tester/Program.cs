@@ -12,7 +12,7 @@ namespace Tester
     {
         static void Main(string[] args)
         {
-            API.AccessToken = "9a3d3055-c6cf-48df-b072-b08ee1e4c742";
+            API.AccessToken = "6bad61c2-adc6-48e2-81aa-8f59c08f1775";
             API.Latitude = "52.30";
             API.Longitude = "13.25";
             API.City = "Berlin";
@@ -29,6 +29,9 @@ namespace Tester
             Console.WriteLine("Reporting Jodel");
             var jodels = API.GetAllJodels();
             API.ReportJodel(jodels[0].PostId, API.Reason.Mobbing);
+            Console.WriteLine("Getting my Jodels");
+            var myJodels = API.GetMyJodels();
+            Console.WriteLine(myJodels[0].Message);
             Console.Read();
         }
     }
