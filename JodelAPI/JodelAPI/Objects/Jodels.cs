@@ -19,6 +19,8 @@ namespace JodelAPI.Objects
 
         public int VoteCount { get; set; }
 
+        public int CommentsCount { get; set; }
+
         public string LocationName { get; set; }
     }
 }

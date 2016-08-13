@@ -58,6 +58,15 @@ namespace JodelAPI
             Other = 5
         }
 
+        /// <summary>
+        /// Methods to sort List<Jodels>
+        /// </summary>
+        public enum SortMethod
+        {
+            MostCommented,
+            Top
+        }
+
 
         public static string AccessToken = "";
         public static string Latitude = "";
@@ -99,7 +108,8 @@ namespace JodelAPI
                     HexColor = item.color,
                     IsImage = isUrl,
                     VoteCount = item.vote_count,
-                    LocationName = item.location.name
+                    LocationName = item.location.name,
+                    CommentsCount = item.child_count ?? 0
                 };
 
                 temp.Add(objJodels);
@@ -143,7 +153,8 @@ namespace JodelAPI
                         HexColor = item.color,
                         IsImage = isUrl,
                         VoteCount = item.vote_count,
-                        LocationName = item.location.name
+                        LocationName = item.location.name,
+                        CommentsCount = item.child_count ?? 0
                     };
 
                     temp.Add(objJodels);
@@ -576,6 +587,13 @@ namespace JodelAPI
                 return true;
             }
             return false;
+        }
+
+        public static List<Jodels> Sort(List<Jodels> jodels, SortMethod method)
+        {
+            return method == SortMethod.MostCommented 
+                          ? jodels.OrderByDescending(o => o.CommentsCount).ToList() 
+                          : jodels.OrderByDescending(o => o.VoteCount).ToList();
         }
 
 
