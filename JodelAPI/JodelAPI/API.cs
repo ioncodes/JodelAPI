@@ -363,6 +363,11 @@ namespace JodelAPI
             return objTokens.access_token;
         }
 
+        /// <summary>
+        /// Generates the access token.
+        /// </summary>
+        /// <param name="advanced">if set to <c>true</c> [advanced].</param>
+        /// <returns>Tokens.</returns>
         public static Tokens GenerateAccessToken(bool advanced)
         {
             DateTime dt = DateTime.UtcNow;
