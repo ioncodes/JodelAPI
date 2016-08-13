@@ -55,6 +55,7 @@
     <Compile Include="Json\JsonMyComments.cs" />
     <Compile Include="Json\JsonMyJodels.cs" />
     <Compile Include="Json\JsonMyVotes.cs" />
+    <Compile Include="Json\JsonTokens.cs" />
     <Compile Include="Objects\Comments.cs" />
     <Compile Include="Objects\Config.cs" />
     <Compile Include="Objects\Coordinates.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Objects\MyComments.cs" />
     <Compile Include="Objects\MyJodels.cs" />
     <Compile Include="Objects\MyVotes.cs" />
+    <Compile Include="Objects\Tokens.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
