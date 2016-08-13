@@ -13,10 +13,14 @@ namespace Tester
         static void Main(string[] args)
         {
             API.AccessToken = "6bad61c2-adc6-48e2-81aa-8f59c08f1775";
-            API.Latitude = "52.30";
-            API.Longitude = "13.25";
+            API.Latitude = "47.4618072509873";
+            API.Longitude = "8.329452514657341";
             API.City = "Berlin";
             API.CountryCode = "DE";
+
+            Console.Read();
+
+            var jodels = API.GetAllJodels();
 
             Console.WriteLine("Getting Flagged Jodels and flaging jodel:");
             var list = API.GetModerationQueue();
@@ -27,7 +31,6 @@ namespace Tester
             Console.WriteLine("Latitude: " + coords.Latitude + ", Longitude: " + coords.Longitude);
             Console.WriteLine(API.CalcDistance(coords, API.GetCoordinates("hamburg, Deutschland"), API.Unit.Meters).ToString(CultureInfo.InvariantCulture));
             Console.WriteLine("Reporting Jodel");
-            var jodels = API.GetAllJodels();
             API.ReportJodel(jodels[0].PostId, API.Reason.Mobbing);
             Console.WriteLine("Getting my Jodels");
             var myJodels = API.GetMyJodels();
@@ -38,6 +41,10 @@ namespace Tester
             Console.WriteLine("Getting my votes");
             var myVotes = API.GetMyVotes();
             Console.WriteLine("Jodel: " + myVotes[0].Message);
+            Console.WriteLine("Upvoting Jodel");
+            API.Upvote(jodels[1].PostId);
+
+            Console.Read();
             Console.Read();
         }
     }

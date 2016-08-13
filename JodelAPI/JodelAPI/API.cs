@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Security;
 using System.Security.Cryptography;
 using System.Text;
 using JodelAPI.Objects;
@@ -75,11 +73,15 @@ namespace JodelAPI
         /// <returns>List&lt;Jodels&gt;.</returns>
         public static List<Jodels> GetFirstJodels()
         {
-            string plainJson = GetPageContent(Constants.LinkFirstJodels.ToLink());
+            string plainJson;
+            using (var client = new WebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                plainJson = client.DownloadString(Constants.LinkFirstJodels.ToLink());
+            }
             JsonJodelsFirstRound.RootObject jfr = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(plainJson);
             List<Jodels> temp = new List<Jodels>(); // List<post_id,message>
 
-            int i = 0;
             foreach (var item in jfr.recent)
             {
                 string msg = item.message;
@@ -97,14 +99,10 @@ namespace JodelAPI
                     HexColor = item.color,
                     IsImage = isUrl,
                     VoteCount = item.vote_count,
-                    Latitude = item.location.loc_coordinates.lat.ToString(),
-                    Longitude = item.location.loc_coordinates.lng.ToString(),
                     LocationName = item.location.name
                 };
 
                 temp.Add(objJodels);
-
-                i++;
             }
 
             _lastPostId = temp.Last().PostId; // Set the last post_id for next jodels
@@ -121,9 +119,13 @@ namespace JodelAPI
             List<Jodels> temp = new List<Jodels>();
             for (int e = 0; e < 3; e++)
             {
-                string plainJson = GetPageContent(Constants.LinkSecondJodels.ToLink(_lastPostId));
+                string plainJson;
+                using (var client = new WebClient())
+                {
+                    client.Encoding = Encoding.UTF8;
+                    plainJson = client.DownloadString(Constants.LinkSecondJodels.ToLink(_lastPostId));
+                }
                 JsonJodelsLastRound.RootObject jlr = JsonConvert.DeserializeObject<JsonJodelsLastRound.RootObject>(plainJson);
-                int i = 0;
                 foreach (var item in jlr.posts)
                 {
                     string msg = item.message;
@@ -141,13 +143,10 @@ namespace JodelAPI
                         HexColor = item.color,
                         IsImage = isUrl,
                         VoteCount = item.vote_count,
-                        Latitude = item.location.loc_coordinates.lat.ToString(),
-                        Longitude = item.location.loc_coordinates.lng.ToString(),
                         LocationName = item.location.name
                     };
 
                     temp.Add(objJodels);
-                    i++;
                 }
 
                 _lastPostId = temp.Last().PostId; // Set the last post_id for next jodels
@@ -177,20 +176,9 @@ namespace JodelAPI
             string stringifiedPayload =
                 @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "/" + "upvote/%" + AccessToken + "%" + $"{dt:s}Z" + "%%";
 
-            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
-            var hmacsha1 = new HMACSHA1(keyByte);
-            hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
-
             using (var client = new WebClient())
             {
-                client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
-                client.Headers.Add("User-Agent", "Jodel/" + Constants.AppVersion + " Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); //TODO: Randomize
-                client.Headers.Add("Accept-Encoding", "gzip");
-                client.Headers.Add("X-Client-Type", "android_" + Constants.AppVersion + "");
-                client.Headers.Add("X-Api-Version", "0.2");
-                client.Headers.Add("X-Timestamp", $"{dt:s}Z");
-                client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
-                client.Headers.Add("Authorization", "Bearer " + AccessToken);
+                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, true));
                 client.Encoding = Encoding.UTF8;
                 client.UploadData(Constants.LinkUpvoteJodel.ToLink(postId), "PUT", new byte[] { });
             }
@@ -207,20 +195,9 @@ namespace JodelAPI
             string stringifiedPayload =
                 @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "/" + "downvote/%" + AccessToken + "%" + $"{dt:s}Z" + "%%";
 
-            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
-            var hmacsha1 = new HMACSHA1(keyByte);
-            hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
-
             using (var client = new WebClient())
             {
-                client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
-                client.Headers.Add("User-Agent", "Jodel/" + Constants.AppVersion + " Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); //TODO: Randomize
-                client.Headers.Add("Accept-Encoding", "gzip, deflate");
-                client.Headers.Add("X-Client-Type", "android_" + Constants.AppVersion + "");
-                client.Headers.Add("X-Api-Version", "0.2");
-                client.Headers.Add("X-Timestamp", $"{dt:s}Z");
-                client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
-                client.Headers.Add("Authorization", "Bearer " + AccessToken);
+                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, true));
                 client.Encoding = Encoding.UTF8;
                 client.UploadData(Constants.LinkDownvoteJodel.ToLink(postId), "PUT", new byte[] { });
             }
@@ -232,7 +209,11 @@ namespace JodelAPI
         /// <returns>System.Int32.</returns>
         public static int GetKarma()
         {
-            string resp = GetPageContent(Constants.LinkGetKarma.ToLink());
+            string resp;
+            using (var client = new WebClient())
+            {
+                resp = client.DownloadString(Constants.LinkGetKarma.ToLink());
+            }
             string result = resp.Substring(resp.LastIndexOf(':') + 1);
             return Convert.ToInt32(result.Replace("}", "").Replace("\"", ""));
         }
@@ -242,17 +223,17 @@ namespace JodelAPI
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="colorParam">The color parameter.</param>
-        /// <param name="postID">The post identifier.</param>
-        public static void PostJodel(string message, PostColor colorParam = PostColor.Random, string postID = null)
+        /// <param name="postId">The post identifier.</param>
+        public static void PostJodel(string message, PostColor colorParam = PostColor.Random, string postId = null)
         {
             DateTime dt = DateTime.UtcNow;
 
             var color = GetColor(colorParam);
 
             string jsonCommentFragment = String.Empty;
-            if (postID != null)
+            if (postId != null)
             {
-                jsonCommentFragment = @"""ancestor"": """ + postID + @""", ";
+                jsonCommentFragment = @"""ancestor"": """ + postId + @""", ";
             }
 
             string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/posts/%" + AccessToken + "%" + $"{dt:s}Z" +
@@ -271,7 +252,12 @@ namespace JodelAPI
             {
                 hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
-                GetPageContentPost(Constants.LinkPostJodel, payload, true, ByteToString(hmacsha1.Hash), $"{dt:s}Z");
+                using (var client = new WebClient())
+                {
+                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, true));
+                    client.Encoding = Encoding.UTF8;
+                    client.UploadString(Constants.LinkPostJodel, payload);
+                }
             }
         }
 
@@ -282,7 +268,12 @@ namespace JodelAPI
         /// <returns>List&lt;Comments&gt;.</returns>
         public static List<Comments> GetComments(string postId)
         {
-            string plainJson = GetPageContent(Constants.LinkGetComments.ToLink());
+            string plainJson;
+            using (var client = new WebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                plainJson = client.DownloadString(Constants.LinkGetComments.ToLink());
+            }
             JsonComments.RootObject com = JsonConvert.DeserializeObject<JsonComments.RootObject>(plainJson);
 
             return com.children.Select(c => new Comments()
@@ -300,7 +291,12 @@ namespace JodelAPI
         /// <returns>List&lt;ModerationQueue&gt;.</returns>
         public static List<ModerationQueue> GetModerationQueue()
         {
-            string plainJson = GetPageContent(Constants.LinkModeration.ToLink());
+            string plainJson;
+            using (var client = new WebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                plainJson = client.DownloadString(Constants.LinkModeration.ToLink());
+            }
             JsonModeration.RootObject queue = JsonConvert.DeserializeObject<JsonModeration.RootObject>(plainJson);
             return queue.posts.Select(item => new ModerationQueue()
             {
@@ -343,8 +339,12 @@ namespace JodelAPI
             {
                 hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
-                return GetPageContentPost(Constants.LinkGenAT, payload, false,
-                    ByteToString(hmacsha1.Hash), $"{dt:s}Z");
+                using (var client = new WebClient())
+                {
+                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload));
+                    client.Encoding = Encoding.UTF8;
+                    return client.UploadString(Constants.LinkGenAt, payload);
+                }
             }
         }
 
@@ -358,55 +358,36 @@ namespace JodelAPI
             DateTime dt = DateTime.UtcNow;
 
             string dec = Convert.ChangeType(decision, decision.GetTypeCode())?.ToString(); // get int from enum.
-            string stringifiedPayload = @"{""decision"": " + dec +
+            string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v3/moderation/%%" + $"{dt:s}Z" +
+                            @"%%{""decision"": " + dec +
+                            @", ""task_id"": """ + taskId +
+                            @"""}";
+
+            string payload = @"{""decision"": " + dec +
                                         @", ""task_id"": """ + taskId +
                                         @"""}";
 
-
-            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
-            var hmacsha1 = new HMACSHA1(keyByte);
-            hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
-
             using (var client = new WebClient())
             {
-                client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
-                client.Headers.Add("User-Agent", "Jodel/" + Constants.AppVersion + " Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); // TODO: Randomize
-                client.Headers.Add("Accept-Encoding", "gzip");
-                client.Headers.Add("X-Client-Type", "android_" + Constants.AppVersion + "");
-                client.Headers.Add("X-Api-Version", "0.2");
-                client.Headers.Add("X-Timestamp", $"{dt:s}Z");
-                client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
+                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload));
                 client.Encoding = Encoding.UTF8;
-                client.UploadString(Constants.LinkModeration.ToLink(), stringifiedPayload);
+                client.UploadString(Constants.LinkModeration.ToLink(), payload);
             }
         }
 
         /// <summary>
         /// Reports the jodel.
         /// </summary>
-        /// <param name="taskId">The task identifier.</param>
-        /// <param name="decision">The decision.</param>
+        /// <param name="postId"></param>
+        /// <param name="reason"></param>
         public static void ReportJodel(string postId, Reason reason)
         {
-            DateTime dt = DateTime.UtcNow;
-
             string rea = Convert.ChangeType(reason, reason.GetTypeCode())?.ToString(); // get int from enum.
             string stringifiedPayload = @"{""reason_id"":"+rea+"}";
 
-            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
-            var hmacsha1 = new HMACSHA1(keyByte);
-            hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
-
             using (var client = new WebClient())
             {
-                client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
-                client.Headers.Add("User-Agent", "Jodel/" + Constants.AppVersion + " Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)");
-                client.Headers.Add("Accept-Encoding", "gzip");
-                client.Headers.Add("X-Client-Type", "android_" + Constants.AppVersion + "");
-                client.Headers.Add("X-Api-Version", "0.2");
-                client.Headers.Add("X-Timestamp", $"{dt:s}Z");
-                client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
-                client.Headers.Add("Authorization", "Bearer " + AccessToken);
+                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, true));
                 client.Encoding = Encoding.UTF8;
                 client.UploadData(Constants.LinkReportJodel.ToLink(postId), "PUT", new byte[] { });
             }
@@ -430,7 +411,7 @@ namespace JodelAPI
                 where jodel.Message.Contains(channel)
                 select new Jodels()
                 {
-                    PostId = jodel.PostId, HexColor = jodel.HexColor, IsImage = jodel.IsImage, Latitude = jodel.Latitude, Longitude = jodel.Longitude, LocationName = jodel.LocationName, Message = jodel.Message, VoteCount = jodel.VoteCount
+                    PostId = jodel.PostId, HexColor = jodel.HexColor, IsImage = jodel.IsImage, LocationName = jodel.LocationName, Message = jodel.Message, VoteCount = jodel.VoteCount
                 }).ToList();
 
             return temp;
@@ -478,19 +459,19 @@ namespace JodelAPI
         /// <exception cref="InternalException">API Error: Calculating Distance</exception>
         public static double CalcDistance(Coordinates coord1, Coordinates coord2, Unit unit)
         {
-            double c1lo = double.Parse(coord1.Longitude, System.Globalization.CultureInfo.InvariantCulture);
-            double c2lo = double.Parse(coord2.Longitude, System.Globalization.CultureInfo.InvariantCulture);
-            double c1la = double.Parse(coord1.Latitude, System.Globalization.CultureInfo.InvariantCulture);
-            double c2la = double.Parse(coord2.Latitude, System.Globalization.CultureInfo.InvariantCulture);
+            double c1Lo = double.Parse(coord1.Longitude, System.Globalization.CultureInfo.InvariantCulture);
+            double c2Lo = double.Parse(coord2.Longitude, System.Globalization.CultureInfo.InvariantCulture);
+            double c1La = double.Parse(coord1.Latitude, System.Globalization.CultureInfo.InvariantCulture);
+            double c2La = double.Parse(coord2.Latitude, System.Globalization.CultureInfo.InvariantCulture);
 
             switch (unit)
             {
                 case Unit.Kilometers:
-                    return Distance.KilometresBetweenTwoGeographicCoordinates(c1lo, c1la, c2lo, c2la);
+                    return Distance.KilometresBetweenTwoGeographicCoordinates(c1Lo, c1La, c2Lo, c2La);
                 case Unit.Meters:
-                    return Distance.MetresBetweenTwoGeographicCoordinates(c1lo, c1la, c2lo, c2la);
+                    return Distance.MetresBetweenTwoGeographicCoordinates(c1Lo, c1La, c2Lo, c2La);
                 case Unit.Miles:
-                    return Distance.MilesBetweenTwoGeographicCoordinates(c1lo, c1la, c2lo, c2la);
+                    return Distance.MilesBetweenTwoGeographicCoordinates(c1Lo, c1La, c2Lo, c2La);
                 default:
                     throw new InternalException("API Error: Calculating Distance");
             }
@@ -502,7 +483,12 @@ namespace JodelAPI
         /// <returns>List&lt;MyJodels&gt;.</returns>
         public static List<MyJodels> GetMyJodels()
         {
-            string plainJson = GetPageContent(Constants.LinkGetMyJodels.ToLink());
+            string plainJson;
+            using (var client = new WebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                plainJson = client.DownloadString(Constants.LinkGetMyJodels.ToLink());
+            }
 
             JsonMyJodels.RootObject myJodels = JsonConvert.DeserializeObject<JsonMyJodels.RootObject>(plainJson);
             return myJodels.posts.Select(item => new MyJodels()
@@ -523,7 +509,12 @@ namespace JodelAPI
         /// <returns>List&lt;MyComments&gt;.</returns>
         public static List<MyComments> GetMyComments()
         {
-            string plainJson = GetPageContent(Constants.LinkGetMyComments.ToLink());
+            string plainJson;
+            using (var client = new WebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                plainJson = client.DownloadString(Constants.LinkGetMyComments.ToLink());
+            }
 
             JsonMyComments.RootObject myComments = JsonConvert.DeserializeObject<JsonMyComments.RootObject>(plainJson);
             return myComments.posts.Select(item => new MyComments()
@@ -545,7 +536,12 @@ namespace JodelAPI
         /// <returns>List&lt;MyVotes&gt;.</returns>
         public static List<MyVotes> GetMyVotes()
         {
-            string plainJson = GetPageContent(Constants.LinkGetMyVotes.ToLink());
+            string plainJson;
+            using (var client = new WebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                plainJson = client.DownloadString(Constants.LinkGetMyVotes.ToLink());
+            }
 
             JsonMyVotes.RootObject myVotes = JsonConvert.DeserializeObject<JsonMyVotes.RootObject>(plainJson);
             return myVotes.posts.Select(item => new MyVotes()
@@ -566,7 +562,12 @@ namespace JodelAPI
         /// <returns><c>true</c> if the specified token is moderator; otherwise, <c>false</c>.</returns>
         public static bool IsModerator(string token)
         {
-            string plainJson = GetPageContent(Constants.LinkConfig.ToLink());
+            string plainJson;
+            using (var client = new WebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                plainJson = client.DownloadString(Constants.LinkConfig.ToLink());
+            }
 
             JsonConfig.RootObject config = JsonConvert.DeserializeObject<JsonConfig.RootObject>(plainJson);
             
@@ -581,62 +582,6 @@ namespace JodelAPI
         private static string ByteToString(byte[] buff)
         {
             return buff.Aggregate("", (current, t) => current + t.ToString("X2"));
-        }
-
-        private static string GetPageContent(string link)
-        {
-            string html;
-            WebRequest request = WebRequest.Create(link);
-            WebResponse response = request.GetResponse();
-            Stream data = response.GetResponseStream();
-            using (StreamReader sr = new StreamReader(data))
-            {
-                html = sr.ReadToEnd();
-            }
-            return html;
-        }
-
-        private static string GetPageContentPost(string link, string post, bool bearer, string hmac, string timestamp)
-        {
-            var request = (HttpWebRequest)WebRequest.Create(link);
-
-            var data = Encoding.UTF8.GetBytes(post);
-
-            request.Method = "POST";
-            request.ContentType = "application/json; charset=UTF-8";
-            request.ContentLength = data.LongLength;
-            request.UserAgent = "Jodel/" + Constants.AppVersion + " Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"; //TODO: Randomize
-            request.KeepAlive = true;
-            request.Headers.Add("Accept-Encoding", "gzip");
-            request.Headers.Add("X-Client-Type", "android_" + Constants.AppVersion + "");
-            request.Headers.Add("X-Api-Version", "0.2");
-            if (timestamp != null)
-                request.Headers.Add("X-Timestamp", timestamp);
-            if (hmac != null)
-                request.Headers.Add("X-Authorization", "HMAC " + hmac);
-
-            if (bearer)
-            {
-                request.Headers.Add("Authorization", "Bearer " + AccessToken);
-            }
-            request.ServicePoint.Expect100Continue = false;
-            request.AuthenticationLevel = AuthenticationLevel.None;
-
-            using (var stream = request.GetRequestStream())
-            {
-                stream.Write(data, 0, data.Length);
-            }
-
-            var response = (HttpWebResponse)request.GetResponse();
-
-            var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
-
-            if (hmac != null)
-            {
-                var responseJson = JsonConvert.DeserializeObject<dynamic>(responseString); // ugly solution, may throw exception if no access token is responded
-                responseString = responseJson.access_token;
-            }
-            return responseString;
         }
 
         private static string Sha256(string value)
@@ -747,6 +692,28 @@ namespace JodelAPI
 
 
             return link;
+        }
+
+        private static WebHeaderCollection ToHeader(this WebHeaderCollection header, string stringifiedPayload, bool addBearer = false)
+        {
+            header.Remove("X-Authorization");
+            header.Remove("X-Timestamp");
+            header.Remove("Authorization");
+
+            DateTime dt = DateTime.UtcNow;
+            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
+            var hmacsha1 = new HMACSHA1(keyByte);
+            hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
+
+            header.Add("X-Timestamp", $"{dt:s}Z");
+            header.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
+
+            if(addBearer)
+            {
+                header.Add("Authorization", "Bearer " + AccessToken);
+            }
+
+            return header;
         }
     }
 }
