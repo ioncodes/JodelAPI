@@ -572,6 +572,26 @@ namespace JodelAPI
             }).ToList();
         }
 
+        /// <summary>
+        /// Determines whether the specified token is from a moderator.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns><c>true</c> if the specified token is moderator; otherwise, <c>false</c>.</returns>
+        public static bool IsModerator(string token)
+        {
+            string link = "https://api.go-tellm.com/api/v3/user/config?access_token=" + token;
+
+            string plainJson = GetPageContent(link);
+
+            JsonConfig.RootObject config = JsonConvert.DeserializeObject<JsonConfig.RootObject>(plainJson);
+            
+            if(config.moderator)
+            {
+                return true;
+            }
+            return false;
+        }
+
         private static string ByteToString(byte[] buff)
         {
             return buff.Aggregate("", (current, t) => current + t.ToString("X2"));

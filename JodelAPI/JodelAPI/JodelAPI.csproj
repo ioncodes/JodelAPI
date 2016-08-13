@@ -49,11 +49,13 @@
     <Compile Include="Exceptions\GoogleApiTokenInvalidException.cs" />
     <Compile Include="Exceptions\GoogleApiTokenEmptyException.cs" />
     <Compile Include="Exceptions\LocationNotFoundException.cs" />
+    <Compile Include="Json\JsonConfig.cs" />
     <Compile Include="Json\JsonGCoordinates.cs" />
     <Compile Include="Json\JsonMyComments.cs" />
     <Compile Include="Json\JsonMyJodels.cs" />
     <Compile Include="Json\JsonMyVotes.cs" />
     <Compile Include="Objects\Comments.cs" />
+    <Compile Include="Objects\Config.cs" />
     <Compile Include="Objects\Coordinates.cs" />
     <Compile Include="GMaps.cs" />
     <Compile Include="Objects\Jodels.cs" />
