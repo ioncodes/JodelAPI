@@ -184,9 +184,9 @@ namespace JodelAPI
             using (var client = new WebClient())
             {
                 client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
-                client.Headers.Add("User-Agent", "Jodel/4.13.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); //TODO: Randomize
+                client.Headers.Add("User-Agent", "Jodel/" + Constants.AppVersion + " Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); //TODO: Randomize
                 client.Headers.Add("Accept-Encoding", "gzip");
-                client.Headers.Add("X-Client-Type", "android_4.13.2");
+                client.Headers.Add("X-Client-Type", "android_" + Constants.AppVersion + "");
                 client.Headers.Add("X-Api-Version", "0.2");
                 client.Headers.Add("X-Timestamp", $"{dt:s}Z");
                 client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
@@ -214,9 +214,9 @@ namespace JodelAPI
             using (var client = new WebClient())
             {
                 client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
-                client.Headers.Add("User-Agent", "Jodel/4.13.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); //TODO: Randomize
+                client.Headers.Add("User-Agent", "Jodel/" + Constants.AppVersion + " Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); //TODO: Randomize
                 client.Headers.Add("Accept-Encoding", "gzip, deflate");
-                client.Headers.Add("X-Client-Type", "android_4.13.2");
+                client.Headers.Add("X-Client-Type", "android_" + Constants.AppVersion + "");
                 client.Headers.Add("X-Api-Version", "0.2");
                 client.Headers.Add("X-Timestamp", $"{dt:s}Z");
                 client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
@@ -370,9 +370,9 @@ namespace JodelAPI
             using (var client = new WebClient())
             {
                 client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
-                client.Headers.Add("User-Agent", "Jodel/4.13.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); // TODO: Randomize
+                client.Headers.Add("User-Agent", "Jodel/" + Constants.AppVersion + " Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); // TODO: Randomize
                 client.Headers.Add("Accept-Encoding", "gzip");
-                client.Headers.Add("X-Client-Type", "android_4.13.2");
+                client.Headers.Add("X-Client-Type", "android_" + Constants.AppVersion + "");
                 client.Headers.Add("X-Api-Version", "0.2");
                 client.Headers.Add("X-Timestamp", $"{dt:s}Z");
                 client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
@@ -400,9 +400,9 @@ namespace JodelAPI
             using (var client = new WebClient())
             {
                 client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
-                client.Headers.Add("User-Agent", "Jodel/4.13.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)");
+                client.Headers.Add("User-Agent", "Jodel/" + Constants.AppVersion + " Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)");
                 client.Headers.Add("Accept-Encoding", "gzip");
-                client.Headers.Add("X-Client-Type", "android_4.13.2");
+                client.Headers.Add("X-Client-Type", "android_" + Constants.AppVersion + "");
                 client.Headers.Add("X-Api-Version", "0.2");
                 client.Headers.Add("X-Timestamp", $"{dt:s}Z");
                 client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
@@ -605,10 +605,10 @@ namespace JodelAPI
             request.Method = "POST";
             request.ContentType = "application/json; charset=UTF-8";
             request.ContentLength = data.LongLength;
-            request.UserAgent = "Jodel/4.13.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"; //TODO: Randomize
+            request.UserAgent = "Jodel/" + Constants.AppVersion + " Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"; //TODO: Randomize
             request.KeepAlive = true;
             request.Headers.Add("Accept-Encoding", "gzip");
-            request.Headers.Add("X-Client-Type", "android_4.13.2");
+            request.Headers.Add("X-Client-Type", "android_" + Constants.AppVersion + "");
             request.Headers.Add("X-Api-Version", "0.2");
             if (timestamp != null)
                 request.Headers.Add("X-Timestamp", timestamp);
@@ -734,7 +734,7 @@ namespace JodelAPI
                 link = link.Replace("{LAT}", Latitude);
             }
 
-            if (link.Contains("LNG"))
+            if (link.Contains("{LNG}"))
             {
                 link = link.Replace("{LNG}", Longitude);
             }
@@ -743,6 +743,8 @@ namespace JodelAPI
             {
                 link = link.Replace("{PID}", postId);
             }
+
+
 
             return link;
         }

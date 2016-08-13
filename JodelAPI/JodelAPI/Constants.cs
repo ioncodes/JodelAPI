@@ -26,5 +26,8 @@ namespace JodelAPI
         public const string LinkGetMyComments = "https://api.go-tellm.com/api/v2/posts/mine/replies?skip=0&access_token={AT}&limit=150";
         public const string LinkGetMyVotes = "https://api.go-tellm.com/api/v2/posts/mine/votes?limit=150&access_token={AT}&skip=0";
         public const string LinkConfig = "https://api.go-tellm.com/api/v3/user/config?access_token={AT}";
+        public const string LinkRefreshToken = "https://api.go-tellm.com/api/v2/users/refreshToken?access_token={AT}&refresh_token={RT}";
+
+        public const string AppVersion = "4.13.2";
     }
 }
