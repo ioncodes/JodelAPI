@@ -61,9 +61,6 @@ namespace JodelAPI
         }
 
 
-        private const string Key = "pNsUaphGEfqqZJJIKHjfxAReDqdCTIIuaIVGaowG";
-        private const string ClientId = "81e8a76e-1e02-4d17-9ba0-8a7020261b26";
-
         public static string AccessToken = "";
         public static string Latitude = "";
         public static string Longitude = "";
@@ -78,7 +75,7 @@ namespace JodelAPI
         /// <returns>List&lt;Jodels&gt;.</returns>
         public static List<Jodels> GetFirstJodels()
         {
-            string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/location/combo?lat=" + Latitude + "&lng=" + Longitude + "&access_token=" + AccessToken);
+            string plainJson = GetPageContent(Constants.LinkFirstJodels.ToLink());
             JsonJodelsFirstRound.RootObject jfr = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(plainJson);
             List<Jodels> temp = new List<Jodels>(); // List<post_id,message>
 
@@ -124,7 +121,7 @@ namespace JodelAPI
             List<Jodels> temp = new List<Jodels>();
             for (int e = 0; e < 3; e++)
             {
-                string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/location?lng=" + Longitude + "&lat=" + Latitude + "&after=" + _lastPostId + "&access_token=" + AccessToken + "&limit=1000000");
+                string plainJson = GetPageContent(Constants.LinkSecondJodels.ToLink(_lastPostId));
                 JsonJodelsLastRound.RootObject jlr = JsonConvert.DeserializeObject<JsonJodelsLastRound.RootObject>(plainJson);
                 int i = 0;
                 foreach (var item in jlr.posts)
@@ -180,23 +177,22 @@ namespace JodelAPI
             string stringifiedPayload =
                 @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "/" + "upvote/%" + AccessToken + "%" + $"{dt:s}Z" + "%%";
 
-            var keyByte = Encoding.UTF8.GetBytes(Key);
+            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
             var hmacsha1 = new HMACSHA1(keyByte);
             hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
             using (var client = new WebClient())
             {
                 client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
-                client.Headers.Add("User-Agent", "Jodel/4.12.5 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); //TODO: Randomize
+                client.Headers.Add("User-Agent", "Jodel/4.13.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); //TODO: Randomize
                 client.Headers.Add("Accept-Encoding", "gzip");
-                client.Headers.Add("X-Client-Type", "android_4.12.5");
+                client.Headers.Add("X-Client-Type", "android_4.13.2");
                 client.Headers.Add("X-Api-Version", "0.2");
                 client.Headers.Add("X-Timestamp", $"{dt:s}Z");
                 client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
                 client.Headers.Add("Authorization", "Bearer " + AccessToken);
                 client.Encoding = Encoding.UTF8;
-                client.UploadData(
-                    "https://api.go-tellm.com/api/v2/posts/" + postId + "/" + "upvote/", "PUT", new byte[] { });
+                client.UploadData(Constants.LinkUpvoteJodel.ToLink(postId), "PUT", new byte[] { });
             }
         }
 
@@ -211,23 +207,22 @@ namespace JodelAPI
             string stringifiedPayload =
                 @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "/" + "downvote/%" + AccessToken + "%" + $"{dt:s}Z" + "%%";
 
-            var keyByte = Encoding.UTF8.GetBytes(Key);
+            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
             var hmacsha1 = new HMACSHA1(keyByte);
             hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
             using (var client = new WebClient())
             {
                 client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
-                client.Headers.Add("User-Agent", "Jodel/4.12.5 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); //TODO: Randomize
+                client.Headers.Add("User-Agent", "Jodel/4.13.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); //TODO: Randomize
                 client.Headers.Add("Accept-Encoding", "gzip, deflate");
-                client.Headers.Add("X-Client-Type", "android_4.12.5");
+                client.Headers.Add("X-Client-Type", "android_4.13.2");
                 client.Headers.Add("X-Api-Version", "0.2");
                 client.Headers.Add("X-Timestamp", $"{dt:s}Z");
                 client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
                 client.Headers.Add("Authorization", "Bearer " + AccessToken);
                 client.Encoding = Encoding.UTF8;
-                client.UploadData(
-                    "https://api.go-tellm.com/api/v2/posts/" + postId + "/" + "downvote/", "PUT", new byte[] { });
+                client.UploadData(Constants.LinkDownvoteJodel.ToLink(postId), "PUT", new byte[] { });
             }
         }
 
@@ -237,7 +232,7 @@ namespace JodelAPI
         /// <returns>System.Int32.</returns>
         public static int GetKarma()
         {
-            string resp = GetPageContent("https://api.go-tellm.com/api/v2/users/karma?access_token=" + AccessToken);
+            string resp = GetPageContent(Constants.LinkGetKarma.ToLink());
             string result = resp.Substring(resp.LastIndexOf(':') + 1);
             return Convert.ToInt32(result.Replace("}", "").Replace("\"", ""));
         }
@@ -271,12 +266,12 @@ namespace JodelAPI
                              @""", ""loc_coordinates"": " + @"{""lat"": " + Latitude + @", ""lng"": " + Longitude +
                              @"}, ""country"": """ + CountryCode + @""", ""name"": """ + City + @"""}}";
 
-            var keyByte = Encoding.UTF8.GetBytes(Key);
+            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
             using (var hmacsha1 = new HMACSHA1(keyByte))
             {
                 hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
-                GetPageContentPost("https://api.go-tellm.com/api/v2/posts/", payload, true, ByteToString(hmacsha1.Hash), $"{dt:s}Z");
+                GetPageContentPost(Constants.LinkPostJodel, payload, true, ByteToString(hmacsha1.Hash), $"{dt:s}Z");
             }
         }
 
@@ -287,7 +282,7 @@ namespace JodelAPI
         /// <returns>List&lt;Comments&gt;.</returns>
         public static List<Comments> GetComments(string postId)
         {
-            string plainJson = GetPageContent("https://api.go-tellm.com/api/v2/posts/" + postId + "?access_token=" + AccessToken);
+            string plainJson = GetPageContent(Constants.LinkGetComments.ToLink());
             JsonComments.RootObject com = JsonConvert.DeserializeObject<JsonComments.RootObject>(plainJson);
 
             return com.children.Select(c => new Comments()
@@ -305,7 +300,7 @@ namespace JodelAPI
         /// <returns>List&lt;ModerationQueue&gt;.</returns>
         public static List<ModerationQueue> GetModerationQueue()
         {
-            string plainJson = GetPageContent("https://api.go-tellm.com/api/v3/moderation/?access_token=" + AccessToken);
+            string plainJson = GetPageContent(Constants.LinkModeration.ToLink());
             JsonModeration.RootObject queue = JsonConvert.DeserializeObject<JsonModeration.RootObject>(plainJson);
             return queue.posts.Select(item => new ModerationQueue()
             {
@@ -336,19 +331,19 @@ namespace JodelAPI
                                         @"%%{""device_uid"": """ + deviceUid + @""", ""location"": {""city"": """ + City +
                                         @""", ""loc_accuracy"": 100, ""loc_coordinates"": {""lat"": " + Latitude +
                                         @", ""lng"": " + Longitude + @"}, ""country"": """ + CountryCode + @"""}, " +
-                                        @"""client_id"": """ + ClientId + @"""}";
+                                        @"""client_id"": """ + Constants.ClientId + @"""}";
 
             string payload = @"{""device_uid"": """ + deviceUid + @""", ""location"": {""city"": """ + City +
                              @""", ""loc_accuracy"": 100, ""loc_coordinates"": " + @"{""lat"": " + Latitude +
                              @", ""lng"": " + Longitude + @"}, ""country"": """ + CountryCode +
-                             @"""}, ""client_id"": """ + ClientId + @"""}";
+                             @"""}, ""client_id"": """ + Constants.ClientId + @"""}";
 
-            var keyByte = Encoding.UTF8.GetBytes(Key);
+            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
             using (var hmacsha1 = new HMACSHA1(keyByte))
             {
                 hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
-                return GetPageContentPost("https://api.go-tellm.com/api/v2/users/", payload, false,
+                return GetPageContentPost(Constants.LinkGenAT, payload, false,
                     ByteToString(hmacsha1.Hash), $"{dt:s}Z");
             }
         }
@@ -368,22 +363,21 @@ namespace JodelAPI
                                         @"""}";
 
 
-            var keyByte = Encoding.UTF8.GetBytes(Key);
+            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
             var hmacsha1 = new HMACSHA1(keyByte);
             hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
             using (var client = new WebClient())
             {
                 client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
-                client.Headers.Add("User-Agent", "Jodel/4.12.5 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); // TODO: Randomize
+                client.Headers.Add("User-Agent", "Jodel/4.13.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"); // TODO: Randomize
                 client.Headers.Add("Accept-Encoding", "gzip");
-                client.Headers.Add("X-Client-Type", "android_4.12.5");
+                client.Headers.Add("X-Client-Type", "android_4.13.2");
                 client.Headers.Add("X-Api-Version", "0.2");
                 client.Headers.Add("X-Timestamp", $"{dt:s}Z");
                 client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
                 client.Encoding = Encoding.UTF8;
-                client.UploadString(
-                    "https://api.go-tellm.com/api/v3/moderation/?access_token=" + AccessToken, stringifiedPayload);
+                client.UploadString(Constants.LinkModeration.ToLink(), stringifiedPayload);
             }
         }
 
@@ -399,23 +393,22 @@ namespace JodelAPI
             string rea = Convert.ChangeType(reason, reason.GetTypeCode())?.ToString(); // get int from enum.
             string stringifiedPayload = @"{""reason_id"":"+rea+"}";
 
-            var keyByte = Encoding.UTF8.GetBytes(Key);
+            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
             var hmacsha1 = new HMACSHA1(keyByte);
             hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
             using (var client = new WebClient())
             {
                 client.Headers.Add("Content-Type", "application/json; charset=UTF-8");
-                client.Headers.Add("User-Agent", "Jodel/4.12.5 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)");
+                client.Headers.Add("User-Agent", "Jodel/4.13.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)");
                 client.Headers.Add("Accept-Encoding", "gzip");
-                client.Headers.Add("X-Client-Type", "android_4.12.5");
+                client.Headers.Add("X-Client-Type", "android_4.13.2");
                 client.Headers.Add("X-Api-Version", "0.2");
                 client.Headers.Add("X-Timestamp", $"{dt:s}Z");
                 client.Headers.Add("X-Authorization", "HMAC " + ByteToString(hmacsha1.Hash));
                 client.Headers.Add("Authorization", "Bearer " + AccessToken);
                 client.Encoding = Encoding.UTF8;
-                client.UploadData(
-                    "https://api.go-tellm.com/api/v2/posts/" + postId + "/" + "flag?" + AccessToken, "PUT", new byte[] { });
+                client.UploadData(Constants.LinkReportJodel.ToLink(postId), "PUT", new byte[] { });
             }
         }
 
@@ -509,9 +502,7 @@ namespace JodelAPI
         /// <returns>List&lt;MyJodels&gt;.</returns>
         public static List<MyJodels> GetMyJodels()
         {
-            string link = "https://api.go-tellm.com/api/v2/posts/mine?limit=150&access_token=" + AccessToken + "&skip=0";
-
-            string plainJson = GetPageContent(link);
+            string plainJson = GetPageContent(Constants.LinkGetMyJodels.ToLink());
 
             JsonMyJodels.RootObject myJodels = JsonConvert.DeserializeObject<JsonMyJodels.RootObject>(plainJson);
             return myJodels.posts.Select(item => new MyJodels()
@@ -532,9 +523,7 @@ namespace JodelAPI
         /// <returns>List&lt;MyComments&gt;.</returns>
         public static List<MyComments> GetMyComments()
         {
-            string link = "https://api.go-tellm.com/api/v2/posts/mine/replies?skip=0&access_token=" + AccessToken + "&limit=150";
-
-            string plainJson = GetPageContent(link);
+            string plainJson = GetPageContent(Constants.LinkGetMyComments.ToLink());
 
             JsonMyComments.RootObject myComments = JsonConvert.DeserializeObject<JsonMyComments.RootObject>(plainJson);
             return myComments.posts.Select(item => new MyComments()
@@ -556,9 +545,7 @@ namespace JodelAPI
         /// <returns>List&lt;MyVotes&gt;.</returns>
         public static List<MyVotes> GetMyVotes()
         {
-            string link = "https://api.go-tellm.com/api/v2/posts/mine/votes?limit=150&access_token=" + AccessToken + "&skip=0";
-
-            string plainJson = GetPageContent(link);
+            string plainJson = GetPageContent(Constants.LinkGetMyVotes.ToLink());
 
             JsonMyVotes.RootObject myVotes = JsonConvert.DeserializeObject<JsonMyVotes.RootObject>(plainJson);
             return myVotes.posts.Select(item => new MyVotes()
@@ -579,9 +566,7 @@ namespace JodelAPI
         /// <returns><c>true</c> if the specified token is moderator; otherwise, <c>false</c>.</returns>
         public static bool IsModerator(string token)
         {
-            string link = "https://api.go-tellm.com/api/v3/user/config?access_token=" + token;
-
-            string plainJson = GetPageContent(link);
+            string plainJson = GetPageContent(Constants.LinkConfig.ToLink());
 
             JsonConfig.RootObject config = JsonConvert.DeserializeObject<JsonConfig.RootObject>(plainJson);
             
@@ -591,6 +576,7 @@ namespace JodelAPI
             }
             return false;
         }
+
 
         private static string ByteToString(byte[] buff)
         {
@@ -619,10 +605,10 @@ namespace JodelAPI
             request.Method = "POST";
             request.ContentType = "application/json; charset=UTF-8";
             request.ContentLength = data.LongLength;
-            request.UserAgent = "Jodel/4.12.5 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"; //TODO: Randomize
+            request.UserAgent = "Jodel/4.13.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/MMB29V)"; //TODO: Randomize
             request.KeepAlive = true;
             request.Headers.Add("Accept-Encoding", "gzip");
-            request.Headers.Add("X-Client-Type", "android_4.12.5");
+            request.Headers.Add("X-Client-Type", "android_4.13.2");
             request.Headers.Add("X-Api-Version", "0.2");
             if (timestamp != null)
                 request.Headers.Add("X-Timestamp", timestamp);
@@ -714,6 +700,51 @@ namespace JodelAPI
             };
 
             return coord;
+        }
+
+        private static string ToLink(this string link)
+        {
+            if(link.Contains("{AT}"))
+            {
+                link = link.Replace("{AT}", AccessToken);
+            }
+
+            if(link.Contains("{LAT}"))
+            {
+                link = link.Replace("{LAT}", Latitude);
+            }
+
+            if(link.Contains("{LNG}"))
+            {
+                link = link.Replace("{LNG}", Longitude);
+            }
+
+            return link;
+        }
+
+        private static string ToLink(this string link, string postId)
+        {
+            if (link.Contains("{AT}"))
+            {
+                link = link.Replace("{AT}", AccessToken);
+            }
+
+            if (link.Contains("{LAT}"))
+            {
+                link = link.Replace("{LAT}", Latitude);
+            }
+
+            if (link.Contains("LNG"))
+            {
+                link = link.Replace("{LNG}", Longitude);
+            }
+
+            if(link.Contains("{PID}"))
+            {
+                link = link.Replace("{PID}", postId);
+            }
+
+            return link;
         }
     }
 }
