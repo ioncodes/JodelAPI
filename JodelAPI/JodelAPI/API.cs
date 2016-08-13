@@ -589,6 +589,12 @@ namespace JodelAPI
             return false;
         }
 
+        /// <summary>
+        /// Sorts the jodels.
+        /// </summary>
+        /// <param name="jodels">The jodels.</param>
+        /// <param name="method">The method.</param>
+        /// <returns>List&lt;Jodels&gt;.</returns>
         public static List<Jodels> Sort(List<Jodels> jodels, SortMethod method)
         {
             return method == SortMethod.MostCommented 
