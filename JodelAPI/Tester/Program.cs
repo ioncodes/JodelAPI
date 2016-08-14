@@ -31,7 +31,7 @@ namespace Tester
             Console.WriteLine("Latitude: " + coords.Latitude + ", Longitude: " + coords.Longitude);
             Console.WriteLine(API.CalcDistance(coords, API.GetCoordinates("hamburg, Deutschland"), API.Unit.Meters).ToString(CultureInfo.InvariantCulture));
             // Console.WriteLine("Reporting Jodel");
-            // API.ReportJodel(jodels[0].PostId, API.Reason.Mobbing);
+            // API.ReportJodel(jodels[0].PostId, API.Reason.Mobbing);comcod
             Console.WriteLine("Getting my Jodels");
             var myJodels = API.GetMyJodels();
             Console.WriteLine(myJodels[0].Message);

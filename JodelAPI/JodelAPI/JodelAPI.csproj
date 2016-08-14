@@ -55,6 +55,7 @@
     <Compile Include="Json\JsonMyComments.cs" />
     <Compile Include="Json\JsonMyJodels.cs" />
     <Compile Include="Json\JsonMyVotes.cs" />
+    <Compile Include="Json\JsonPostJodels.cs" />
     <Compile Include="Json\JsonRefreshTokens.cs" />
     <Compile Include="Json\JsonTokens.cs" />
     <Compile Include="Objects\Comments.cs" />

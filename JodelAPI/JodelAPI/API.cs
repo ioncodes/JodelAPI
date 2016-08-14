@@ -235,7 +235,7 @@ namespace JodelAPI
         /// <param name="message">The message.</param>
         /// <param name="colorParam">The color parameter.</param>
         /// <param name="postId">The post identifier.</param>
-        public static void PostJodel(string message, PostColor colorParam = PostColor.Random, string postId = null)
+        public static string PostJodel(string message, PostColor colorParam = PostColor.Random, string postId = null)
         {
             DateTime dt = DateTime.UtcNow;
 
@@ -267,7 +267,9 @@ namespace JodelAPI
                 {
                     client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, true));
                     client.Encoding = Encoding.UTF8;
-                    client.UploadString(Constants.LinkPostJodel, payload);
+                    string newJodels = client.UploadString(Constants.LinkPostJodel, payload);
+                    JsonPostJodels.RootObject temp = JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(newJodels);
+                    return temp.posts[0].post_id;
                 }
             }
         }
