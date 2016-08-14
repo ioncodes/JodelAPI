@@ -328,47 +328,7 @@ namespace JodelAPI
         /// Generates an access token.
         /// </summary>
         /// <returns>System.String.</returns>
-        public static string GenerateAccessToken()
-        {
-            DateTime dt = DateTime.UtcNow;
-            string jsonString;
-            string deviceUid = Sha256(RandomString(5, true));
-
-            string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/users/%%" + $"{dt:s}Z" +
-                                        @"%%{""device_uid"": """ + deviceUid + @""", ""location"": {""city"": """ + City +
-                                        @""", ""loc_accuracy"": 100, ""loc_coordinates"": {""lat"": " + Latitude +
-                                        @", ""lng"": " + Longitude + @"}, ""country"": """ + CountryCode + @"""}, " +
-                                        @"""client_id"": """ + Constants.ClientId + @"""}";
-
-            string payload = @"{""device_uid"": """ + deviceUid + @""", ""location"": {""city"": """ + City +
-                             @""", ""loc_accuracy"": 100, ""loc_coordinates"": " + @"{""lat"": " + Latitude +
-                             @", ""lng"": " + Longitude + @"}, ""country"": """ + CountryCode +
-                             @"""}, ""client_id"": """ + Constants.ClientId + @"""}";
-
-            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
-            using (var hmacsha1 = new HMACSHA1(keyByte))
-            {
-                hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
-
-                using (var client = new WebClient())
-                {
-                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload));
-                    client.Encoding = Encoding.UTF8;
-                    jsonString = client.UploadString(Constants.LinkGenAt, payload);
-                }
-            }
-
-            JsonTokens.RootObject objTokens = JsonConvert.DeserializeObject<JsonTokens.RootObject>(jsonString);
-
-            return objTokens.access_token;
-        }
-
-        /// <summary>
-        /// Generates the access token.
-        /// </summary>
-        /// <param name="advanced">if set to <c>true</c> [advanced].</param>
-        /// <returns>Tokens.</returns>
-        public static Tokens GenerateAccessToken(bool advanced)
+        public static Tokens GenerateAccessToken()
         {
             DateTime dt = DateTime.UtcNow;
             string jsonString;
@@ -401,7 +361,7 @@ namespace JodelAPI
             JsonTokens.RootObject objTokens = JsonConvert.DeserializeObject<JsonTokens.RootObject>(jsonString);
 
             return new Tokens { AccessToken = objTokens.access_token, RefreshToken = objTokens.refresh_token, ExpireTimestamp = objTokens.expiration_date };
-        } // will return Tokens object containing RefreshToken etc.
+        }
 
         /// <summary>
         /// Flags the jodel.
@@ -644,6 +604,47 @@ namespace JodelAPI
             return method == SortMethod.MostCommented 
                           ? jodels.OrderByDescending(o => o.CommentsCount).ToList() 
                           : jodels.OrderByDescending(o => o.VoteCount).ToList();
+        }
+
+        /// <summary>
+        /// Refreshes the access token.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns>Tokens.</returns>
+        public static Tokens RefreshAccessToken(Tokens token)
+        {
+            string plainJson;
+            const string payload = @"{""refresh_token"": ""{RT}""}";
+            using (var client = new WebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                plainJson = client.UploadString(Constants.LinkRefreshToken.Replace("{AT}", token.AccessToken), payload.Replace("{RT}", token.RefreshToken));
+            }
+
+            JsonRefreshTokens.RootObject objRefToken = JsonConvert.DeserializeObject<JsonRefreshTokens.RootObject>(plainJson);
+
+            return new Tokens { AccessToken = objRefToken.access_token, ExpireTimestamp = objRefToken.expiration_date, RefreshToken = token.RefreshToken };
+        }
+
+        /// <summary>
+        /// Refreshes the access token.
+        /// </summary>
+        /// <param name="accessToken">The access token.</param>
+        /// <param name="refreshToken">The refresh token.</param>
+        /// <returns>Tokens.</returns>
+        public static Tokens RefreshAccessToken(string accessToken, string refreshToken)
+        {
+            string plainJson;
+            const string payload = @"{""refresh_token"": ""{RT}""}";
+            using (var client = new WebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                plainJson = client.UploadString(Constants.LinkRefreshToken.Replace("{AT}", accessToken), payload.Replace("{RT}", refreshToken));
+            }
+
+            JsonRefreshTokens.RootObject objRefToken = JsonConvert.DeserializeObject<JsonRefreshTokens.RootObject>(plainJson);
+
+            return new Tokens { AccessToken = objRefToken.access_token, ExpireTimestamp = objRefToken.expiration_date, RefreshToken = refreshToken };
         }
 
 
