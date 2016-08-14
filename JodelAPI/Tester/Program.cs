@@ -45,7 +45,7 @@ namespace Tester
             API.Upvote(jodels[0].PostId);
             Console.WriteLine("Sorting Jodel [TOP]");
             var sorted = API.Sort(jodels, API.SortMethod.Top);
-            Console.WriteLine("1# Top Jodel: "+ sorted[0].Message);
+            Console.WriteLine("1# Top Jodel: " + sorted[0].Message);
             Console.WriteLine("Sorting Jodel [COMMENTS]");
             sorted = API.Sort(jodels, API.SortMethod.MostCommented);
             Console.WriteLine("1# Commented Jodel: " + sorted[0].Message);

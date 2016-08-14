@@ -618,6 +618,7 @@ namespace JodelAPI
             using (var client = new WebClient())
             {
                 client.Encoding = Encoding.UTF8;
+                client.Headers.Add("Content-Type", "application/json");
                 plainJson = client.UploadString(Constants.LinkRefreshToken.Replace("{AT}", token.AccessToken), payload.Replace("{RT}", token.RefreshToken));
             }
 
@@ -639,6 +640,7 @@ namespace JodelAPI
             using (var client = new WebClient())
             {
                 client.Encoding = Encoding.UTF8;
+                client.Headers.Add("Content-Type", "application/json");
                 plainJson = client.UploadString(Constants.LinkRefreshToken.Replace("{AT}", accessToken), payload.Replace("{RT}", refreshToken));
             }
 
