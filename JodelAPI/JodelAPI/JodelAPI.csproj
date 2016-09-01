@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\Projects\Jodel Hack\Jodel Hack\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Documents\Visual Studio 2015\Projects\JodelGenerator\JodelGenerator\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

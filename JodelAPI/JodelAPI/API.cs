@@ -83,7 +83,7 @@ namespace JodelAPI
         public static List<Jodels> GetFirstJodels()
         {
             string plainJson;
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 client.Encoding = Encoding.UTF8;
                 plainJson = client.DownloadString(Constants.LinkFirstJodels.ToLink());
@@ -130,7 +130,7 @@ namespace JodelAPI
             for (int e = 0; e < 3; e++)
             {
                 string plainJson;
-                using (var client = new WebClient())
+                using (var client = new MyWebClient())
                 {
                     client.Encoding = Encoding.UTF8;
                     plainJson = client.DownloadString(Constants.LinkSecondJodels.ToLink(_lastPostId));
@@ -187,7 +187,7 @@ namespace JodelAPI
             string stringifiedPayload =
                 @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "/" + "upvote/%" + AccessToken + "%" + $"{dt:s}Z" + "%%";
 
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, true));
                 client.Encoding = Encoding.UTF8;
@@ -206,7 +206,7 @@ namespace JodelAPI
             string stringifiedPayload =
                 @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "/" + "downvote/%" + AccessToken + "%" + $"{dt:s}Z" + "%%";
 
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, true));
                 client.Encoding = Encoding.UTF8;
@@ -221,7 +221,7 @@ namespace JodelAPI
         public static int GetKarma()
         {
             string resp;
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 resp = client.DownloadString(Constants.LinkGetKarma.ToLink());
             }
@@ -263,7 +263,7 @@ namespace JodelAPI
             {
                 hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
-                using (var client = new WebClient())
+                using (var client = new MyWebClient())
                 {
                     client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, true));
                     client.Encoding = Encoding.UTF8;
@@ -282,7 +282,7 @@ namespace JodelAPI
         public static List<Comments> GetComments(string postId)
         {
             string plainJson;
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 client.Encoding = Encoding.UTF8;
                 plainJson = client.DownloadString(Constants.LinkGetComments.ToLink());
@@ -305,7 +305,7 @@ namespace JodelAPI
         public static List<ModerationQueue> GetModerationQueue()
         {
             string plainJson;
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 client.Encoding = Encoding.UTF8;
                 plainJson = client.DownloadString(Constants.LinkModeration.ToLink());
@@ -352,7 +352,7 @@ namespace JodelAPI
             {
                 hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
-                using (var client = new WebClient())
+                using (var client = new MyWebClient())
                 {
                     client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload));
                     client.Encoding = Encoding.UTF8;
@@ -384,7 +384,7 @@ namespace JodelAPI
                                         @", ""task_id"": """ + taskId +
                                         @"""}";
 
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload));
                 client.Encoding = Encoding.UTF8;
@@ -402,7 +402,7 @@ namespace JodelAPI
             string rea = Convert.ChangeType(reason, reason.GetTypeCode())?.ToString(); // get int from enum.
             string stringifiedPayload = @"{""reason_id"":"+rea+"}";
 
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, true));
                 client.Encoding = Encoding.UTF8;
@@ -501,7 +501,7 @@ namespace JodelAPI
         public static List<MyJodels> GetMyJodels()
         {
             string plainJson;
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 client.Encoding = Encoding.UTF8;
                 plainJson = client.DownloadString(Constants.LinkGetMyJodels.ToLink());
@@ -527,7 +527,7 @@ namespace JodelAPI
         public static List<MyComments> GetMyComments()
         {
             string plainJson;
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 client.Encoding = Encoding.UTF8;
                 plainJson = client.DownloadString(Constants.LinkGetMyComments.ToLink());
@@ -554,7 +554,7 @@ namespace JodelAPI
         public static List<MyVotes> GetMyVotes()
         {
             string plainJson;
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 client.Encoding = Encoding.UTF8;
                 plainJson = client.DownloadString(Constants.LinkGetMyVotes.ToLink());
@@ -580,7 +580,7 @@ namespace JodelAPI
         public static bool IsModerator(string token)
         {
             string plainJson;
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 client.Encoding = Encoding.UTF8;
                 plainJson = client.DownloadString(Constants.LinkConfig.ToLink());
@@ -617,7 +617,7 @@ namespace JodelAPI
         {
             string plainJson;
             const string payload = @"{""refresh_token"": ""{RT}""}";
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 client.Encoding = Encoding.UTF8;
                 client.Headers.Add("Content-Type", "application/json");
@@ -639,7 +639,7 @@ namespace JodelAPI
         {
             string plainJson;
             const string payload = @"{""refresh_token"": ""{RT}""}";
-            using (var client = new WebClient())
+            using (var client = new MyWebClient())
             {
                 client.Encoding = Encoding.UTF8;
                 client.Headers.Add("Content-Type", "application/json");
@@ -787,6 +787,16 @@ namespace JodelAPI
             }
 
             return header;
+        }
+    }
+
+    class MyWebClient : WebClient
+    {
+        protected override WebRequest GetWebRequest(Uri address)
+        {
+            HttpWebRequest request = base.GetWebRequest(address) as HttpWebRequest;
+            request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+            return request;
         }
     }
 }
