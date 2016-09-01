@@ -44,12 +44,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Account.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Distance.cs" />
     <Compile Include="Exceptions\InternalException.cs" />
     <Compile Include="Exceptions\GoogleApiTokenInvalidException.cs" />
     <Compile Include="Exceptions\GoogleApiTokenEmptyException.cs" />
     <Compile Include="Exceptions\LocationNotFoundException.cs" />
+    <Compile Include="Helpers.cs" />
+    <Compile Include="Jodel.cs" />
     <Compile Include="Json\JsonConfig.cs" />
     <Compile Include="Json\JsonGCoordinates.cs" />
     <Compile Include="Json\JsonMyComments.cs" />
@@ -58,6 +61,8 @@
     <Compile Include="Json\JsonPostJodels.cs" />
     <Compile Include="Json\JsonRefreshTokens.cs" />
     <Compile Include="Json\JsonTokens.cs" />
+    <Compile Include="Location.cs" />
+    <Compile Include="Moderation.cs" />
     <Compile Include="Objects\Comments.cs" />
     <Compile Include="Objects\Config.cs" />
     <Compile Include="Objects\Coordinates.cs" />
@@ -66,7 +71,6 @@
     <Compile Include="Json\JsonComments.cs" />
     <Compile Include="Json\JsonJodelsFirstRound.cs" />
     <Compile Include="Json\JsonJodelsLastRound.cs" />
-    <Compile Include="API.cs" />
     <Compile Include="Json\JsonModeration.cs" />
     <Compile Include="Objects\ModerationQueue.cs" />
     <Compile Include="Objects\MyComments.cs" />
