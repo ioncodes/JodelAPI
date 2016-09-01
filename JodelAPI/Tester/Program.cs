@@ -52,11 +52,13 @@ namespace Tester
             Console.WriteLine("1# Commented Jodel: " + sorted[0].Message);
             //Console.WriteLine("Posting Jodel...");
             //Jodel.PostJodel("Test", Jodel.PostColor.Blue);
-            Console.WriteLine("Pinning Jodel...");
-            Jodel.PinJodel(jodels[0].PostId);
+            //Console.WriteLine("Pinning Jodel...");
+            //Jodel.PinJodel(jodels[0].PostId);
             Console.WriteLine("Get my pinned Jodels...");
             var pinned = Jodel.GetMyPins();
             Console.WriteLine(pinned[0].Message);
+            Console.WriteLine("Following channel");
+            Jodel.Channels.FollowChannel("jhj");
 
             Console.Read();
             Console.Read();

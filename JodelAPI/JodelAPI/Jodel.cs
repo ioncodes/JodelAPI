@@ -395,5 +395,30 @@ namespace JodelAPI
                 IsOwn = item.post_own.Equals("own")
             }).ToList();
         }
+
+        public static class Channels
+        {
+            /// <summary>
+            /// Follows a channel.
+            /// </summary>
+            /// <param name="channel"></param>
+            public static void FollowChannel(string channel)
+            {
+                if (channel[0] == '#')
+                    channel = channel.Remove(0, 1);
+
+                DateTime dt = DateTime.UtcNow;
+
+                string stringifiedPayload =
+                    @"PUT%api.go-tellm.com%443%/api/v3/user/followChannel?access_token=" + Account.AccessToken + "%" + "&channel=" + channel + $"{dt:s}Z" + "%%";
+
+                using (var client = new MyWebClient())
+                {
+                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload));
+                    client.Encoding = Encoding.UTF8;
+                    client.UploadData(Constants.LinkFollowChannel.ToLink(channel), "PUT", new byte[] { });
+                }
+            }
+        }
     }
 }

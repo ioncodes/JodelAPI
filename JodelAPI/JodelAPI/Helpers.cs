@@ -79,7 +79,7 @@ namespace JodelAPI
             return coord;
         }
 
-         public static string ToLink(this string link)
+        public static string ToLink(this string link)
         {
             if (link.Contains("{AT}"))
             {
@@ -99,7 +99,7 @@ namespace JodelAPI
             return link;
         }
 
-        public static string ToLink(this string link, string postId)
+        public static string ToLink(this string link, string postIdOrChannel)
         {
             if (link.Contains("{AT}"))
             {
@@ -118,10 +118,13 @@ namespace JodelAPI
 
             if (link.Contains("{PID}"))
             {
-                link = link.Replace("{PID}", postId);
+                link = link.Replace("{PID}", postIdOrChannel);
             }
 
-
+            if (link.Contains("{CH}"))
+            {
+                link = link.Replace("{CH}", postIdOrChannel);
+            }
 
             return link;
         }
