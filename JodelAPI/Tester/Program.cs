@@ -61,6 +61,9 @@ namespace Tester
             Jodel.Channels.FollowChannel("jhj");
             Console.WriteLine("Unfollowing channel");
             Jodel.Channels.FollowChannel("jhj");
+            Console.WriteLine("Get jodels from channel");
+            var cJodels = Jodel.Channels.GetJodels("jhj");
+            Console.WriteLine(cJodels[0].Message);
 
             Console.Read();
             Console.Read();

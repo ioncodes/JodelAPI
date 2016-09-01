@@ -55,6 +55,7 @@
     <Compile Include="Jodel.cs" />
     <Compile Include="Json\JsonConfig.cs" />
     <Compile Include="Json\JsonGCoordinates.cs" />
+    <Compile Include="Json\JsonGetJodelsFromChannel.cs" />
     <Compile Include="Json\JsonMyComments.cs" />
     <Compile Include="Json\JsonMyJodels.cs" />
     <Compile Include="Json\JsonMyPins.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="Json\JsonTokens.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="Moderation.cs" />
+    <Compile Include="Objects\ChannelJodel.cs" />
     <Compile Include="Objects\Comments.cs" />
     <Compile Include="Objects\Config.cs" />
     <Compile Include="Objects\Coordinates.cs" />

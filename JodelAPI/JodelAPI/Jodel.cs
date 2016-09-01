@@ -441,6 +441,31 @@ namespace JodelAPI
                     client.UploadData(Constants.LinkUnfollowChannel.ToLink(channel), "PUT", new byte[] { });
                 }
             }
+
+            /// <summary>
+            /// Get's all Jodels from this channel.
+            /// </summary>
+            /// <param name="channel">The channel.</param>
+            /// <returns>List&lt;ChannelJodel&gt;.</returns>
+            public static List<ChannelJodel> GetJodels(string channel)
+            {
+                string plainJson;
+                using (var client = new MyWebClient())
+                {
+                    client.Encoding = Encoding.UTF8;
+                    plainJson = client.DownloadString(Constants.LinkGetJodelsFromChannel.ToLink(channel));
+                }
+
+                JsonGetJodelsFromChannel.RootObject myJodelsFromChannel = JsonConvert.DeserializeObject<JsonGetJodelsFromChannel.RootObject>(plainJson);
+                return myJodelsFromChannel.recent.Select(item => new ChannelJodel
+                {
+                    PostId = item.post_id,
+                    Message = item.message,
+                    VoteCount = item.vote_count,
+                    PinCount = item.pin_count,
+                    IsOwn = item.post_own.Equals("own")
+                }).ToList();
+            }
         }
     }
 }
