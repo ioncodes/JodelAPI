@@ -26,7 +26,7 @@ namespace JodelAPI
         public const string LinkConfig = "https://api.go-tellm.com/api/v3/user/config?access_token={AT}";    
         public const string LinkRefreshToken = "https://api.go-tellm.com/api/v2/users/refreshToken?access_token={AT}";
         public const string LinkPinJodel = "https://api.go-tellm.com/api/v2/posts/{PID}/pin?access_token={AT}";
-        public const string LinkMyPins = "https://api.go-tellm.com/api/v2/posts/mine/pinned?limit=1000&access_token=b8ff0042-00f0-4437-a8f1-b2fece566a74&skip=0";
+        public const string LinkMyPins = "https://api.go-tellm.com/api/v2/posts/mine/pinned?limit=1000&access_token={AT}&skip=0";
 
         // Headers
         public static WebHeaderCollection Header = new WebHeaderCollection

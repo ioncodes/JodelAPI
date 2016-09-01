@@ -382,7 +382,7 @@ namespace JodelAPI
             using (var client = new MyWebClient())
             {
                 client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(Constants.LinkPinJodel.ToLink());
+                plainJson = client.DownloadString(Constants.LinkMyPins.ToLink());
             }
 
             JsonMyPins.RootObject myPins = JsonConvert.DeserializeObject<JsonMyPins.RootObject>(plainJson);

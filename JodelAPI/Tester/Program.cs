@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using JodelAPI;
@@ -53,6 +54,9 @@ namespace Tester
             //Jodel.PostJodel("Test", Jodel.PostColor.Blue);
             Console.WriteLine("Pinning Jodel...");
             Jodel.PinJodel(jodels[0].PostId);
+            Console.WriteLine("Get my pinned Jodels...");
+            var pinned = Jodel.GetMyPins();
+            Console.WriteLine(pinned[0].Message);
 
             Console.Read();
             Console.Read();
