@@ -61,6 +61,7 @@
     <Compile Include="Json\JsonMyPins.cs" />
     <Compile Include="Json\JsonMyVotes.cs" />
     <Compile Include="Json\JsonPostJodels.cs" />
+    <Compile Include="Json\JsonRecommendedChannels.cs" />
     <Compile Include="Json\JsonRefreshTokens.cs" />
     <Compile Include="Json\JsonTokens.cs" />
     <Compile Include="Location.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="Objects\MyJodels.cs" />
     <Compile Include="Objects\MyPins.cs" />
     <Compile Include="Objects\MyVotes.cs" />
+    <Compile Include="Objects\RecommendedChannel.cs" />
     <Compile Include="Objects\Tokens.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

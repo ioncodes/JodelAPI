@@ -466,6 +466,27 @@ namespace JodelAPI
                     IsOwn = item.post_own.Equals("own")
                 }).ToList();
             }
+
+            /// <summary>
+            /// Get's the recommended channels.
+            /// </summary>
+            /// <returns>List&lt;RecommendedChannel&gt;.</returns>
+            public static List<RecommendedChannel> GetRecommendedChannels()
+            {
+                string plainJson;
+                using (var client = new MyWebClient())
+                {
+                    client.Encoding = Encoding.UTF8;
+                    plainJson = client.DownloadString(Constants.LinkGetRecommendedChannels.ToLink());
+                }
+
+                JsonRecommendedChannels.RootObject recommendedChannels = JsonConvert.DeserializeObject<JsonRecommendedChannels.RootObject>(plainJson);
+                return recommendedChannels.recommended.Select(item => new RecommendedChannel
+                {
+                    Name = item.channel,
+                    Followers = item.followers
+                }).ToList();
+            }
         }
     }
 }

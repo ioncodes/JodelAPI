@@ -64,6 +64,9 @@ namespace Tester
             Console.WriteLine("Get jodels from channel");
             var cJodels = Jodel.Channels.GetJodels("jhj");
             Console.WriteLine(cJodels[0].Message);
+            Console.WriteLine("Get recommended channels");
+            var rChannels = Jodel.Channels.GetRecommendedChannels();
+            Console.WriteLine(rChannels[0].Name);
 
             Console.Read();
             Console.Read();
