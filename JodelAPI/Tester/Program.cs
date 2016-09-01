@@ -49,8 +49,10 @@ namespace Tester
             Console.WriteLine("Sorting Jodel [COMMENTS]");
             sorted = Jodel.Sort(jodels, Jodel.SortMethod.MostCommented);
             Console.WriteLine("1# Commented Jodel: " + sorted[0].Message);
-            Console.WriteLine("Posting Jodel...");
-            Jodel.PostJodel("Test", Jodel.PostColor.Blue);
+            //Console.WriteLine("Posting Jodel...");
+            //Jodel.PostJodel("Test", Jodel.PostColor.Blue);
+            Console.WriteLine("Pinning Jodel...");
+            Jodel.PinJodel(jodels[0].PostId);
 
             Console.Read();
             Console.Read();

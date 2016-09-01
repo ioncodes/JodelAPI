@@ -352,5 +352,48 @@ namespace JodelAPI
                 client.UploadData(Constants.LinkReportJodel.ToLink(postId), "PUT", new byte[] { });
             }
         }
+
+        /// <summary>
+        /// Pins a Jodel.
+        /// </summary>
+        /// <param name="postId"></param>
+        public static void PinJodel(string postId)
+        {
+            DateTime dt = DateTime.UtcNow;
+
+            string stringifiedPayload =
+                @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "/" + "pin?access_token=/%" + Account.AccessToken + "%" + $"{dt:s}Z" + "%%";
+
+            using (var client = new MyWebClient())
+            {
+                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload));
+                client.Encoding = Encoding.UTF8;
+                client.UploadData(Constants.LinkPinJodel.ToLink(postId), "PUT", new byte[] { });
+            }
+        }
+
+        /// <summary>
+        /// Get's all pinned Jodels.
+        /// </summary>
+        /// <returns>List&lt;MyPins&gt;.</returns>
+        public static List<MyPins> GetMyPins()
+        {
+            string plainJson;
+            using (var client = new MyWebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                plainJson = client.DownloadString(Constants.LinkPinJodel.ToLink());
+            }
+
+            JsonMyPins.RootObject myPins = JsonConvert.DeserializeObject<JsonMyPins.RootObject>(plainJson);
+            return myPins.posts.Select(item => new MyPins()
+            {
+                PostId = item.post_id,
+                Message = item.message,
+                VoteCount = item.vote_count,
+                PinCount = item.pin_count,
+                IsOwn = item.post_own.Equals("own")
+            }).ToList();
+        }
     }
 }

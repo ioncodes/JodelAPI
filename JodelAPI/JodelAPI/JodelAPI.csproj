@@ -57,6 +57,7 @@
     <Compile Include="Json\JsonGCoordinates.cs" />
     <Compile Include="Json\JsonMyComments.cs" />
     <Compile Include="Json\JsonMyJodels.cs" />
+    <Compile Include="Json\JsonMyPins.cs" />
     <Compile Include="Json\JsonMyVotes.cs" />
     <Compile Include="Json\JsonPostJodels.cs" />
     <Compile Include="Json\JsonRefreshTokens.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Objects\ModerationQueue.cs" />
     <Compile Include="Objects\MyComments.cs" />
     <Compile Include="Objects\MyJodels.cs" />
+    <Compile Include="Objects\MyPins.cs" />
     <Compile Include="Objects\MyVotes.cs" />
     <Compile Include="Objects\Tokens.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
