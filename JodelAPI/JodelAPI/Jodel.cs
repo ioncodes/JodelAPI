@@ -419,6 +419,28 @@ namespace JodelAPI
                     client.UploadData(Constants.LinkFollowChannel.ToLink(channel), "PUT", new byte[] { });
                 }
             }
+
+            /// <summary>
+            /// Unfollows a channel.
+            /// </summary>
+            /// <param name="channel"></param>
+            public static void UnfollowChannel(string channel)
+            {
+                if (channel[0] == '#')
+                    channel = channel.Remove(0, 1);
+
+                DateTime dt = DateTime.UtcNow;
+
+                string stringifiedPayload =
+                    @"PUT%api.go-tellm.com%443%/api/v3/user/unfollowChannel?access_token=" + Account.AccessToken + "%" + "&channel=" + channel + $"{dt:s}Z" + "%%";
+
+                using (var client = new MyWebClient())
+                {
+                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload));
+                    client.Encoding = Encoding.UTF8;
+                    client.UploadData(Constants.LinkUnfollowChannel.ToLink(channel), "PUT", new byte[] { });
+                }
+            }
         }
     }
 }

@@ -59,6 +59,8 @@ namespace Tester
             Console.WriteLine(pinned[0].Message);
             Console.WriteLine("Following channel");
             Jodel.Channels.FollowChannel("jhj");
+            Console.WriteLine("Unfollowing channel");
+            Jodel.Channels.FollowChannel("jhj");
 
             Console.Read();
             Console.Read();
