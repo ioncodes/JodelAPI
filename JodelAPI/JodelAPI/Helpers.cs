@@ -158,6 +158,7 @@ namespace JodelAPI
         {
             HttpWebRequest request = base.GetWebRequest(address) as HttpWebRequest;
             request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+            request.ServicePoint.Expect100Continue = false;
             return request;
         }
     }

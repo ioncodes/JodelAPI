@@ -7,7 +7,7 @@ namespace JodelAPI
         // Key Values
         public const string Key = "iyWpGGuOOCdKIMRsfxoJMIPsmCFdrscSxGyCfmBb";
         public const string ClientId = "81e8a76e-1e02-4d17-9ba0-8a7020261b26";       
-        public const string AppVersion = "4.13.2";
+        public const string AppVersion = "4.16.1";
 
         // Links
         public const string LinkFirstJodels = "https://api.go-tellm.com/api/v2/posts/location/combo?lat={LAT}&lng={LNG}&access_token={AT}";
