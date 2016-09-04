@@ -397,6 +397,21 @@ namespace JodelAPI
             }).ToList();
         }
 
+        public static void DeleteJodel(string postId)
+        {
+            DateTime dt = DateTime.UtcNow;
+
+            string stringifiedPayload =
+                @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "%" + Account.AccessToken + "%" + $"{dt:s}Z" + "%%";
+
+            using (var client = new MyWebClient())
+            {
+                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, true));
+                client.Encoding = Encoding.UTF8;
+                client.UploadData(Constants.LinkDeleteJodel.ToLink(postId), "DELETE", new byte[] { });
+            }
+        }
+
         public static class Channels
         {
             /// <summary>

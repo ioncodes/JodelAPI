@@ -31,6 +31,7 @@ namespace JodelAPI
         public const string LinkUnfollowChannel = "https://api.go-tellm.com/api/v3/user/unfollowChannel?access_token={AT}&channel={CH}";
         public const string LinkGetJodelsFromChannel = "https://api.go-tellm.com/api/v3/posts/channel/combo?access_token={AT}&channel={CH}";
         public const string LinkGetRecommendedChannels = "https://api.go-tellm.com/api/v3/user/recommendedChannels?access_token={AT}";
+        public const string LinkDeleteJodel = "https://api.go-tellm.com/api/v2/posts/{PID}";
 
         // Headers
         public static WebHeaderCollection Header = new WebHeaderCollection

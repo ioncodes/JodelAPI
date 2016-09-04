@@ -67,9 +67,12 @@ namespace Tester
             Console.WriteLine("Get recommended channels");
             var rChannels = Jodel.Channels.GetRecommendedChannels();
             Console.WriteLine(rChannels[0].Name);
-            Console.WriteLine("Generating AT");
-            string at = Account.GenerateAccessToken().AccessToken;
-            Console.WriteLine(at);
+            //Console.WriteLine("Generating AT");
+            //string at = Account.GenerateAccessToken().AccessToken;
+            //Console.WriteLine(at);
+            Console.WriteLine("Deleteing Jodel");
+            string pid = Jodel.PostJodel("What is happening here?");
+            Jodel.DeleteJodel(pid);
 
             Console.Read();
             Console.Read();
