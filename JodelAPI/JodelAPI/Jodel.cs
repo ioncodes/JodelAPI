@@ -231,7 +231,7 @@ namespace JodelAPI
             using (var client = new MyWebClient())
             {
                 client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(Constants.LinkGetComments.ToLink());
+                plainJson = client.DownloadString(Constants.LinkGetComments.ToLink(postId));
             }
             JsonComments.RootObject com = JsonConvert.DeserializeObject<JsonComments.RootObject>(plainJson);
 

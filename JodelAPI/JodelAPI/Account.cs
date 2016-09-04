@@ -72,6 +72,7 @@ namespace JodelAPI
 
             return new Tokens { AccessToken = objTokens.access_token, RefreshToken = objTokens.refresh_token, ExpireTimestamp = objTokens.expiration_date };
         }
+
         /// <summary>
         /// Refreshes the access token.
         /// </summary>
