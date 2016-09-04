@@ -120,7 +120,8 @@ namespace JodelAPI
 
                     temp.Add(objJodels);
                 }
-
+                if (temp.Count == 0)
+                    return temp; // not enough Jodels anymore.
                 _lastPostId = temp.Last().PostId; // Set the last post_id for next jodels
             }
             return temp;
