@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
+using System.Drawing;
 using System.Security.Cryptography;
 using System.Text;
 using JodelAPI.Objects;
@@ -215,6 +215,41 @@ namespace JodelAPI
                     client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, true));
                     client.Encoding = Encoding.UTF8;
                     string newJodels = client.UploadString(Constants.LinkPostJodel, payload);
+                    JsonPostJodels.RootObject temp = JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(newJodels);
+                    return temp.posts[0].post_id;
+                }
+            }
+        }
+
+        public static string PostJodel(Image image, PostColor colorParam = PostColor.Random, string postId = null)
+        {
+            DateTime dt = DateTime.UtcNow;
+
+            var color = Helpers.GetColor(colorParam);
+
+                ImageConverter ic = new ImageConverter();
+                byte[] buffer = (byte[]) ic.ConvertTo(image, typeof(byte[]));
+                string base64 =  Convert.ToBase64String(buffer, Base64FormattingOptions.InsertLineBreaks);
+
+            string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/posts/%" + Account.AccessToken + "%" + $"{dt:s}Z" +
+                                        "%% {\"location\": {\"country\": \"" + Account.CountryCode + "\",\"name\": \"unknown\",\"loc_accuracy\": 65,\"loc_coordinates\": " +
+                                        "{\"lat\": " + Account.Latitude + ",\"lng\": " + Account.Longitude + "},\"city\": \"" + Account.City + "\"},\"image\": \"" + base64.Replace("/", @"\/") + "\"," +
+                                        "\"message\": \"Jodel\",\"color\": \"" + color + "\"}";
+
+                string payload = "{\"location\": {\"country\": \""+Account.CountryCode+"\",\"name\": \"unknown\",\"loc_accuracy\": 65,\"loc_coordinates\": " +
+                                 "{\"lat\": " + Account.Latitude + ",\"lng\": " + Account.Longitude+"},\"city\": \""+Account.City+"\"},\"image\": \"" + base64 + "\"," +
+                                 "\"message\": \"Jodel\",\"color\": \""+color+"\"}";
+
+            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
+            using (var hmacsha1 = new HMACSHA1(keyByte))
+            {
+                hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
+
+                using (var client = new MyWebClient())
+                {
+                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, true));
+                    client.Encoding = Encoding.UTF8;
+                    string newJodels = client.UploadString(Constants.LinkPostImage, payload);
                     JsonPostJodels.RootObject temp = JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(newJodels);
                     return temp.posts[0].post_id;
                 }

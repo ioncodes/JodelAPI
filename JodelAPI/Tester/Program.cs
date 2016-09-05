@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -73,6 +74,9 @@ namespace Tester
             Console.WriteLine("Deleteing Jodel");
             string pid = Jodel.PostJodel("What is happening here?");
             Jodel.DeleteJodel(pid);
+            Console.WriteLine("Posting Image");
+            string pid1 = Jodel.PostJodel(Image.FromFile(@"C:\Users\LucaMarcelli\Desktop\Download.jpg"));
+            Jodel.DeleteJodel(pid1);
 
             Console.Read();
             Console.Read();
