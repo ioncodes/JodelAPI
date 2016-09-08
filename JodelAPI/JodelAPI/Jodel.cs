@@ -227,18 +227,24 @@ namespace JodelAPI
 
             var color = Helpers.GetColor(colorParam);
 
-                ImageConverter ic = new ImageConverter();
-                byte[] buffer = (byte[]) ic.ConvertTo(image, typeof(byte[]));
-                string base64 =  Convert.ToBase64String(buffer, Base64FormattingOptions.InsertLineBreaks);
+            ImageConverter ic = new ImageConverter();
+            byte[] buffer = (byte[]) ic.ConvertTo(image, typeof(byte[]));
+            string base64 = Convert.ToBase64String(buffer, Base64FormattingOptions.InsertLineBreaks);
 
-            string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/posts/%" + Account.AccessToken + "%" + $"{dt:s}Z" +
-                                        "%% {\"location\": {\"country\": \"" + Account.CountryCode + "\",\"name\": \"unknown\",\"loc_accuracy\": 65,\"loc_coordinates\": " +
-                                        "{\"lat\": " + Account.Latitude + ",\"lng\": " + Account.Longitude + "},\"city\": \"" + Account.City + "\"},\"image\": \"" + base64.Replace("/", @"\/") + "\"," +
-                                        "\"message\": \"Jodel\",\"color\": \"" + color + "\"}";
+            string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/posts/%" + Account.AccessToken + "%" +
+                                        $"{dt:s}Z" +
+                                        "%%{\"color\": \"" + color +
+                                        "\", \"message\": \"\", \"location\": {\"loc_accuracy\": 1, \"city\": \"" +
+                                        Account.City +
+                                        "\", \"loc_coordinates\": " + "{\"lat\": " + Account.Latitude + ", \"lng\": " +
+                                        Account.Longitude + "}, \"country\": \"" + Account.CountryCode +
+                                        "\", \"name\": \"" + Account.City + "\"}, \"image\": \"" + base64 + "\"}";
 
-                string payload = "{\"location\": {\"country\": \""+Account.CountryCode+"\",\"name\": \"unknown\",\"loc_accuracy\": 65,\"loc_coordinates\": " +
-                                 "{\"lat\": " + Account.Latitude + ",\"lng\": " + Account.Longitude+"},\"city\": \""+Account.City+"\"},\"image\": \"" + base64 + "\"," +
-                                 "\"message\": \"Jodel\",\"color\": \""+color+"\"}";
+            string payload = "{\"color\": \"" + color +
+                             "\", \"message\": \"\", \"location\": {\"loc_accuracy\": 1, \"city\": \"" + Account.City +
+                             "\", \"loc_coordinates\": " + "{\"lat\": " + Account.Latitude + ", \"lng\": " +
+                             Account.Longitude + "}, \"country\": \"" + Account.CountryCode +
+                             "\", \"name\": \"" + Account.City + "\"}, \"image\": \"" + base64 + "\"}";
 
             var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
             using (var hmacsha1 = new HMACSHA1(keyByte))
