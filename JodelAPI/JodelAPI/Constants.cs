@@ -5,9 +5,9 @@ namespace JodelAPI
     static class Constants
     {
         // Key Values
-        public const string Key = "nggKWnnmsyaeqzrJozIPivDdxVMLVorNgOiaxDkC";
+        public const string Key = "JymRNkOGDUHQMVeVvdzvaxcKaeuJKWWFeihnYnsY";
         public const string ClientId = "81e8a76e-1e02-4d17-9ba0-8a7020261b26";       
-        public const string AppVersion = "4.16.1";
+        public const string AppVersion = "4.17.1";
 
         // Links
         public const string LinkFirstJodels = "https://api.go-tellm.com/api/v2/posts/location/combo?lat={LAT}&lng={LNG}&access_token={AT}";
