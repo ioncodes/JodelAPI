@@ -21,10 +21,15 @@ Account.CountryCode = "";
 The class 'Jodel' contains all functions for getting, deleting, posting, etc Jodels.
 
 ### Getting the Jodels
-To get the Jodels call ```GetAllJodels()```.
+To get the Jodels call 
+```
+GetAllJodels()
+```
 
 **Return:**
-```List<Jodels>```
+```
+List<Jodels>
+```
 
 ```csharp
 public string PostId { get; set; }
@@ -73,8 +78,11 @@ To get the comments from an Jodel you can use ```GetComments(string postId)```.
 * postId: the jodel postId
 
 **Return:**
-```List<Comments>```
-```c#
+```
+List<Comments>
+```
+
+```csharp
 public string PostId { get; set; }
 public string Message { get; set; }
 public string UserHandle { get; set; }
