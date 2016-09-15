@@ -1,172 +1,87 @@
 # JodelAPI
+We are glad to tell you that the API is in the final state. Issue reports and enhancement requests are welcome!
 
-Build Status: [![Build status](https://ci.appveyor.com/api/projects/status/2dx3f591ubmp978t/branch/master?svg=true)](https://ci.appveyor.com/project/ioncodes/jodelapi/branch/master)
+## Builds
+* [JodelAPI](https://ci.appveyor.com/api/projects/ioncodes/jodelapi/artifacts/JodelAPI/JodelAPI/bin/Debug/JodelAPI.dll)
+* [Newtonsoft.Json](https://ci.appveyor.com/api/projects/ioncodes/jodelapi/artifacts/JodelAPI/JodelAPI/bin/Debug/Newtonsoft.Json.dll)
 
-Download JodelAPI.dll: https://ci.appveyor.com/api/projects/ioncodes/jodelapi/artifacts/JodelAPI/JodelAPI/bin/Debug/JodelAPI.dll
-Download Newtonsoft.Json.dll: https://ci.appveyor.com/api/projects/ioncodes/jodelapi/artifacts/JodelAPI/JodelAPI/bin/Debug/Newtonsoft.Json.dll
+## Setup
+In the class 'Account' set the following variables first.
+```c#
+using JodelAPI; // add namespace
+// ...
+Account.AccessToken = "";
+Account.Longitude = "";
+Account.Latitude = "";
+Account.City = "";
+Account.CountryCode = "";
+```
 
-Alternatively download it via NuGet package manager!
-
-[WIP] API for the Jodel app in .NET
-
-We're proud to announce that our JodelAPI finally reached revision 1.0!
-Let's talk about the current state of things:
-
-Jodel changed their authentication system few time ago. We applied the new authentication system to our API and you are able to generate access tokens and post whatever you want!
-
-## How the private Jodel API works...
-
-The API generally takes 3 arguments for requests: lat, lng, access_token.
-lat: This is the latitude of your location.
-lng: This is the longitude of your location.
-access_token: In the app, navigate to the options and click on "write us", then scroll down to "client info". There is something called "access_token=". The token is the string after the "=". Alternatively you can gather it by performing a mitm.
-
-Each PUT/POST request needs to be a signed request. This is accomplished by using a HMAC hash that is built from the stringified payload of the desired request.
+## Jodel
+The class 'Jodel' contains all functions for getting, deleting, posting, etc Jodels.
 
 ### Getting the Jodels
+To get the Jodels call ```GetAllJodels()```.
 
-To get the first Jodels, open this as GET: "https://api.go-tellm.com/api/v2/posts/location/combo?lat={LAT}&lng={LNG}&access_token={YOUR_ACCESS_TOKEN}"
+**Return:**
+```List<Jodels>```
 
-To obtain the rest, open this as GET:
-"https://api.go-tellm.com/api/v2/posts/location?lng={LNG}&lat={LAT}&after={THE_LAST_POST_ID_OBTAINED_ABOVE}&access_token={YOUR_ACCESS_TOKEN}&limit=1000000"
-
-Notice: Instead of providing your access token as a parameter, you can always set "Authentication: Bearer {access_token}" as a request header.
-
-### Get Karma
-
-GET: "https://api.go-tellm.com/api/v2/users/karma?access_token={ACCESS_TOKEN}"
-
-### More
-
-Visit this link: http://jodel-app.wikia.com/
-
-## Documentation
-
-Jodels are returned as ```List<Jodels>```.
-
-```
+```c#
 public string PostId { get; set; }
 public string Message { get; set; }
 public string HexColor { get; set; }
 public bool IsImage { get; set; }
 public int VoteCount { get; set; }
-public string Latitude { get; set; }
-public string Longitude { get; set; }
+public int CommentsCount { get; set; }
 public string LocationName { get; set; }
 ```
 
-Comments are returned as ```List<Comments>```.
+### Upvoting & Downvoting
+To down/upvote an Jodel use ```UpvoteJodel(string postId)``` or ```DownvoteJodel(string postId)```.
+It takes the Post Id of the Jodel.
 
-```
-public string PostId { get; set; }
-public string Message { get; set; }
-public string UserHandle { get; set; }
-public int VoteCount { get; set; }
-```
+### Posting
+To post an Jodel with a message use
+```public static string PostJodel(string message, PostColor colorParam = PostColor.Random, string postId = null)```.
 
-The lists both contain formatted json objects.
+To post an image use 
+```public static string PostJodel(Image image, PostColor colorParam = PostColor.Random, string postId = null)```
 
-# Setup
+**Arguments:**
+* message, image: the post content.
+* colorParam: PostColor enum which sets the post color.
+* postId: the original jodel Post ID (optional)
 
-Add the vars and namespace properly:
-
+PostColor is defined as follows:
 ```c#
-using JodelAPI;
-
-// ...
-
-public static string AccessToken = "";
-public static string Latitude = "";
-public static string Longitude = "";
-public static string CountryCode = "";
-public static string City = "";
-```
-
-Baseclass is called 'API'.
-
-# Get Jodels
-
-Use ```GetAllJodels()```;
-
-# Upvote & Downvote
-
-You can use ```Upvote()``` and ```Downvote()```. Remember that you can pass the postID (string) or the index (int) from the List as argument.
-
-Voting more than 199 times in a row will get your IP banned!
-
-# Karma
-
-```GetKarma()``` will return an int with your amount of Karma.
-
-# Posting
-
-```PostJodel(string message, PostColor colorParam = PostColor.Random, string postId = null);```
-
-message: message to post.
-
-colorParam: Color from enum for post.
-
-postId: add postID if it is a comment, otherwise don't change it.
-
-## Posting a Comment
-
-Set the postId (see above).
-
-## Colors
-
-The following colors are currently accepted by the Jodel server:
-
-```
 public enum PostColor
 {
-   Orange,
-   Yellow,
-   Red,
-   Blue,
-   Bluegreyish,
-   Green,
-   Random
+    Orange,
+    Yellow,
+    Red,
+    Blue,
+    Bluegreyish,
+    Green,
+    Random
 }
 ```
 
-# Access Token
+### Getting comments
+To get the comments from an Jodel you can use ```GetComments(string postId)```.
 
-We were able to reverse their new Authentication system and now GenerateAccessToken() works! It returns a string containing the token.
-Notice: Spamming the function (>60 times) will get your IP banned!
+**Arguments:**
+* postId: the jodel postId
 
-# Moderation
-
-You can now queue reported Jodel posts through our API! Please note that you will only be able to do this if you reached about 30k Karma and got your moderation enrollment.
-
-Posts are returned as ```List<ModerationQueue>```.
-
-```
+**Return:**
+```List<Comments>```
+```c#
 public string PostId { get; set; }
 public string Message { get; set; }
-public int VoteCount { get; set; }
-public string HexColor { get; set; }
 public string UserHandle { get; set; }
-public int TaskId { get; set; }
-public int FlagCount { get; set; }
-public string ParentId { get; set; }
-public int FlagReason { get; set; }
+public int VoteCount { get; set; }
 ```
 
-## Flaging Jodels
+### My Jodels, Comments and Votes$
 
-You can flag now Jodels/Comments by calling the function ```FlagJodel(int taskId, Decision decision)```! taskId is the ID retrieved from ```List<ModerationQueue>```
+**COMMING SOON**
 
-```
-public enum Decision
-{
-   Allow = 0,
-   Block = 2,
-   DontKnow = 1
-} // ignore the numbers, they are for internal use.
-```
-
-# General
-
-## FilterByChannel
-
-```FilterByChannel(List<Jodels> jodels, string channel)``` will return a new ```List<Jodels>```, but all jodels contain the specified keyword in "channel". If you're an IRC veteran, feel free to put a '#' in front of the name, I'm removing it anyways :D
