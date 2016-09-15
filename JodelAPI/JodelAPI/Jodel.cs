@@ -221,6 +221,13 @@ namespace JodelAPI
             }
         }
 
+        /// <summary>
+        /// Post's an Jodel
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="colorParam"></param>
+        /// <param name="postId"></param>
+        /// <returns></returns>
         public static string PostJodel(Image image, PostColor colorParam = PostColor.Random, string postId = null)
         {
             DateTime dt = DateTime.UtcNow;
@@ -438,6 +445,10 @@ namespace JodelAPI
             }).ToList();
         }
 
+        /// <summary>
+        /// Remove an Jodel
+        /// </summary>
+        /// <param name="postId"></param>
         public static void DeleteJodel(string postId)
         {
             DateTime dt = DateTime.UtcNow;
