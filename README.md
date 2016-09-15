@@ -26,7 +26,7 @@ To get the Jodels call ```GetAllJodels()```.
 **Return:**
 ```List<Jodels>```
 
-```c#
+```cs
 public string PostId { get; set; }
 public string Message { get; set; }
 public string HexColor { get; set; }
