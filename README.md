@@ -7,7 +7,7 @@ We are glad to tell you that the API is in the final state. Issue reports and en
 
 ## Setup
 In the class 'Account' set the following variables first.
-```c#
+```cs
 using JodelAPI; // add namespace
 // ...
 Account.AccessToken = "";
@@ -53,7 +53,7 @@ To post an image use
 * postId: the original jodel Post ID (optional)
 
 PostColor is defined as follows:
-```c#
+```cs
 public enum PostColor
 {
     Orange,
