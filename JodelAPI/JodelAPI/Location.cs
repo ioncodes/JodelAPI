@@ -27,7 +27,7 @@ namespace JodelAPI
         /// </summary>
         /// <param name="location">The location.</param>
         /// <returns>Coordinates.</returns>
-        public Coordinates GetCoordinates(string location)
+        public static Coordinates GetCoordinates(string location)
         {
             return Helpers.GetCoords(location);
         }
@@ -36,7 +36,7 @@ namespace JodelAPI
         ///     Sets the location.
         /// </summary>
         /// <param name="location">The location.</param>
-        public void SetLocation(string location)
+        public static void SetLocation(string location)
         {
             var coord = Helpers.GetCoords(location);
 
@@ -48,7 +48,7 @@ namespace JodelAPI
         ///     Sets the location.
         /// </summary>
         /// <param name="coord">The coord.</param>
-        public void SetLocation(Coordinates coord)
+        public static void SetLocation(Coordinates coord)
         {
             _user.Latitude = coord.Latitude;
             _user.Longitude = coord.Longitude;
@@ -62,7 +62,7 @@ namespace JodelAPI
         /// <param name="unit">The unit.</param>
         /// <returns>System.Double.</returns>
         /// <exception cref="InternalException">API Error: Calculating Distance</exception>
-        public double CalcDistance(Coordinates coord1, Coordinates coord2, Unit unit)
+        public static double CalcDistance(Coordinates coord1, Coordinates coord2, Unit unit)
         {
             double c1Lo = double.Parse(coord1.Longitude, CultureInfo.InvariantCulture);
             double c2Lo = double.Parse(coord2.Longitude, CultureInfo.InvariantCulture);

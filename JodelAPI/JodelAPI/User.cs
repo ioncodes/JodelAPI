@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace JodelAPI
+﻿namespace JodelAPI
 {
     public class User
     {
-        public string AccessToken { get; set; }
-        public string Latitude { get; set; }
-        public string Longitude { get; set; }
-        public string CountryCode { get; set; }
-        public string City { get; set; }
-        public string GoogleApiToken { get; set; }
+        public string AccessToken;
+        public string Latitude;
+        public string Longitude;
+        public string CountryCode;
+        public string City;
+        public string GoogleApiToken;
+
+        public User(string accessToken, string latitude, string longitude, string countryCode, string city, string googleApiToken = "")
+        {
+            AccessToken = accessToken;
+            Latitude = latitude;
+            Longitude = longitude;
+            CountryCode = countryCode;
+            City = city;
+            GoogleApiToken = googleApiToken;
+        }
     }
 }

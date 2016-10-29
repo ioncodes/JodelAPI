@@ -20,15 +20,13 @@ namespace JodelAPI
         public Jodel(string accessToken, string longitude, string latitude, string city, string countryCode, string googleApiToken = "")
         {
             Helpers._user = _user;
-            _user = new User()
-            {
-                AccessToken = accessToken,
-                City = city,
-                CountryCode = countryCode,
-                Latitude = latitude,
-                Longitude = longitude,
-                GoogleApiToken = googleApiToken
-            };
+            _user = new User(accessToken, latitude, longitude, countryCode, city, googleApiToken);
+        }
+
+        public Jodel(User user)
+        {
+            Helpers._user = user;
+            _user = user;
         }
 
         /// <summary>
@@ -92,8 +90,8 @@ namespace JodelAPI
                     LocationName = item.location.name,
                     CommentsCount = item.child_count ?? 0,
                     ChildCount = item.child_count ?? 0,
-                    CreatedAt = DateTime.ParseExact(item.created_at, "o", null),
-                    UpdatedAt = DateTime.ParseExact(item.updated_at, "o", null),
+                    CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
+                    UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
                     Distance = item.distance,
                     IsNotificationEnabled = item.notifications_enabled,
                     PinCount = item.pin_count,
@@ -145,8 +143,8 @@ namespace JodelAPI
                     LocationName = item.location.name,
                     CommentsCount = item.child_count ?? 0,
                     ChildCount = item.child_count ?? 0,
-                    CreatedAt = DateTime.ParseExact(item.created_at, "o", null),
-                    UpdatedAt = DateTime.ParseExact(item.updated_at, "o", null),
+                    CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
+                    UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
                     Distance = item.distance,
                     IsNotificationEnabled = item.notifications_enabled,
                     PinCount = item.pin_count,
@@ -201,8 +199,8 @@ namespace JodelAPI
                         LocationName = item.location.name,
                         CommentsCount = item.child_count ?? 0,
                         ChildCount = item.child_count ?? 0,
-                        CreatedAt = DateTime.ParseExact(item.created_at, "o", null),
-                        UpdatedAt = DateTime.ParseExact(item.updated_at, "o", null),
+                        CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
+                        UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
                         Distance = item.distance,
                         IsNotificationEnabled = item.notifications_enabled,
                         PinCount = item.pin_count,
@@ -260,8 +258,8 @@ namespace JodelAPI
                         LocationName = item.location.name,
                         CommentsCount = item.child_count ?? 0,
                         ChildCount = item.child_count ?? 0,
-                        CreatedAt = DateTime.ParseExact(item.created_at, "o", null),
-                        UpdatedAt = DateTime.ParseExact(item.updated_at, "o", null),
+                        CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
+                        UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
                         Distance = item.distance,
                         IsNotificationEnabled = item.notifications_enabled,
                         PinCount = item.pin_count,
@@ -509,8 +507,8 @@ namespace JodelAPI
                 Longitude = item.location.loc_coordinates.lng,
                 LocationName = item.location.name,
                 ChildCount = item.child_count,
-                CreatedAt = DateTime.ParseExact(item.created_at, "o", null),
-                UpdatedAt = DateTime.ParseExact(item.updated_at, "o", null),
+                CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
+                UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
                 Distance = item.distance,
                 IsNotificationEnabled = item.notifications_enabled,
                 PinCount = item.pin_count,

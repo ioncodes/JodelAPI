@@ -39,19 +39,19 @@ namespace JodelAPI
         ///     Generates an access token.
         /// </summary>
         /// <returns>System.String.</returns>
-        public Tokens GenerateAccessToken()
+        public static Tokens GenerateAccessToken()
         {
             DateTime dt = DateTime.UtcNow;
             string jsonString;
             string deviceUid = Helpers.Sha256(Helpers.RandomString(5, true));
 
             string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/users/%%" + $"{dt:s}Z" +
-                                        @"%%{""device_uid"": """ + deviceUid + @""", ""location"": {""_user.City"": """ + _user.City +
+                                        @"%%{""device_uid"": """ + deviceUid + @""", ""location"": {""City"": """ + _user.City +
                                         @""", ""loc_accuracy"": 0, ""loc_coordinates"": {""lat"": " + _user.Latitude +
                                         @", ""lng"": " + _user.Longitude + @"}, ""country"": """ + _user.CountryCode + @"""}, " +
                                         @"""client_id"": """ + Constants.ClientId + @"""}";
 
-            string payload = @"{""device_uid"": """ + deviceUid + @""", ""location"": {""_user.City"": """ + _user.City +
+            string payload = @"{""device_uid"": """ + deviceUid + @""", ""location"": {""City"": """ + _user.City +
                              @""", ""loc_accuracy"": 0, ""loc_coordinates"": " + @"{""lat"": " + _user.Latitude +
                              @", ""lng"": " + _user.Longitude + @"}, ""country"": """ + _user.CountryCode +
                              @"""}, ""client_id"": """ + Constants.ClientId + @"""}";
@@ -79,36 +79,83 @@ namespace JodelAPI
             };
         }
 
-        /// <summary>
-        ///     Fetches tokens from DB.
-        /// </summary>
-        /// <param name="jodelId">The jodelId.</param>
-        /// <param name="amount">The amount.</param>
-        /// <param name="authString">The authorization value.</param>
-        /// <param name="downvote">Whether or not it is a downvote request.</param>
-        /// <returns>List of Tokens.</returns>
-        public List<Tokens> GetAccessTokensFromDb(string jodelId, int amount, string authString,
-            bool downvote = false)
+        public static Tokens GenerateAccessToken(string latitude, string longitude, string city, string countrycode)
         {
+            DateTime dt = DateTime.UtcNow;
             string jsonString;
+            string deviceUid = Helpers.Sha256(Helpers.RandomString(5, true));
 
-            using (var client = new MyWebClient())
+            string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/users/%%" + $"{dt:s}Z" +
+                                        @"%%{""device_uid"": """ + deviceUid + @""", ""location"": {""City"": """ + city +
+                                        @""", ""loc_accuracy"": 0, ""loc_coordinates"": {""lat"": " + latitude +
+                                        @", ""lng"": " + longitude + @"}, ""country"": """ + countrycode + @"""}, " +
+                                        @"""client_id"": """ + Constants.ClientId + @"""}";
+
+            string payload = @"{""device_uid"": """ + deviceUid + @""", ""location"": {""City"": """ + city +
+                             @""", ""loc_accuracy"": 0, ""loc_coordinates"": " + @"{""lat"": " + latitude +
+                             @", ""lng"": " + longitude + @"}, ""country"": """ + countrycode +
+                             @"""}, ""client_id"": """ + Constants.ClientId + @"""}";
+
+            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
+            using (var hmacsha1 = new HMACSHA1(keyByte))
             {
-                client.Encoding = Encoding.UTF8;
-                client.Headers.Add("Authorization", authString);
-                jsonString =
-                    client.DownloadString(
-                        Constants.LinkGetAccessTokens.Replace("{JODEL_ID}", jodelId)
-                            .Replace("{AMOUNT}", amount.ToString())
-                            .Replace("{DOWNVOTE}", downvote.ToString()));
+                hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
+
+                using (var client = new MyWebClient())
+                {
+                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow));
+                    client.Encoding = Encoding.UTF8;
+                    jsonString = client.UploadString(Constants.LinkGenAt, payload);
+                }
+            }
+            JsonTokens.RootObject objTokens = JsonConvert.DeserializeObject<JsonTokens.RootObject>(jsonString);
+
+            return new Tokens
+            {
+                AccessToken = objTokens.access_token,
+                RefreshToken = objTokens.refresh_token,
+                ExpireTimestamp = objTokens.expiration_date
+            };
+        }
+
+        public static Tokens GenerateAccessToken(User user)
+        {
+            DateTime dt = DateTime.UtcNow;
+            string jsonString;
+            string deviceUid = Helpers.Sha256(Helpers.RandomString(5, true));
+
+            string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/users/%%" + $"{dt:s}Z" +
+                                        @"%%{""device_uid"": """ + deviceUid + @""", ""location"": {""City"": """ + user.City +
+                                        @""", ""loc_accuracy"": 0, ""loc_coordinates"": {""lat"": " + user.Latitude +
+                                        @", ""lng"": " + user.Longitude + @"}, ""country"": """ + user.CountryCode + @"""}, " +
+                                        @"""client_id"": """ + Constants.ClientId + @"""}";
+
+            string payload = @"{""device_uid"": """ + deviceUid + @""", ""location"": {""City"": """ + user.City +
+                             @""", ""loc_accuracy"": 0, ""loc_coordinates"": " + @"{""lat"": " + user.Latitude +
+                             @", ""lng"": " + user.Longitude + @"}, ""country"": """ + user.CountryCode +
+                             @"""}, ""client_id"": """ + Constants.ClientId + @"""}";
+
+            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
+            using (var hmacsha1 = new HMACSHA1(keyByte))
+            {
+                hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
+
+                using (var client = new MyWebClient())
+                {
+                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow));
+                    client.Encoding = Encoding.UTF8;
+                    jsonString = client.UploadString(Constants.LinkGenAt, payload);
+                }
             }
 
-            JArray objs = JsonConvert.DeserializeObject<dynamic>(jsonString).access_token;
-            string[] objTokens = objs.Select(jv => (string)jv).ToArray();
+            JsonTokens.RootObject objTokens = JsonConvert.DeserializeObject<JsonTokens.RootObject>(jsonString);
 
-            return
-                objTokens.Select(
-                    objToken => new Tokens { AccessToken = objToken, RefreshToken = null, ExpireTimestamp = 0 }).ToList();
+            return new Tokens
+            {
+                AccessToken = objTokens.access_token,
+                RefreshToken = objTokens.refresh_token,
+                ExpireTimestamp = objTokens.expiration_date
+            };
         }
 
         /// <summary>
