@@ -185,7 +185,7 @@ namespace JodelAPI
                     bool isUrl = false;
                     if (msg == "Jodel")
                     {
-                        msg = "http:" + item.image_url; // WELL THERE IS NO IMAGE_URL!!!!???
+                        msg = "http:" + item.image_url;
                         isUrl = true;
                     }
 

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JodelAPI", "JodelAPI\JodelA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JConsole", "Console\JConsole.csproj", "{B093C922-CF99-4C02-AAEB-A34F8DEF9DFC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JodelAPITests", "JodelAPITests\JodelAPITests.csproj", "{09BDDB23-563A-429B-93B0-D53394F1323D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B093C922-CF99-4C02-AAEB-A34F8DEF9DFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B093C922-CF99-4C02-AAEB-A34F8DEF9DFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B093C922-CF99-4C02-AAEB-A34F8DEF9DFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09BDDB23-563A-429B-93B0-D53394F1323D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09BDDB23-563A-429B-93B0-D53394F1323D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09BDDB23-563A-429B-93B0-D53394F1323D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09BDDB23-563A-429B-93B0-D53394F1323D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
