@@ -466,13 +466,23 @@ namespace JodelAPI
             }
             JsonComments.RootObject com = JsonConvert.DeserializeObject<JsonComments.RootObject>(plainJson);
 
-            return com.children.Select(c => new Comments
+            var result = new List<Comments>();
+
+            if (com.children != null)
             {
-                PostId = c.post_id,
-                Message = c.message,
-                UserHandle = c.user_handle,
-                VoteCount = c.vote_count
-            }).ToList();
+                foreach (var child in com.children)
+                {
+                    result.Add(new Comments
+                    {
+                        Message = child.message,
+                        PostId = child.post_id,
+                        UserHandle = child.user_handle,
+                        VoteCount = child.vote_count
+                    });
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
