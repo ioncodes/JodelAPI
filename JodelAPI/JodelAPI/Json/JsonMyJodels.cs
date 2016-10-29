@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace JodelAPI.Json
 {
-    class JsonMyJodels
+    internal class JsonMyJodels
     {
         public class LocCoordinates
         {
@@ -31,10 +27,12 @@ namespace JodelAPI.Json
             public int discovered { get; set; }
             public string voted { get; set; }
             public int distance { get; set; }
+            public int pin_count { get; set; }
             public int child_count { get; set; }
             public List<object> children { get; set; }
             public int vote_count { get; set; }
             public string color { get; set; }
+            public bool notifications_enabled { get; set; }
             public Location location { get; set; }
             public List<object> tags { get; set; }
             public string user_handle { get; set; }

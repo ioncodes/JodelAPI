@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using JodelAPI.Objects;
 
 namespace JodelAPI
 {
-    public static class Location
+    public class Location
     {
+        private static User _user;
+
+        internal Location(User user)
+        {
+            _user = user;
+        }
+
         /// <summary>
-        /// Unit for calculating distance
+        ///     Unit for calculating distance
         /// </summary>
         public enum Unit
         {
@@ -21,51 +23,51 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Gets the coordinates.
+        ///     Gets the coordinates.
         /// </summary>
         /// <param name="location">The location.</param>
         /// <returns>Coordinates.</returns>
-        public static Coordinates GetCoordinates(string location)
+        public Coordinates GetCoordinates(string location)
         {
             return Helpers.GetCoords(location);
         }
 
         /// <summary>
-        /// Sets the location.
+        ///     Sets the location.
         /// </summary>
         /// <param name="location">The location.</param>
-        public static void SetLocation(string location)
+        public void SetLocation(string location)
         {
             var coord = Helpers.GetCoords(location);
 
-            Account.Latitude = coord.Latitude;
-            Account.Longitude = coord.Longitude;
+            _user.Latitude = coord.Latitude;
+            _user.Longitude = coord.Longitude;
         } // from location name via Google API
 
         /// <summary>
-        /// Sets the location.
+        ///     Sets the location.
         /// </summary>
         /// <param name="coord">The coord.</param>
-        public static void SetLocation(Coordinates coord)
+        public void SetLocation(Coordinates coord)
         {
-            Account.Latitude = coord.Latitude;
-            Account.Longitude = coord.Longitude;
+            _user.Latitude = coord.Latitude;
+            _user.Longitude = coord.Longitude;
         } // from created object
 
         /// <summary>
-        /// Calculates the distance.
+        ///     Calculates the distance.
         /// </summary>
         /// <param name="coord1">The coord1.</param>
         /// <param name="coord2">The coord2.</param>
         /// <param name="unit">The unit.</param>
         /// <returns>System.Double.</returns>
         /// <exception cref="InternalException">API Error: Calculating Distance</exception>
-        public static double CalcDistance(Coordinates coord1, Coordinates coord2, Location.Unit unit)
+        public double CalcDistance(Coordinates coord1, Coordinates coord2, Unit unit)
         {
-            double c1Lo = Double.Parse(coord1.Longitude, CultureInfo.InvariantCulture);
-            double c2Lo = Double.Parse(coord2.Longitude, CultureInfo.InvariantCulture);
-            double c1La = Double.Parse(coord1.Latitude, CultureInfo.InvariantCulture);
-            double c2La = Double.Parse(coord2.Latitude, CultureInfo.InvariantCulture);
+            double c1Lo = double.Parse(coord1.Longitude, CultureInfo.InvariantCulture);
+            double c2Lo = double.Parse(coord2.Longitude, CultureInfo.InvariantCulture);
+            double c1La = double.Parse(coord1.Latitude, CultureInfo.InvariantCulture);
+            double c2La = double.Parse(coord2.Latitude, CultureInfo.InvariantCulture);
 
             switch (unit)
             {

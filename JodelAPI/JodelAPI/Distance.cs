@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JodelAPI
 {
-    static class Distance
+    internal static class Distance
     {
         public const int RadiusOfEarthInKilometres = 6371;
 
@@ -59,7 +55,7 @@ namespace JodelAPI
             var deltaLat = DegreeToRadian(destinationLatitude - originLatitude);
             var deltaLng = DegreeToRadian(destinationLongitude - originLongitude);
 
-            var a = (Math.Sin(deltaLat / 2) * Math.Sin(deltaLat / 2)) +
+            var a = Math.Sin(deltaLat / 2) * Math.Sin(deltaLat / 2) +
                     Math.Cos(DegreeToRadian(originLatitude)) * Math.Cos(DegreeToRadian(destinationLatitude)) *
                     (Math.Sin(deltaLng / 2) * Math.Sin(deltaLng / 2));
 

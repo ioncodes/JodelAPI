@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using JodelAPI.Objects;
 
 namespace JodelAPI
 {
-    static class Helpers
+    internal static class Helpers
     {
+        public static User _user;
+
         public static string ByteToString(byte[] buff)
         {
             return buff.Aggregate("", (current, t) => current + t.ToString("X2"));
@@ -79,41 +79,41 @@ namespace JodelAPI
             return coord;
         }
 
-        public static string ToLink(this string link)
+        public static string ToLink(this string link, string accessToken = null)
         {
             if (link.Contains("{AT}"))
             {
-                link = link.Replace("{AT}", Account.AccessToken);
+                link = link.Replace("{AT}", accessToken ?? _user.AccessToken);
             }
 
             if (link.Contains("{LAT}"))
             {
-                link = link.Replace("{LAT}", Account.Latitude);
+                link = link.Replace("{LAT}", _user.Latitude);
             }
 
             if (link.Contains("{LNG}"))
             {
-                link = link.Replace("{LNG}", Account.Longitude);
+                link = link.Replace("{LNG}", _user.Longitude);
             }
 
             return link;
         }
 
-        public static string ToLink(this string link, string postIdOrChannel)
+        public static string ToLinkSecond(this string link, string postIdOrChannel, string accessToken = null)
         {
             if (link.Contains("{AT}"))
             {
-                link = link.Replace("{AT}", Account.AccessToken);
+                link = link.Replace("{AT}", accessToken ?? _user.AccessToken);
             }
 
             if (link.Contains("{LAT}"))
             {
-                link = link.Replace("{LAT}", Account.Latitude);
+                link = link.Replace("{LAT}", _user.Latitude);
             }
 
             if (link.Contains("{LNG}"))
             {
-                link = link.Replace("{LNG}", Account.Longitude);
+                link = link.Replace("{LNG}", _user.Longitude);
             }
 
             if (link.Contains("{PID}"))
@@ -129,13 +129,13 @@ namespace JodelAPI
             return link;
         }
 
-        public static WebHeaderCollection ToHeader(this WebHeaderCollection header, string stringifiedPayload, bool addBearer = false)
+        public static WebHeaderCollection ToHeader(this WebHeaderCollection header, string stringifiedPayload,
+            DateTime dt, bool addBearer = false)
         {
             header.Remove("X-Authorization");
             header.Remove("X-Timestamp");
             header.Remove("Authorization");
 
-            DateTime dt = DateTime.UtcNow;
             var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
             var hmacsha1 = new HMACSHA1(keyByte);
             hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
@@ -145,14 +145,14 @@ namespace JodelAPI
 
             if (addBearer)
             {
-                header.Add("Authorization", "Bearer " + Account.AccessToken);
+                header.Add("Authorization", "Bearer " + _user.AccessToken);
             }
 
             return header;
         }
     }
 
-    class MyWebClient : WebClient
+    internal class MyWebClient : WebClient
     {
         protected override WebRequest GetWebRequest(Uri address)
         {

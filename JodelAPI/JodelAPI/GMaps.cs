@@ -1,18 +1,12 @@
-﻿using System;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using System.Net;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 using JodelAPI.Json;
 using Newtonsoft.Json;
 
 namespace JodelAPI
 {
-    static class GMaps
+    internal static class GMaps
     {
         public static string[] ToCoordinates(this string address)
         {

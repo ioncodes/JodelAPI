@@ -1,19 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using JodelAPI.Json;
 using JodelAPI.Objects;
 using Newtonsoft.Json;
 
 namespace JodelAPI
 {
-    public static class Moderation
+    public class Moderation
     {
         /// <summary>
-        /// Reason for reporting Jodels
+        ///     Decisions for flaging an Jodel
+        /// </summary>
+        public enum Decision
+        {
+            Allow = 0,
+            Block = 2,
+            DontKnow = 1
+        }
+
+        /// <summary>
+        ///     Reason for reporting Jodels
         /// </summary>
         public enum Reason
         {
@@ -25,20 +33,10 @@ namespace JodelAPI
         }
 
         /// <summary>
-        /// Decisions for flaging an Jodel
-        /// </summary>
-        public enum Decision
-        {
-            Allow = 0,
-            Block = 2,
-            DontKnow = 1
-        }
-
-        /// <summary>
-        /// Gets the reported Jodels
+        ///     Gets the reported Jodels
         /// </summary>
         /// <returns>List&lt;ModerationQueue&gt;.</returns>
-        public static List<ModerationQueue> GetModerationQueue()
+        public List<ModerationQueue> GetModerationQueue()
         {
             string plainJson;
             using (var client = new MyWebClient())
@@ -47,7 +45,7 @@ namespace JodelAPI
                 plainJson = client.DownloadString(Constants.LinkModeration.ToLink());
             }
             JsonModeration.RootObject queue = JsonConvert.DeserializeObject<JsonModeration.RootObject>(plainJson);
-            return queue.posts.Select(item => new ModerationQueue()
+            return queue.posts.Select(item => new ModerationQueue
             {
                 PostId = item.post_id,
                 FlagCount = item.flag_count,
@@ -58,43 +56,42 @@ namespace JodelAPI
                 TaskId = item.task_id,
                 UserHandle = item.user_handle,
                 VoteCount = item.vote_count
-
             }).ToList();
         }
 
         /// <summary>
-        /// Flags the jodel.
+        ///     Flags the jodel.
         /// </summary>
         /// <param name="taskId">The task identifier.</param>
         /// <param name="decision">The decision.</param>
-        public static void FlagJodel(int taskId, Decision decision)
+        public void FlagJodel(int taskId, Decision decision)
         {
             DateTime dt = DateTime.UtcNow;
 
-            string dec = Convert.ChangeType((object) decision, (TypeCode) decision.GetTypeCode())?.ToString(); // get int from enum.
+            string dec = Convert.ChangeType(decision, decision.GetTypeCode())?.ToString(); // get int from enum.
             string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v3/moderation/%%" + $"{dt:s}Z" +
-                            @"%%{""decision"": " + dec +
-                            @", ""task_id"": """ + taskId +
-                            @"""}";
-
-            string payload = @"{""decision"": " + dec +
+                                        @"%%{""decision"": " + dec +
                                         @", ""task_id"": """ + taskId +
                                         @"""}";
 
+            string payload = @"{""decision"": " + dec +
+                             @", ""task_id"": """ + taskId +
+                             @"""}";
+
             using (var client = new MyWebClient())
             {
-                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload));
+                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, dt));
                 client.Encoding = Encoding.UTF8;
                 client.UploadString(Constants.LinkModeration.ToLink(), payload);
             }
         }
 
         /// <summary>
-        /// Determines whether the specified token is from a moderator.
+        ///     Determines whether the specified token is from a moderator.
         /// </summary>
         /// <param name="token">The token.</param>
         /// <returns><c>true</c> if the specified token is moderator; otherwise, <c>false</c>.</returns>
-        public static bool IsModerator(string token)
+        public bool IsModerator(string token)
         {
             string plainJson;
             using (var client = new MyWebClient())

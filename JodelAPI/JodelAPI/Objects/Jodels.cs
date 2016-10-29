@@ -1,19 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JodelAPI.Objects
 {
     public class Jodels
     {
-        //postid, message, hexcolor, isImage, votecount, lat, lng, name
         public string PostId { get; set; }
 
         public string Message { get; set; }
 
+        public DateTime CreatedAt { get; set; }
+
+        public DateTime UpdatedAt { get; set; }
+
+        public int PinCount { get; set; }
+
         public string HexColor { get; set; }
+
+        public bool IsNotificationEnabled { get; set; }
+
+        public string PostOwn { get; set; }
+
+        public int Distance { get; set; }
+
+        public int ChildCount { get; set; }
 
         public bool IsImage { get; set; }
 
@@ -22,5 +31,7 @@ namespace JodelAPI.Objects
         public int CommentsCount { get; set; }
 
         public string LocationName { get; set; }
+
+        public string UserHandle { get; set; }
     }
 }

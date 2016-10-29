@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace JodelAPI.Json
 {
-    class JsonMyVotes
+    internal class JsonMyVotes
     {
         public class LocCoordinates
         {
