@@ -13,17 +13,23 @@ namespace JodelAPI.Tests
     public class JodelTests
     {
         public Jodel GetJodelObject()
-        { 
+        {
             var location = Location.GetCoordinates("Baden, Aargau, Schweiz");
+            Assert.IsNotNull(location);
             string accessToken = Account.GenerateAccessToken(location.Latitude, location.Longitude, "CH", "Baden").AccessToken;
+            Assert.IsTrue(accessToken.Length > 0);
             User user = new User(accessToken, location.Latitude, location.Longitude, "CH", "Baden");
-            return new Jodel(user);
+            Assert.IsNotNull(user);
+            Jodel jodel = new Jodel(user);
+            Assert.IsNotNull(jodel);
+            return jodel;
         }
 
         [TestMethod()]
         public void GetAllJodelsTest()
         {
-            GetJodelObject().GetAllJodels();
+            List<Jodels> jodels = GetJodelObject().GetAllJodels();
+            Assert.IsNotNull(jodels);
         }
 
         [TestMethod()]
@@ -37,13 +43,14 @@ namespace JodelAPI.Tests
         public void DownvoteTest()
         {
             Jodel jodel = GetJodelObject();
-            jodel.Downvote(jodel.GetAllJodels()[0].PostId);
+            jodel.Downvote(jodel.GetAllJodels()[1].PostId);
         }
 
         [TestMethod()]
         public void PostJodelTest()
         {
-            GetJodelObject().PostJodel("Test");
+            string postid = GetJodelObject().PostJodel("Test");
+            Assert.IsTrue(postid.Length > 0);
         }
 
         [TestMethod()]
