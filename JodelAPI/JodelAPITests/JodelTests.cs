@@ -33,6 +33,13 @@ namespace JodelAPI.Tests
         }
 
         [TestMethod()]
+        public async Task GetAllJodelsAsyncTest()
+        {
+            List<Jodels> jodels = await GetJodelObject().GetAllJodelsAsync();
+            Assert.IsNotNull(jodels);
+        }
+
+        [TestMethod()]
         public void UpvoteTest()
         {
             Jodel jodel = GetJodelObject();
@@ -65,6 +72,13 @@ namespace JodelAPI.Tests
         public void GetKarmaTest()
         {
             GetJodelObject().Account.GetKarma();
+        }
+
+        [TestMethod()]
+        public void SetLocationTest()
+        {
+            var location = Location.GetCoordinates("Baden, Aargau, Schweiz");
+            GetJodelObject().Account.SetUserLocation(Account.GenerateAccessToken(location.Latitude, location.Longitude, "CH", "Baden").AccessToken);
         }
     }
 }

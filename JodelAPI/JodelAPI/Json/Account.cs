@@ -165,7 +165,7 @@ namespace JodelAPI
         public void SetUserLocation(string accessToken)
         {
             string payload =
-                @"{""location"": {""_user.City"": """ + _user.City + @""", ""loc_accuracy"": 0, ""loc_coordinates"": {" +
+                @"{""location"": {""City"": """ + _user.City + @""", ""loc_accuracy"": 0, ""loc_coordinates"": {" +
                 @"""lat"": " + _user.Latitude + @", ""lng"": " + _user.Longitude + @"}, ""country"": """ + _user.CountryCode +
                 @"""}, ""name"": """ + _user.City + @"""}";
             var client = new WebClient { Encoding = Encoding.UTF8 };
