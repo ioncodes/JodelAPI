@@ -75,7 +75,7 @@ namespace JodelAPI.Tests
         }
 
         [TestMethod()]
-        public void SetLocationTest()
+        public void SetUserLocationTest()
         {
             var location = Location.GetCoordinates("Baden, Aargau, Schweiz");
             GetJodelObject().Account.SetUserLocation(Account.GenerateAccessToken(location.Latitude, location.Longitude, "CH", "Baden").AccessToken);
