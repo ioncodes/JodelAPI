@@ -173,6 +173,11 @@ namespace JodelAPI
             client.UploadString(Constants.LinkUserLocation.Replace("{AT}", accessToken), "PUT", payload);
         }
 
+        public void SetAccessToken(string accessToken)
+        {
+            _user.AccessToken = accessToken;
+        }
+
         /// <summary>
         ///     Refreshes the access token.
         /// </summary>

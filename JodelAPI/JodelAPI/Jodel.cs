@@ -19,8 +19,8 @@ namespace JodelAPI
 
         public Jodel(string accessToken, string longitude, string latitude, string city, string countryCode, string googleApiToken = "")
         {
-            Helpers._user = _user;
             _user = new User(accessToken, latitude, longitude, countryCode, city, googleApiToken);
+            Helpers._user = _user;
         }
 
         public Jodel(User user)
