@@ -18,15 +18,5 @@
             City = city;
             GoogleApiToken = googleApiToken;
         }
-
-        public User(string latitude, string longitude, string countryCode, string city, string googleApiToken = "")
-        {
-            AccessToken = "";
-            Latitude = latitude;
-            Longitude = longitude;
-            CountryCode = countryCode;
-            City = city;
-            GoogleApiToken = googleApiToken;
-        }
     }
 }

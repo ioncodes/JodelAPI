@@ -14,19 +14,23 @@ namespace JodelAPI
     {
         private static User _user;
         public Moderation Moderation = new Moderation();
-        public Account Account = new Account(_user);
-        public Location Location = new Location(_user);
+        public Account Account = null;
+        public Location Location = null;
 
         public Jodel(string accessToken, string longitude, string latitude, string city, string countryCode, string googleApiToken = "")
         {
             _user = new User(accessToken, latitude, longitude, countryCode, city, googleApiToken);
             Helpers._user = _user;
+            Account = new Account(_user);
+            Location = new Location(_user);
         }
 
         public Jodel(User user)
         {
-            Helpers._user = user;
             _user = user;
+            Helpers._user = user;
+            Account = new Account(user);
+            Location = new Location(user);
         }
 
         /// <summary>
