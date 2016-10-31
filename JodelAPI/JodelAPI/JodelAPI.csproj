@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Json\Account.cs" />
+    <Compile Include="Account.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Distance.cs" />
     <Compile Include="Exceptions\InternalException.cs" />
