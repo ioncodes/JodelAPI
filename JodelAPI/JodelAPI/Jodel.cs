@@ -336,7 +336,7 @@ namespace JodelAPI
             {
                 client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, dt, true));
                 client.Encoding = Encoding.UTF8;
-                client.UploadData(Constants.LinkUpvoteJodel.ToLink(postId), "PUT", new byte[] { });
+                client.UploadData(Constants.LinkUpvoteJodel.ToLink(_user.AccessToken, postId), "PUT", new byte[] { });
             }
         }
 
@@ -356,7 +356,7 @@ namespace JodelAPI
             {
                 client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, dt, true));
                 client.Encoding = Encoding.UTF8;
-                client.UploadData(Constants.LinkDownvoteJodel.ToLink(postId), "PUT", new byte[] { });
+                client.UploadData(Constants.LinkDownvoteJodel.ToLink(_user.AccessToken, postId), "PUT", new byte[] { });
             }
         }
 
@@ -600,7 +600,7 @@ namespace JodelAPI
             {
                 client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow, true));
                 client.Encoding = Encoding.UTF8;
-                client.UploadData(Constants.LinkReportJodel.ToLink(postId), "PUT", new byte[] { });
+                client.UploadData(Constants.LinkReportJodel.ToLink(_user.AccessToken, postId), "PUT", new byte[] { });
             }
         }
 
@@ -620,7 +620,7 @@ namespace JodelAPI
             {
                 client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow));
                 client.Encoding = Encoding.UTF8;
-                client.UploadData(Constants.LinkPinJodel.ToLink(postId), "PUT", new byte[] { });
+                client.UploadData(Constants.LinkPinJodel.ToLink(_user.AccessToken, postId), "PUT", new byte[] { });
             }
         }
 
@@ -660,7 +660,7 @@ namespace JodelAPI
             {
                 client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow, true));
                 client.Encoding = Encoding.UTF8;
-                client.UploadData(Constants.LinkDeleteJodel.ToLink(postId), "DELETE", new byte[] { });
+                client.UploadData(Constants.LinkDeleteJodel.ToLink(_user.AccessToken, postId), "DELETE", new byte[] { });
             }
         }
 

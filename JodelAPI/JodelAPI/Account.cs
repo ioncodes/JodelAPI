@@ -158,7 +158,6 @@ namespace JodelAPI
             };
         }
 
-
         /// <summary>
         ///     Sets the user location.
         /// </summary>

@@ -43,9 +43,10 @@ namespace JodelAPI.Tests
         public void UpvoteTest()
         {
             Jodel jodel = GetJodelObject();
-            jodel.Upvote(jodel.GetAllJodels()[0].PostId);
+            //jodel.Upvote(jodel.GetAllJodels()[0].PostId);
+            jodel.Upvote("5817a0bcd31920521edf3eb6");
             Random rnd = new Random();
-            jodel.PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'. Downvoted Successfull");
+            jodel.PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'. Upvote Successfull");
         }
 
         [TestMethod()]
