@@ -14,8 +14,8 @@ namespace JodelAPI
     {
         private static User _user;
         public Moderation Moderation = new Moderation();
-        public Account Account = null;
-        public Location Location = null;
+        public Account Account;
+        public Location Location;
 
         public Jodel(string accessToken, string longitude, string latitude, string city, string countryCode, string googleApiToken = "")
         {
@@ -464,7 +464,7 @@ namespace JodelAPI
             using (var client = new MyWebClient())
             {
                 client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(Constants.LinkGetComments.ToLink(postId));
+                plainJson = client.DownloadString(Constants.LinkGetComments.ToLink(_user.AccessToken, postId));
             }
             JsonComments.RootObject com = JsonConvert.DeserializeObject<JsonComments.RootObject>(plainJson);
 

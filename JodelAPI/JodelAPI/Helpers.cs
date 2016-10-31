@@ -99,6 +99,22 @@ namespace JodelAPI
             return link;
         }
 
+        public static string ToLink(this string link, string accessToken, string pid)
+        {
+            if (link.Contains("{AT}"))
+            {
+                link = link.Replace("{AT}", accessToken ?? _user.AccessToken);
+            }
+
+
+            if (link.Contains("{PID}"))
+            {
+                link = link.Replace("{PID}", pid);
+            }
+
+            return link;
+        }
+
         public static string ToLinkSecond(this string link, string postIdOrChannel, string accessToken = null)
         {
             if (link.Contains("{AT}"))

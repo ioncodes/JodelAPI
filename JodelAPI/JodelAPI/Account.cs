@@ -158,37 +158,6 @@ namespace JodelAPI
             };
         }
 
-        /// <summary>
-        ///     Fetches tokens from DB.
-        /// </summary>
-        /// <param name="jodelId">The jodelId.</param>
-        /// <param name="amount">The amount.</param>
-        /// <param name="authString">The authorization value.</param>
-        /// <param name="downvote">Whether or not it is a downvote request.</param>
-        /// <returns>List of Tokens.</returns>
-        public static List<Tokens> GetAccessTokensFromDb(string jodelId, int amount, string authString,
-            bool downvote = false)
-        {
-            string jsonString;
-
-            using (var client = new MyWebClient())
-            {
-                client.Encoding = Encoding.UTF8;
-                client.Headers.Add("Authorization", authString);
-                jsonString =
-                    client.DownloadString(
-                        Constants.LinkGetAccessTokens.Replace("{JODEL_ID}", jodelId)
-                            .Replace("{AMOUNT}", amount.ToString())
-                            .Replace("{DOWNVOTE}", downvote.ToString()));
-            }
-
-            JArray objs = JsonConvert.DeserializeObject<dynamic>(jsonString).access_token;
-            string[] objTokens = objs.Select(jv => (string)jv).ToArray();
-
-            return
-                objTokens.Select(
-                    objToken => new Tokens { AccessToken = objToken, RefreshToken = null, ExpireTimestamp = 0 }).ToList();
-        }
 
         /// <summary>
         ///     Sets the user location.
