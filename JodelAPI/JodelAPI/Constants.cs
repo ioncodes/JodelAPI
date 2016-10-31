@@ -57,10 +57,6 @@ namespace JodelAPI
         public const string LinkDeleteJodel = "https://api.go-tellm.com/api/v2/posts/{PID}";
         public const string LinkPostImage = "https://api.go-tellm.com/api/v2/posts?access_token={AT}";
 
-        // DB backend links
-        public const string LinkGetAccessTokens =
-            "http://jodel.lonely-mountain.ch/v1/jodel/tokens/{JODEL_ID}/{AMOUNT}?downvote={DOWNVOTE}";
-
         // Headers
         public static WebHeaderCollection Header = new WebHeaderCollection
         {

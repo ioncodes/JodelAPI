@@ -44,6 +44,8 @@ namespace JodelAPI.Tests
         {
             Jodel jodel = GetJodelObject();
             jodel.Upvote(jodel.GetAllJodels()[0].PostId);
+            Random rnd = new Random();
+            jodel.PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'. Downvoted Successfull");
         }
 
         [TestMethod()]
@@ -51,12 +53,15 @@ namespace JodelAPI.Tests
         {
             Jodel jodel = GetJodelObject();
             jodel.Downvote(jodel.GetAllJodels()[1].PostId);
+            Random rnd = new Random();
+            jodel.PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'. Downvoted Successfull");
         }
 
         [TestMethod()]
         public void PostJodelTest()
         {
-            string postid = GetJodelObject().PostJodel("Test");
+            Random rnd = new Random();
+            string postid = GetJodelObject().PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'");
             Assert.IsTrue(postid.Length > 0);
         }
 
@@ -64,14 +69,24 @@ namespace JodelAPI.Tests
         public void DeleteJodelTest()
         {
             Jodel jodel = GetJodelObject();
-            string postid = jodel.PostJodel("Test");
-            jodel.DeleteJodel(postid);
+            Random rnd = new Random();
+            string postid = jodel.PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'. Delete me test.");
+            try
+            {
+                jodel.DeleteJodel(postid);
+            }
+            catch (Exception ex)
+            {
+                jodel.PostJodel("Deleting failed. Fuck My Life. Error: " + ex.Message);
+            }
         }
 
         [TestMethod()]
         public void GetKarmaTest()
         {
-            GetJodelObject().Account.GetKarma();
+            int karma = GetJodelObject().Account.GetKarma();
+            Random rnd = new Random();
+            GetJodelObject().PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms' to get my karma: " + karma + ". I'm a poor nigger :'(");
         }
 
         [TestMethod()]
@@ -79,6 +94,16 @@ namespace JodelAPI.Tests
         {
             var location = Location.GetCoordinates("Baden, Aargau, Schweiz");
             GetJodelObject().Account.SetUserLocation(Account.GenerateAccessToken(location.Latitude, location.Longitude, "CH", "Baden").AccessToken);
+        }
+
+        [TestMethod()]
+        public void GetCommentsTest()
+        {
+            Random rnd = new Random();
+            var jodel = GetJodelObject();
+            jodel.PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'.");
+            jodel.GetComments(jodel.GetAllJodels()[10].PostId);
+            jodel.PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'. Got comments successfully.");
         }
     }
 }
