@@ -14,11 +14,11 @@ namespace JodelAPI.Tests
     {
         public Jodel GetJodelObject()
         {
-            var location = Location.GetCoordinates("Baden, Aargau, Schweiz");
+            var location = Location.GetCoordinates("Von Rollstrasse 10, 4600 Olten, Schweiz");
             Assert.IsNotNull(location);
-            string accessToken = Account.GenerateAccessToken(location.Latitude, location.Longitude, "CH", "Baden").AccessToken;
+            string accessToken = Account.GenerateAccessToken(location.Latitude, location.Longitude, "CH", "Dini Mom").AccessToken;
             Assert.IsTrue(accessToken.Length > 0);
-            User user = new User(accessToken, location.Latitude, location.Longitude, "CH", "Baden");
+            User user = new User(accessToken, location.Latitude, location.Longitude, "CH", "Dini Mom");
             Assert.IsNotNull(user);
             Jodel jodel = new Jodel(user);
             Assert.IsNotNull(jodel);
@@ -43,8 +43,7 @@ namespace JodelAPI.Tests
         public void UpvoteTest()
         {
             Jodel jodel = GetJodelObject();
-            //jodel.Upvote(jodel.GetAllJodels()[0].PostId);
-            jodel.Upvote("5817a0bcd31920521edf3eb6");
+            jodel.Upvote(jodel.GetAllJodels()[2].PostId);
             Random rnd = new Random();
             jodel.PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'. Upvote Successfull");
         }
