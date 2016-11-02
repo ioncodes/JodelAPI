@@ -76,20 +76,22 @@ namespace JodelAPI
 
             foreach (var item in jfr.recent)
             {
-                string msg = item.message;
+                string image_url = "";
                 bool isUrl = false;
-                if (msg == "Jodel")
+
+                if (item.image_url != null)
                 {
-                    msg = "http:" + item.image_url;
+                    image_url = "http:" + item.image_url;
                     isUrl = true;
                 }
 
                 Jodels objJodels = new Jodels
                 {
                     PostId = item.post_id,
-                    Message = msg,
+                    Message = item.message,
                     HexColor = item.color,
                     IsImage = isUrl,
+                    ImageUrl = image_url,
                     VoteCount = item.vote_count,
                     LocationName = item.location.name,
                     CommentsCount = item.child_count ?? 0,
@@ -129,20 +131,22 @@ namespace JodelAPI
 
             foreach (var item in jfr.recent)
             {
-                string msg = item.message;
+                string image_url = "";
                 bool isUrl = false;
-                if (msg == "Jodel")
+
+                if (item.image_url != null)
                 {
-                    msg = "http:" + item.image_url;
+                    image_url = "http:" + item.image_url;
                     isUrl = true;
                 }
 
                 Jodels objJodels = new Jodels
                 {
                     PostId = item.post_id,
-                    Message = msg,
+                    Message = item.message,
                     HexColor = item.color,
                     IsImage = isUrl,
+                    ImageUrl = image_url,
                     VoteCount = item.vote_count,
                     LocationName = item.location.name,
                     CommentsCount = item.child_count ?? 0,
@@ -185,20 +189,22 @@ namespace JodelAPI
                 JsonJodelsLastRound.RootObject jlr = JsonConvert.DeserializeObject<JsonJodelsLastRound.RootObject>(plainJson);
                 foreach (var item in jlr.posts)
                 {
-                    string msg = item.message;
+                    string image_url = "";
                     bool isUrl = false;
-                    if (msg == "Jodel")
+
+                    if (item.image_url != null)
                     {
-                        msg = "http:" + item.image_url;
+                        image_url = "http:" + item.image_url;
                         isUrl = true;
                     }
 
                     Jodels objJodels = new Jodels
                     {
                         PostId = item.post_id,
-                        Message = msg,
+                        Message = item.message,
                         HexColor = item.color,
                         IsImage = isUrl,
+                        ImageUrl = image_url,
                         VoteCount = item.vote_count,
                         LocationName = item.location.name,
                         CommentsCount = item.child_count ?? 0,
@@ -244,20 +250,22 @@ namespace JodelAPI
                     JsonConvert.DeserializeObject<JsonJodelsLastRound.RootObject>(plainJson);
                 foreach (var item in jlr.posts)
                 {
-                    string msg = item.message;
+                    string image_url = "";
                     bool isUrl = false;
-                    if (msg == "Jodel")
+
+                    if (item.image_url != null)
                     {
-                        msg = "http:" + item.image_url; // WELL THERE IS NO IMAGE_URL!!!!???
+                        image_url = "http:" + item.image_url;
                         isUrl = true;
                     }
 
                     Jodels objJodels = new Jodels
                     {
                         PostId = item.post_id,
-                        Message = msg,
+                        Message = item.message,
                         HexColor = item.color,
                         IsImage = isUrl,
+                        ImageUrl = image_url,
                         VoteCount = item.vote_count,
                         LocationName = item.location.name,
                         CommentsCount = item.child_count ?? 0,
@@ -474,10 +482,23 @@ namespace JodelAPI
             {
                 foreach (var child in com.children)
                 {
+                    string image_url = "";
+                    bool isUrl = false;
+
+                    if (child.image_url != null)
+                    {
+                        image_url = "http:" + child.image_url;
+                        isUrl = true;
+                    }
+
                     result.Add(new Comments
                     {
                         Message = child.message,
                         PostId = child.post_id,
+                        CreatedAt = DateTime.ParseExact(child.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
+                        UpdatedAt = DateTime.ParseExact(child.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
+                        IsImage = isUrl,
+                        ImageUrl = image_url,
                         UserHandle = child.user_handle,
                         VoteCount = child.vote_count
                     });

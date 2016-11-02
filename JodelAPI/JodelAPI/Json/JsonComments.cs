@@ -31,6 +31,7 @@ namespace JodelAPI.Json
             public string color { get; set; }
             public Location location { get; set; }
             public string user_handle { get; set; }
+            public string image_url { get; set; }
         }
 
         public class LocCoordinates2

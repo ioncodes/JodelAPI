@@ -33,5 +33,7 @@ namespace JodelAPI.Objects
         public string LocationName { get; set; }
 
         public string UserHandle { get; set; }
+
+        public string ImageUrl { get; set; }
     }
 }

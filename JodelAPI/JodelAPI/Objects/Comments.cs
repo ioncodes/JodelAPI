@@ -1,4 +1,6 @@
-﻿namespace JodelAPI.Objects
+﻿using System;
+
+namespace JodelAPI.Objects
 {
     public class Comments
     {
@@ -11,5 +13,13 @@
         public string UserHandle { get; set; }
 
         public int VoteCount { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+ 
+    	public DateTime UpdatedAt { get; set; }
+ 
+ 		public bool IsImage { get; set; }
+ 
+		public string ImageUrl { get; set; }
     }
 }
