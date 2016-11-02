@@ -4,7 +4,6 @@ namespace JodelAPI.Json
 {
     internal class JsonComments
     {
-
         public class LocCoordinates
         {
             public int lat { get; set; }
