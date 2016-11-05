@@ -13,8 +13,7 @@ namespace JodelAPI.Tests
     public class JodelTests
     {
         public Jodel GetJodelObject()
-        {
-            
+        {   
             var location = Location.GetCoordinates("Von Rollstrasse 10, 4600 Olten, Schweiz");
             Assert.IsNotNull(location);
             string accessToken = Account.GenerateAccessToken(location.Latitude, location.Longitude, "CH", "Dini Mom").AccessToken;
