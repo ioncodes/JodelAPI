@@ -26,7 +26,7 @@ using JodelAPI; // add namespace
 
 User user = new User(string.Empty, MyLoc.Latitude, MyLoc.Longitude, MyLoc.CountryCode, MyLoc.City);
 
-List<Tokens> myAccessToken = Account.GenerateAccessToken(user);
+Tokens myAccessToken = Account.GenerateAccessToken(user);
 user.AccessToken = myAccessToken;
 
 Jodel jodel = new Jodel(user);
