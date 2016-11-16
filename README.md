@@ -1,4 +1,7 @@
 # JodelAPI
+[![forthebadge](http://forthebadge.com/images/badges/built-with-swag.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/gluten-free.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/certified-snoop-lion.svg)](http://forthebadge.com)
 ## Introduction
 
 This is the carefully reverse-engineered .NET Jodel API in C#. Please feel free to grab the source or compiled library from the link provided below.
