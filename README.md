@@ -6,7 +6,7 @@
 *Big thanks to KirschbaumP*
 
 [![Build status](https://ci.appveyor.com/api/projects/status/2dx3f591ubmp978t?svg=true)](https://ci.appveyor.com/project/ioncodes/jodelapi)
-[![Github All Releases](https://img.shields.io/github/downloads/ioncodes/JodelAPI/total.svg)]()
+[![Github All Releases](https://img.shields.io/github/downloads/ioncodes/JodelAPI/total.svg)](https://github.com/ioncodes/JodelAPI/releases)
 [![Status](https://img.shields.io/badge/api-working-brightgreen.svg)]()
 
 ## Introduction
