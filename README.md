@@ -4,6 +4,11 @@
 [![forthebadge](http://forthebadge.com/images/badges/certified-snoop-lion.svg)](http://forthebadge.com)
 
 *Big thanks to KirschbaumP*
+
+[![Build status](https://ci.appveyor.com/api/projects/status/2dx3f591ubmp978t?svg=true)](https://ci.appveyor.com/project/ioncodes/jodelapi)
+[![Github All Releases](https://img.shields.io/github/downloads/ioncodes/JodelAPI/total.svg)]()
+[![Status](https://img.shields.io/badge/api-working-brightgreen.svg)]()
+
 ## Introduction
 
 This is the carefully reverse-engineered .NET Jodel API in C#. Please feel free to grab the source or compiled library from the link provided below.
