@@ -114,64 +114,6 @@ namespace JodelAPI
         }
 
         /// <summary>
-        ///     Gets the first amount of Jodels Async (internal usage)
-        /// </summary>
-        /// <returns>List&lt;Jodels&gt;.</returns>
-        public async Task<List<Jodels>> GetFirstJodelsAsync()
-        {
-            string plainJson;
-            using (var client = new MyWebClient())
-            {
-                client.Encoding = Encoding.UTF8;
-                plainJson = await client.DownloadStringTaskAsync(new Uri(Constants.LinkFirstJodels.ToLink()));
-            }
-            JsonJodelsFirstRound.RootObject jfr =
-                JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(plainJson);
-            List<Jodels> temp = new List<Jodels>(); // List<post_id,message>
-
-            foreach (var item in jfr.recent)
-            {
-                string image_url = "";
-                bool isUrl = false;
-
-                if (item.image_url != null)
-                {
-                    image_url = "http:" + item.image_url;
-                    isUrl = true;
-                }
-
-                Jodels objJodels = new Jodels
-                {
-                    PostId = item.post_id,
-                    Message = item.message,
-                    HexColor = item.color,
-                    IsImage = isUrl,
-                    ImageUrl = image_url,
-                    VoteCount = item.vote_count,
-                    LocationName = item.location.name,
-                    CommentsCount = item.child_count ?? 0,
-                    ChildCount = item.child_count ?? 0,
-                    CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                    UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                    Distance = item.distance,
-                    IsNotificationEnabled = item.notifications_enabled,
-                    PinCount = item.pin_count,
-                    PostOwn = item.post_own,
-                    UserHandle = item.user_handle
-                };
-
-                temp.Add(objJodels);
-            }
-
-            lock (_lastPostId)
-            {
-                _lastPostId = temp.Last().PostId; // Set the last post_id for next jodels
-            }
-
-            return temp;
-        }
-
-        /// <summary>
         ///     Gets the second amount of Jodels (internal usage)
         /// </summary>
         /// <returns>List&lt;Jodels&gt;.</returns>
@@ -228,70 +170,6 @@ namespace JodelAPI
         }
 
         /// <summary>
-        ///     Gets the second amount of Jodels Async (internal usage)
-        /// </summary>
-        /// <returns>List&lt;Jodels&gt;.</returns>
-        public async Task<List<Jodels>> GetNextJodelsAsync()
-        {
-            List<Jodels> temp = new List<Jodels>();
-            for (int e = 0; e < 3; e++)
-            {
-                string plainJson, lockedUrl;
-                lock (_lastPostId)
-                {
-                    lockedUrl = Constants.LinkSecondJodels.ToLink(_lastPostId);
-                }
-                using (var client = new MyWebClient())
-                {
-                    client.Encoding = Encoding.UTF8;
-                    plainJson = await client.DownloadStringTaskAsync(new Uri(lockedUrl));
-                }
-                JsonJodelsLastRound.RootObject jlr =
-                    JsonConvert.DeserializeObject<JsonJodelsLastRound.RootObject>(plainJson);
-                foreach (var item in jlr.posts)
-                {
-                    string image_url = "";
-                    bool isUrl = false;
-
-                    if (item.image_url != null)
-                    {
-                        image_url = "http:" + item.image_url;
-                        isUrl = true;
-                    }
-
-                    Jodels objJodels = new Jodels
-                    {
-                        PostId = item.post_id,
-                        Message = item.message,
-                        HexColor = item.color,
-                        IsImage = isUrl,
-                        ImageUrl = image_url,
-                        VoteCount = item.vote_count,
-                        LocationName = item.location.name,
-                        CommentsCount = item.child_count ?? 0,
-                        ChildCount = item.child_count ?? 0,
-                        CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                        UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                        Distance = item.distance,
-                        IsNotificationEnabled = item.notifications_enabled,
-                        PinCount = item.pin_count,
-                        PostOwn = item.post_own,
-                        UserHandle = item.user_handle
-                    };
-
-                    temp.Add(objJodels);
-                }
-                if (temp.Count == 0)
-                    return temp; // not enough Jodels anymore.
-                lock (_lastPostId)
-                {
-                    _lastPostId = temp.Last().PostId; // Set the last post_id for next jodels
-                }
-            }
-            return temp;
-        }
-
-        /// <summary>
         ///     Gets all jodels.
         /// </summary>
         /// <returns>List&lt;Jodels&gt;.</returns>
@@ -310,21 +188,6 @@ namespace JodelAPI
         {
             var allJodels = GetFirstJodels(accessToken);
             allJodels.AddRange(GetNextJodels(accessToken));
-            return allJodels;
-        }
-
-        /// <summary>
-        ///     Gets all jodels.
-        /// </summary>
-        /// <returns>List&lt;Jodels&gt;.</returns>
-        public async Task<List<Jodels>> GetAllJodelsAsync()
-        {
-            var firstJodels = GetFirstJodelsAsync();
-            var nextJodels = GetNextJodelsAsync();
-            var allJodels = new List<Jodels>();
-            var allJodelsFetched = await Task.WhenAll(firstJodels, nextJodels);
-            foreach (var jodelses in allJodelsFetched)
-                allJodels.AddRange(jodelses);
             return allJodels;
         }
 

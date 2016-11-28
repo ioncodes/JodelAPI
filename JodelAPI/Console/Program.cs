@@ -16,11 +16,7 @@ namespace JConsole
             string accessToken = Account.GenerateAccessToken(location.Latitude, location.Longitude, "CH", "Baden").AccessToken;
             User user = new User(accessToken, location.Latitude, location.Longitude, "CH", "Baden");
             Jodel jodel = new Jodel(user);
-            var jodels = jodel.GetAllJodels();
-            Console.WriteLine(jodels[4].Message);
-            //var t = jodel.GetAllJodelsAsync();
-           
-            //Console.WriteLine(jodels1[1].Message);
+            Console.WriteLine(jodel.PostJodel("test"));
             Console.Read();
         }
     }

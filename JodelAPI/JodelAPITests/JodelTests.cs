@@ -14,11 +14,11 @@ namespace JodelAPI.Tests
     {
         public Jodel GetJodelObject()
         {   
-            var location = Location.GetCoordinates("Von Rollstrasse 10, 4600 Olten, Schweiz");
+            var location = Location.GetCoordinates("Baden, Aargau, Schweiz");
             Assert.IsNotNull(location);
-            string accessToken = Account.GenerateAccessToken(location.Latitude, location.Longitude, "CH", "Dini Mom").AccessToken;
+            string accessToken = Account.GenerateAccessToken(location.Latitude, location.Longitude, "CH", "Baden").AccessToken;
             Assert.IsTrue(accessToken.Length > 0);
-            User user = new User(accessToken, location.Latitude, location.Longitude, "CH", "Dini Mom");
+            User user = new User(accessToken, location.Latitude, location.Longitude, "CH", "Baden");
             Assert.IsNotNull(user);
             Jodel jodel = new Jodel(user);
             Assert.IsNotNull(jodel);
@@ -29,13 +29,6 @@ namespace JodelAPI.Tests
         public void GetAllJodelsTest()
         {
             List<Jodels> jodels = GetJodelObject().GetAllJodels();
-            Assert.IsNotNull(jodels);
-        }
-
-        [TestMethod()]
-        public async Task GetAllJodelsAsyncTest()
-        {
-            List<Jodels> jodels = await GetJodelObject().GetAllJodelsAsync();
             Assert.IsNotNull(jodels);
         }
 
