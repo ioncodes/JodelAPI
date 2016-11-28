@@ -6,7 +6,7 @@
 *Big thanks to KirschbaumP*
 
 [![Build status](https://ci.appveyor.com/api/projects/status/2dx3f591ubmp978t?svg=true)](https://ci.appveyor.com/project/ioncodes/jodelapi)
-[![Github All Releases](https://img.shields.io/github/downloads/ioncodes/JodelAPI/total.svg)]()
+[![Github All Releases](https://img.shields.io/github/downloads/ioncodes/JodelAPI/total.svg)](https://github.com/ioncodes/JodelAPI/releases)
 [![Status](https://img.shields.io/badge/api-working-brightgreen.svg)]()
 
 ## Introduction
@@ -20,7 +20,7 @@ This is the carefully reverse-engineered .NET Jodel API in C#. Please feel free 
 **As of October 29th 2016 the API is completely non-static and should be easier to use than ever before.**
 
 ## Binaries and pre-requisites
-* [GitHub Releases](https://github.com/ioncodes/JodelAPI/releases/latest)
+* [GitHub Releases](https://github.com/ioncodes/JodelAPI/releases)
 
 ## Getting Started
 
