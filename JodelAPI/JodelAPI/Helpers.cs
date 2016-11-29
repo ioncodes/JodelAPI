@@ -35,7 +35,7 @@ namespace JodelAPI
         public static string RandomString(int size, bool lowerCase)
         {
             StringBuilder builder = new StringBuilder();
-            Random random = new Random();
+            Random random = new Random(DateTime.Now.Millisecond);
             for (int i = 1; i < size + 1; i++)
             {
                 var ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
