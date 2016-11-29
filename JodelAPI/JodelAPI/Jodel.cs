@@ -18,12 +18,7 @@ namespace JodelAPI
         public Location Location;
 
         public Jodel(string accessToken, string longitude, string latitude, string city, string countryCode, string googleApiToken = "")
-        {
-            _user = new User(accessToken, latitude, longitude, countryCode, city, googleApiToken);
-            Helpers._user = _user;
-            Account = new Account(_user);
-            Location = new Location(_user);
-        }
+            : this(new User(accessToken, latitude, longitude, countryCode, city, googleApiToken)) { }
 
         public Jodel(User user)
         {
@@ -57,6 +52,101 @@ namespace JodelAPI
         }
 
         private string _lastPostId = "";
+
+        /// <summary>
+        /// Gets the UserConfig
+        /// </summary>
+        public User.UserConfig GetUserConfig()
+        {
+            string plainJson;
+            using (var client = new MyWebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                plainJson = client.DownloadString(Constants.LinkConfig.ToLink());
+            }
+
+            JsonConfig.RootObject config = JsonConvert.DeserializeObject<JsonConfig.RootObject>(plainJson);
+
+            List<User.Experiment> experiments = new List<User.Experiment>(config.experiments.Count);
+            foreach (JsonConfig.Experiment experiment in config.experiments)
+            {
+                experiments.Add(new User.Experiment
+                {
+                    Features = experiment.features,
+                    Group = experiment.group,
+                    Name = experiment.name
+                });
+            }
+
+            List<Channel> channels = new List<Channel>(config.followed_hashtags.Count);
+            foreach (string channelname in config.followed_channels)
+            {
+                channels.Add(new Channel(channelname));
+            }
+
+            User.UserConfig uconfig = new User.UserConfig
+            {
+                ChannelsFollowLimit = config.channels_follow_limit,
+                Experiments = experiments,
+                HomeName = config.home_name,
+                HomeSet = config.home_set,
+                FollowedHashtags = config.followed_hashtags,
+                Location = config.location,
+                Moderator = config.moderator,
+                TripleFeedEnabled = config.triple_feed_enabled,
+                UserType = config.user_type,
+                Verified = config.verified,
+                FollowedChannels = channels
+            };
+            _user.Config = uconfig;
+            return uconfig;
+        }
+
+        /// <summary>
+        /// Initial Load of all Followed Channels
+        /// </summary>
+        public void LoadFollowedChannels()
+        {
+            if (_user.Config == null)
+                return;
+
+            DateTime dt = DateTime.UtcNow;
+            string jsonString;
+
+
+            string payload = "{";
+
+            List<string> channelnames = _user.Config.FollowedChannels.Select(x => x.ChannelName).ToList();
+            if (channelnames.Count != 0)
+            {
+                for (int i = 0; i < channelnames.Count; i++)
+                {
+                    channelnames[i] = @"""" + channelnames[i] + @""":-1";
+                }
+                payload += channelnames.Aggregate((i, j) => i + "," + j);
+            }
+
+
+            payload += "}";
+
+
+            string stringifiedPayload = "POST%api.go-tellm.com%443%/api/v3/user/followedChannelsMeta%%" + $"{dt:s}Z" + "%%" + payload;
+
+            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
+            using (var hmacsha1 = new HMACSHA1(keyByte))
+            {
+                hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
+
+                using (var client = new MyWebClient())
+                {
+                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow));
+                    client.Encoding = Encoding.UTF8;
+                    jsonString = client.UploadString(Constants.LinkLoadFollowedChannels.ToLink(), payload);
+                }
+            }
+
+            //TODO: Channels laden
+        }
 
         /// <summary>
         ///     Gets the first amount of Jodels (internal usage)
@@ -548,28 +638,70 @@ namespace JodelAPI
             }
         }
 
-        public class Channels
+        /// <summary>
+        ///     Get's the recommended channels.
+        /// </summary>
+        /// <returns>List&lt;RecommendedChannel&gt;.</returns>
+        public List<RecommendedChannel> GetRecommendedChannels()
         {
+            string plainJson;
+            using (var client = new MyWebClient())
+            {
+                client.Encoding = Encoding.UTF8;
+                plainJson = client.DownloadString(Constants.LinkGetRecommendedChannels.ToLink());
+            }
+
+            JsonRecommendedChannels.RootObject recommendedChannels =
+                JsonConvert.DeserializeObject<JsonRecommendedChannels.RootObject>(plainJson);
+            return recommendedChannels.recommended.Select(item => new RecommendedChannel
+            {
+                Name = item.channel,
+                Followers = item.followers
+            }).ToList();
+        }
+
+        public class Channel
+        {
+            public readonly string ChannelName;
+
+            public Channel(string channelname)
+            {
+                if (channelname[0] == '#')
+                    channelname = channelname.Remove(0, 1);
+                ChannelName = channelname;
+            }
+
             /// <summary>
             ///     Follows a channel.
             /// </summary>
             /// <param name="channel"></param>
-            public void FollowChannel(string channel)
-            {
-                if (channel[0] == '#')
-                    channel = channel.Remove(0, 1);
+            //public void FollowChannel()
+            //{
+            //    DateTime dt = DateTime.UtcNow;
 
+            //    string stringifiedPayload =
+            //        @"PUT%api.go-tellm.com%443%/api/v3/user/followChannel?access_token=" + _user.AccessToken + "%" +
+            //        "&channel=" + ChannelName + $"{dt:s}Z" + "%%";
+
+            //    using (var client = new MyWebClient())
+            //    {
+            //        client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow));
+            //        client.Encoding = Encoding.UTF8;
+            //        client.UploadData(Constants.LinkFollowChannel.ToLink(ChannelName), "PUT", new byte[] { });
+            //    }
+            //}            
+            public void FollowChannel()
+            {
                 DateTime dt = DateTime.UtcNow;
 
-                string stringifiedPayload =
-                    @"PUT%api.go-tellm.com%443%/api/v3/user/followChannel?access_token=" + _user.AccessToken + "%" +
-                    "&channel=" + channel + $"{dt:s}Z" + "%%";
+                string payload = "{}";
+                string stringifiedPayload = @"PUT%api.go-tellm.com%443%/api/v3/user/followChannel?channel=" + ChannelName + "%" + $"{dt:s}Z" + "%%" + payload;
 
                 using (var client = new MyWebClient())
                 {
-                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow));
+                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, dt, true));
                     client.Encoding = Encoding.UTF8;
-                    client.UploadData(Constants.LinkFollowChannel.ToLink(channel), "PUT", new byte[] { });
+                    client.UploadString(Constants.LinkFollowChannel.ToLinkSecond(ChannelName), "PUT", payload);
                 }
             }
 
@@ -577,22 +709,18 @@ namespace JodelAPI
             ///     Unfollows a channel.
             /// </summary>
             /// <param name="channel"></param>
-            public void UnfollowChannel(string channel)
+            public void UnfollowChannel()
             {
-                if (channel[0] == '#')
-                    channel = channel.Remove(0, 1);
-
                 DateTime dt = DateTime.UtcNow;
 
-                string stringifiedPayload =
-                    @"PUT%api.go-tellm.com%443%/api/v3/user/unfollowChannel?access_token=" + _user.AccessToken + "%" +
-                    "&channel=" + channel + $"{dt:s}Z" + "%%";
+                string payload = "{}";
+                string stringifiedPayload = @"PUT%api.go-tellm.com%443%/api/v3/user/unfollowChannel?channel=" + ChannelName + "%" + $"{dt:s}Z" + "%%" + payload;
 
                 using (var client = new MyWebClient())
                 {
-                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow));
+                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, dt, true));
                     client.Encoding = Encoding.UTF8;
-                    client.UploadData(Constants.LinkUnfollowChannel.ToLink(channel), "PUT", new byte[] { });
+                    client.UploadString(Constants.LinkUnfollowChannel.ToLinkSecond(ChannelName), "PUT", payload);
                 }
             }
 
@@ -601,13 +729,13 @@ namespace JodelAPI
             /// </summary>
             /// <param name="channel">The channel.</param>
             /// <returns>List&lt;ChannelJodel&gt;.</returns>
-            public List<ChannelJodel> GetJodels(string channel)
+            public List<ChannelJodel> GetJodels()
             {
                 string plainJson;
                 using (var client = new MyWebClient())
                 {
                     client.Encoding = Encoding.UTF8;
-                    plainJson = client.DownloadString(Constants.LinkGetJodelsFromChannel.ToLink(channel));
+                    plainJson = client.DownloadString(Constants.LinkGetJodelsFromChannel.ToLink(ChannelName));
                 }
 
                 JsonGetJodelsFromChannel.RootObject myJodelsFromChannel =
@@ -627,14 +755,14 @@ namespace JodelAPI
             /// </summary>
             /// <param name="channel">The channel.</param>
             /// <returns>List&lt;ChannelJodel&gt;.</returns>
-            public async Task<List<ChannelJodel>> GetJodelsAsync(string channel)
+            public async Task<List<ChannelJodel>> GetJodelsAsync()
             {
                 string plainJson;
                 using (var client = new MyWebClient())
                 {
                     client.Encoding = Encoding.UTF8;
                     var taskResult = await Task.FromResult(
-                        client.DownloadStringTaskAsync(new Uri(Constants.LinkGetJodelsFromChannel.ToLink(channel))));
+                        client.DownloadStringTaskAsync(new Uri(Constants.LinkGetJodelsFromChannel.ToLink(ChannelName))));
                     plainJson = taskResult.Result;
                 }
 
@@ -647,28 +775,6 @@ namespace JodelAPI
                     VoteCount = item.vote_count,
                     PinCount = item.pin_count,
                     IsOwn = item.post_own.Equals("own")
-                }).ToList();
-            }
-
-            /// <summary>
-            ///     Get's the recommended channels.
-            /// </summary>
-            /// <returns>List&lt;RecommendedChannel&gt;.</returns>
-            public List<RecommendedChannel> GetRecommendedChannels()
-            {
-                string plainJson;
-                using (var client = new MyWebClient())
-                {
-                    client.Encoding = Encoding.UTF8;
-                    plainJson = client.DownloadString(Constants.LinkGetRecommendedChannels.ToLink());
-                }
-
-                JsonRecommendedChannels.RootObject recommendedChannels =
-                    JsonConvert.DeserializeObject<JsonRecommendedChannels.RootObject>(plainJson);
-                return recommendedChannels.recommended.Select(item => new RecommendedChannel
-                {
-                    Name = item.channel,
-                    Followers = item.followers
                 }).ToList();
             }
         }

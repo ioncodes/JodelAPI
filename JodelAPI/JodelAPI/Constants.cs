@@ -25,6 +25,7 @@ namespace JodelAPI
         public const string LinkGenAt = "https://api.go-tellm.com/api/v2/users/";
         public const string LinkUserLocation = "https://api.go-tellm.com/api/v2/users/location?access_token={AT}";
         public const string LinkReportJodel = "https://api.go-tellm.com/api/v2/posts/{PID}/flag?{AT}";
+        public const string LinkLoadFollowedChannels = "https://api.go-tellm.com/api/v3/user/followedChannelsMeta?access_token={AT}";
 
         public const string LinkGetMyJodels =
             "https://api.go-tellm.com/api/v2/posts/mine?limit=150&access_token={AT}&skip=0";
@@ -42,11 +43,9 @@ namespace JodelAPI
         public const string LinkMyPins =
             "https://api.go-tellm.com/api/v2/posts/mine/pinned?limit=1000&access_token={AT}&skip=0";
 
-        public const string LinkFollowChannel =
-            "https://api.go-tellm.com/api/v3/user/followChannel?access_token={AT}&channel={CH}";
+        public const string LinkFollowChannel = "https://api.go-tellm.com/api/v3/user/followChannel?channel={CH}";
 
-        public const string LinkUnfollowChannel =
-            "https://api.go-tellm.com/api/v3/user/unfollowChannel?access_token={AT}&channel={CH}";
+        public const string LinkUnfollowChannel = "https://api.go-tellm.com/api/v3/user/unfollowChannel?channel={CH}";
 
         public const string LinkGetJodelsFromChannel =
             "https://api.go-tellm.com/api/v3/posts/channel/combo?access_token={AT}&channel={CH}";
