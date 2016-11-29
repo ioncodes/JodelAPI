@@ -5,9 +5,9 @@ namespace JodelAPI
     internal class Constants
     {
         // Key Values
-        public const string Key = "VwJHzYUbPjGiXWauoVNaHoCWsaacTmnkGwNtHhjy";
+        public const string Key = "dIHNtHWOxFmoFouufSflpTKYjPmCIhWUCQHgbNzR";
         public const string ClientId = "81e8a76e-1e02-4d17-9ba0-8a7020261b26";
-        public const string AppVersion = "4.27.0";
+        public const string AppVersion = "4.29.0";
 
         // Links
         public const string LinkFirstJodels =
