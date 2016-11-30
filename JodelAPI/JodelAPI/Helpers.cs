@@ -16,32 +16,23 @@ namespace JodelAPI
             return buff.Aggregate("", (current, t) => current + t.ToString("X2"));
         }
 
-        public static string Sha256(string value)
+        /// <summary>
+        /// Generates a random device id
+        /// </summary>
+        /// <returns>Device ID Hash</returns>
+        public static string GetRandomDeviceId()
         {
-            StringBuilder sb = new StringBuilder();
+            byte[] tokenData = new byte[32];
+            using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(tokenData);
+            }
 
             using (SHA256 hash = SHA256.Create())
             {
-                Encoding enc = Encoding.UTF8;
-                byte[] result = hash.ComputeHash(enc.GetBytes(value));
-
-                foreach (byte b in result)
-                    sb.Append(b.ToString("x2"));
+                byte[] result = hash.ComputeHash(tokenData);
+                return BitConverter.ToString(result).Replace("-", "").ToLower();
             }
-
-            return sb.ToString();
-        }
-
-        public static string RandomString(int size, bool lowerCase)
-        {
-            StringBuilder builder = new StringBuilder();
-            Random random = new Random(DateTime.Now.Millisecond);
-            for (int i = 1; i < size + 1; i++)
-            {
-                var ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
-                builder.Append(ch);
-            }
-            return lowerCase ? builder.ToString().ToLower() : builder.ToString();
         }
 
         public static string GetColor(Jodel.PostColor c)
@@ -173,6 +164,7 @@ namespace JodelAPI
         protected override WebRequest GetWebRequest(Uri address)
         {
             HttpWebRequest request = base.GetWebRequest(address) as HttpWebRequest;
+            if (request == null) return null;
             request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
             request.ServicePoint.Expect100Continue = false;
             return request;
