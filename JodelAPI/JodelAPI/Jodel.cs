@@ -169,7 +169,7 @@ namespace JodelAPI
                 string image_url = "";
                 bool isUrl = false;
 
-                if (item.image_url != null)
+                if (!string.IsNullOrWhiteSpace(item.image_url))
                 {
                     image_url = "http:" + item.image_url;
                     isUrl = true;
@@ -224,7 +224,7 @@ namespace JodelAPI
                     string image_url = "";
                     bool isUrl = false;
 
-                    if (item.image_url != null)
+                    if (!string.IsNullOrWhiteSpace(item.image_url))
                     {
                         image_url = "http:" + item.image_url;
                         isUrl = true;
@@ -438,7 +438,7 @@ namespace JodelAPI
                     string image_url = "";
                     bool isUrl = false;
 
-                    if (child.image_url != null)
+                    if (!string.IsNullOrWhiteSpace(child.image_url))
                     {
                         image_url = "http:" + child.image_url;
                         isUrl = true;
