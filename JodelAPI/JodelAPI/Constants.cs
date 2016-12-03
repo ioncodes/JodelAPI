@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http;
 
 namespace JodelAPI
 {
@@ -7,14 +8,47 @@ namespace JodelAPI
         // Key Values
         public const string Key = "dIHNtHWOxFmoFouufSflpTKYjPmCIhWUCQHgbNzR";
         public const string ClientId = "81e8a76e-1e02-4d17-9ba0-8a7020261b26";
-        public const string AppVersion = "4.29.1";
+        public const string AppVersion = "4.29.0";
+
+        // Base URL
+        public const string ApiBaseUrl = "api.go-tellm.com";
+
+        // User API Calls
+        public static readonly ApiCall Register = new ApiCall(HttpMethod.Post, "/users/", "v2", authorize: false);
+        public static readonly ApiCall SetPosition = new ApiCall(HttpMethod.Put, "/users/location/");
+        public static readonly ApiCall GetKarma = new ApiCall(HttpMethod.Get, "/users/karma/", "v2");
+        public static readonly ApiCall GetConfig = new ApiCall(HttpMethod.Get, "/user/config/");
+        public static readonly ApiCall GetMyPosts = new ApiCall(HttpMethod.Get, "/posts/mine/", "v2");
+        public static readonly ApiCall GetMyReplies = new ApiCall(HttpMethod.Get, "/posts/mine/replies/", "v2");
+        public static readonly ApiCall GetMyVotes = new ApiCall(HttpMethod.Get, "/posts/mine/votes/", "v2");
+        public static readonly ApiCall GetMyCombo = new ApiCall(HttpMethod.Get, "/posts/mine/combo/", "v2");
+        public static readonly ApiCall GetMyPopular = new ApiCall(HttpMethod.Get, "/posts/mine/popular/", "v2");
+        public static readonly ApiCall GetMyDiscussed = new ApiCall(HttpMethod.Get, "/posts/mine/discussed/", "v2");
+        public static readonly ApiCall GetMyPinned = new ApiCall(HttpMethod.Get, "/posts/mine/pinned/", "v2");
+        // Post API Calls
+        public static readonly ApiCall GetPosts = new ApiCall(HttpMethod.Get, "/posts/", "v2");
+        public static readonly ApiCall GetCombo = new ApiCall(HttpMethod.Get, "/posts/location/combo/");
+        public static readonly ApiCall GetPopular = new ApiCall(HttpMethod.Get, "/posts/location/popular/", "v2");
+        public static readonly ApiCall GetDiscussed = new ApiCall(HttpMethod.Get, "/posts/location/discussed/", "v2");
+        public static readonly ApiCall GetPost = new ApiCall(HttpMethod.Get, "/posts/", "v2");
+        public static readonly ApiCall Upvote = new ApiCall(HttpMethod.Put, "/posts/", version: "v2", postAction: "/upvote/");
+        public static readonly ApiCall Downvote = new ApiCall(HttpMethod.Put, "/posts/", version: "v2", postAction: "/downvote/");
+        public static readonly ApiCall Pin = new ApiCall(HttpMethod.Put, "/posts/", version: "v2", postAction: "/pin/");
+        public static readonly ApiCall Unpin = new ApiCall(HttpMethod.Put, "/posts/", version: "v2", postAction: "/unpin/");
+        public static readonly ApiCall NewPost = new ApiCall(HttpMethod.Post, "/posts/", "v2");
+        public static readonly ApiCall DeletePost = new ApiCall(HttpMethod.Delete, "/posts/", "v2");
+        // Channel API calls
+        public static readonly ApiCall GetChannel = new ApiCall(HttpMethod.Get, "/posts/channel/combo/");
+        public static readonly ApiCall FollowChannel = new ApiCall(HttpMethod.Put, "/user/followChannel/");
+        public static readonly ApiCall UnfollowChannel = new ApiCall(HttpMethod.Put, "/user/unfollowChannel/");
+        public static readonly ApiCall GetRecommendedChannels = new ApiCall(HttpMethod.Get, "/user/recommendedChannels/");
 
         // Links
         public const string LinkFirstJodels =
-            "https://api.go-tellm.com/api/v2/posts/location/combo?lat={LAT}&lng={LNG}&access_token={AT}";
+            "https://api.go-tellm.com/api/v3/posts/location/combo?lat={LAT}&lng={LNG}";
 
         public const string LinkSecondJodels =
-            "https://api.go-tellm.com/api/v2/posts/location?lng={LNG}&lat={LAT}&after={PID}&access_token={AT}&limit=1000";
+            "https://api.go-tellm.com/api/v3/posts/location?lng={LNG}&lat={LAT}&after={PID}&limit=1000";
 
         public const string LinkUpvoteJodel = "https://api.go-tellm.com/api/v2/posts/{PID}/upvote/";
         public const string LinkDownvoteJodel = "https://api.go-tellm.com/api/v2/posts/{PID}/downvote/";

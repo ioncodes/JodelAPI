@@ -24,6 +24,7 @@ namespace JodelAPI
         public int GetKarma()
         {
             string resp;
+            Constants.GetKarma.ExecuteRequest();
             using (var client = new MyWebClient())
             {
                 resp = client.DownloadString(Constants.LinkGetKarma.ToLink());

@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account.cs" />
+    <Compile Include="ApiCall.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Distance.cs" />
     <Compile Include="Exceptions\InternalException.cs" />
@@ -59,7 +60,6 @@
     <Compile Include="JodelApp.cs" />
     <Compile Include="Json\JsonConfig.cs" />
     <Compile Include="Json\JsonGCoordinates.cs" />
-    <Compile Include="Json\JsonGetJodelsFromChannel.cs" />
     <Compile Include="Json\JsonMyComments.cs" />
     <Compile Include="Json\JsonMyJodels.cs" />
     <Compile Include="Json\JsonMyPins.cs" />
@@ -77,8 +77,7 @@
     <Compile Include="GMaps.cs" />
     <Compile Include="Objects\Jodels.cs" />
     <Compile Include="Json\JsonComments.cs" />
-    <Compile Include="Json\JsonJodelsRecent.cs" />
-    <Compile Include="Json\JsonJodelsPosts.cs" />
+    <Compile Include="Json\JsonJodels.cs" />
     <Compile Include="Json\JsonModeration.cs" />
     <Compile Include="Objects\ModerationQueue.cs" />
     <Compile Include="Objects\MyComments.cs" />

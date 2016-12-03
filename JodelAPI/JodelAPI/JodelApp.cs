@@ -41,13 +41,13 @@ namespace JodelAPI
             Karma = Jodel.Account.GetKarma();
 
             //LoadFirstJodels
-            Jodel.GetFirstJodels();
+            Jodel.GetJodels();
         }
 
         public List<Jodels> ReloadInMain()
         {
             //LoadFirstJodels
-            var jodels = Jodel.GetFirstJodels();
+            var jodels = Jodel.GetJodels();
 
             //LoadKarma
             Karma = Jodel.Account.GetKarma();

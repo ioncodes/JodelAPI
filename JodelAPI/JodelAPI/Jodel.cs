@@ -52,19 +52,12 @@ namespace JodelAPI
             Top
         }
 
-        private string _lastPostId = "";
-
         /// <summary>
         /// Gets the UserConfig
         /// </summary>
         public User.UserConfig GetUserConfig()
         {
-            string plainJson;
-            using (var client = new MyWebClient())
-            {
-                client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(Constants.LinkConfig.ToLink());
-            }
+            string plainJson = Constants.GetConfig.ExecuteRequest();
 
             JsonConfig.RootObject config = JsonConvert.DeserializeObject<JsonConfig.RootObject>(plainJson);
 
@@ -150,135 +143,44 @@ namespace JodelAPI
         }
 
         /// <summary>
-        ///     Gets the first amount of Jodels (internal usage)
+        /// Gets 10 Jodels
         /// </summary>
+        /// <param name="lastPostId">Post ID of last loaded post, starting at next post</param>
         /// <returns>List&lt;Jodels&gt;.</returns>
-        public List<Jodels> GetFirstJodels(string accessToken = null)
+        public List<Jodels> GetJodels(string lastPostId = null)
         {
-            string plainJson;
-            using (var client = new MyWebClient())
-            {
-                client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(Constants.LinkFirstJodels.ToLink(accessToken));
-            }
-            JsonJodelsRecent.RootObject jfr =
-                JsonConvert.DeserializeObject<JsonJodelsRecent.RootObject>(plainJson);
-            List<Jodels> temp = new List<Jodels>(); // List<post_id,message>
+            // parameters
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            if(!string.IsNullOrWhiteSpace(lastPostId)) parameters.Add("after", lastPostId);
+            parameters.Add("lat", _user.Latitude);
+            parameters.Add("lon", _user.Longitude);
 
-            foreach (var item in jfr.recent)
-            {
-                string image_url = "";
-                bool isUrl = false;
-
-                if (!string.IsNullOrWhiteSpace(item.image_url))
-                {
-                    image_url = "http:" + item.image_url;
-                    isUrl = true;
-                }
-
-                Jodels objJodels = new Jodels
-                {
-                    PostId = item.post_id,
-                    Message = item.message,
-                    HexColor = item.color,
-                    IsImage = isUrl,
-                    ImageUrl = image_url,
-                    VoteCount = item.vote_count,
-                    LocationName = item.location.name,
-                    CommentsCount = item.child_count ?? 0,
-                    ChildCount = item.child_count ?? 0,
-                    CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                    UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                    Distance = item.distance,
-                    IsNotificationEnabled = item.notifications_enabled,
-                    PinCount = item.pin_count,
-                    PostOwn = item.post_own,
-                    UserHandle = item.user_handle
-                };
-
-                temp.Add(objJodels);
-            }
-
-            _lastPostId = temp.Last().PostId; // Set the last post_id for next jodels
-
-            return temp;
-        }
-
-        /// <summary>
-        ///     Gets the second amount of Jodels (internal usage)
-        /// </summary>
-        /// <returns>List&lt;Jodels&gt;.</returns>
-        public List<Jodels> GetNextJodels(string accessToken = null)
-        {
-            List<Jodels> temp = new List<Jodels>();
-            for (int e = 0; e < 3; e++)
-            {
-                string plainJson;
-                using (var client = new MyWebClient())
-                {
-                    client.Encoding = Encoding.UTF8;
-                    plainJson = client.DownloadString(Constants.LinkSecondJodels.ToLinkSecond(_lastPostId, accessToken));
-                }
-                JsonJodelsPosts.RootObject jlr = JsonConvert.DeserializeObject<JsonJodelsPosts.RootObject>(plainJson);
-                foreach (var item in jlr.posts)
-                {
-                    string image_url = "";
-                    bool isUrl = false;
-
-                    if (!string.IsNullOrWhiteSpace(item.image_url))
-                    {
-                        image_url = "http:" + item.image_url;
-                        isUrl = true;
-                    }
-
-                    Jodels objJodels = new Jodels
-                    {
-                        PostId = item.post_id,
-                        Message = item.message,
-                        HexColor = item.color,
-                        IsImage = isUrl,
-                        ImageUrl = image_url,
-                        VoteCount = item.vote_count,
-                        LocationName = item.location.name,
-                        CommentsCount = item.child_count ?? 0,
-                        ChildCount = item.child_count ?? 0,
-                        CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                        UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                        Distance = item.distance,
-                        IsNotificationEnabled = item.notifications_enabled,
-                        PinCount = item.pin_count,
-                        PostOwn = item.post_own,
-                        UserHandle = item.user_handle
-                    };
-
-                    temp.Add(objJodels);
-                }
-                if (temp.Count == 0)
-                    return temp; // not enough Jodels anymore.
-                _lastPostId = temp.Last().PostId; // Set the last post_id for next jodels
-            }
-            return temp;
+            // get json from jodel api
+            string plainJson = Constants.GetCombo.ExecuteRequest(parameters);
+            // deserialize json
+            JsonJodels.RootObject jfr = JsonConvert.DeserializeObject<JsonJodels.RootObject>(plainJson);
+            // create jodels objects
+            return jfr.recent.Select(j => new Jodels(j)).ToList();
         }
 
         /// <summary>
         ///     Gets all jodels.
         /// </summary>
+        /// <param name="limit">Limit of Jodels to load, Standard: 200</param>
         /// <returns>List&lt;Jodels&gt;.</returns>
-        public List<Jodels> GetAllJodels()
+        public List<Jodels> GetAllJodels(int limit = 200)
         {
-            var allJodels = GetFirstJodels();
-            allJodels.AddRange(GetNextJodels());
-            return allJodels;
-        }
+            List<Jodels> allJodels = new List<Jodels>();
+            List<Jodels> nextJodels;
 
-        /// <summary>
-        ///     Gets all jodels.
-        /// </summary>
-        /// <returns>List&lt;Jodels&gt;.</returns>
-        public List<Jodels> GetAllJodels(string accessToken)
-        {
-            var allJodels = GetFirstJodels(accessToken);
-            allJodels.AddRange(GetNextJodels(accessToken));
+            nextJodels = GetJodels();
+            allJodels.AddRange(nextJodels);
+
+            while (nextJodels.Count > 0 && allJodels.Count <= limit)
+            {
+                allJodels.AddRange(GetJodels(allJodels.Last().PostId));
+            }
+            
             return allJodels;
         }
 
@@ -476,24 +378,7 @@ namespace JodelAPI
             }
 
             JsonMyJodels.RootObject myJodels = JsonConvert.DeserializeObject<JsonMyJodels.RootObject>(plainJson);
-            return myJodels.posts.Select(item => new MyJodels
-            {
-                PostId = item.post_id,
-                Message = item.message,
-                HexColor = item.color,
-                VoteCount = item.vote_count,
-                Latitude = item.location.loc_coordinates.lat,
-                Longitude = item.location.loc_coordinates.lng,
-                LocationName = item.location.name,
-                ChildCount = item.child_count,
-                CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                Distance = item.distance,
-                IsNotificationEnabled = item.notifications_enabled,
-                PinCount = item.pin_count,
-                PostOwn = item.post_own,
-                UserHandle = item.user_handle
-            }).ToList();
+            return myJodels.posts.Select(item => new MyJodels(item)).ToList();
         }
 
         /// <summary>
@@ -738,43 +623,8 @@ namespace JodelAPI
                     plainJson = client.DownloadString(Constants.LinkGetJodelsFromChannel.ToLinkSecond(ChannelName));
                 }
 
-                JsonJodelsRecent.RootObject myJodelsFromChannel = JsonConvert.DeserializeObject<JsonJodelsRecent.RootObject>(plainJson);
-
-                List<ChannelJodel> jodels = new List<ChannelJodel>();
-                foreach (var item in myJodelsFromChannel.recent)
-                {
-                    string image_url = "";
-                    bool isUrl = false;
-
-                    if (!string.IsNullOrWhiteSpace(item.image_url))
-                    {
-                        image_url = "http:" + item.image_url;
-                        isUrl = true;
-                    }
-
-                    ChannelJodel objJodels = new ChannelJodel
-                    {
-                        PostId = item.post_id,
-                        Message = item.message,
-                        HexColor = item.color,
-                        IsImage = isUrl,
-                        ImageUrl = image_url,
-                        VoteCount = item.vote_count,
-                        LocationName = item.location.name,
-                        CommentsCount = item.child_count ?? 0,
-                        ChildCount = item.child_count ?? 0,
-                        CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                        UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                        Distance = item.distance,
-                        IsNotificationEnabled = item.notifications_enabled,
-                        PinCount = item.pin_count,
-                        PostOwn = item.post_own,
-                        UserHandle = item.user_handle
-                    };
-
-                    jodels.Add(objJodels);
-                }
-                return jodels;
+                JsonJodels.RootObject myJodelsFromChannel = JsonConvert.DeserializeObject<JsonJodels.RootObject>(plainJson);
+                return myJodelsFromChannel.recent.Select(item => new ChannelJodel(item)).ToList();
             }
 
             /// <summary>
@@ -793,16 +643,8 @@ namespace JodelAPI
                     plainJson = taskResult.Result;
                 }
 
-                JsonGetJodelsFromChannel.RootObject myJodelsFromChannel =
-                    JsonConvert.DeserializeObject<JsonGetJodelsFromChannel.RootObject>(plainJson);
-                return myJodelsFromChannel.recent.Select(item => new ChannelJodel
-                {
-                    PostId = item.post_id,
-                    Message = item.message,
-                    VoteCount = item.vote_count,
-                    PinCount = item.pin_count,
-                    IsOwn = item.post_own.Equals("own")
-                }).ToList();
+                JsonJodels.RootObject myJodelsFromChannel = JsonConvert.DeserializeObject<JsonJodels.RootObject>(plainJson);
+                return myJodelsFromChannel.recent.Select(item => new ChannelJodel(item)).ToList();
             }
         }
     }
