@@ -2,7 +2,7 @@
 
 namespace JodelAPI.Json
 {
-    internal class JsonJodelsFirstRound
+    internal class JsonJodelsRecent
     {
         public class LocCoordinates
         {

@@ -161,8 +161,8 @@ namespace JodelAPI
                 client.Encoding = Encoding.UTF8;
                 plainJson = client.DownloadString(Constants.LinkFirstJodels.ToLink(accessToken));
             }
-            JsonJodelsFirstRound.RootObject jfr =
-                JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(plainJson);
+            JsonJodelsRecent.RootObject jfr =
+                JsonConvert.DeserializeObject<JsonJodelsRecent.RootObject>(plainJson);
             List<Jodels> temp = new List<Jodels>(); // List<post_id,message>
 
             foreach (var item in jfr.recent)
@@ -219,7 +219,7 @@ namespace JodelAPI
                     client.Encoding = Encoding.UTF8;
                     plainJson = client.DownloadString(Constants.LinkSecondJodels.ToLinkSecond(_lastPostId, accessToken));
                 }
-                JsonJodelsLastRound.RootObject jlr = JsonConvert.DeserializeObject<JsonJodelsLastRound.RootObject>(plainJson);
+                JsonJodelsPosts.RootObject jlr = JsonConvert.DeserializeObject<JsonJodelsPosts.RootObject>(plainJson);
                 foreach (var item in jlr.posts)
                 {
                     string image_url = "";
@@ -728,7 +728,6 @@ namespace JodelAPI
             /// <summary>
             ///     Get's all Jodels from this channel.
             /// </summary>
-            /// <param name="channel">The channel.</param>
             /// <returns>List&lt;ChannelJodel&gt;.</returns>
             public List<ChannelJodel> GetJodels()
             {
@@ -736,19 +735,46 @@ namespace JodelAPI
                 using (var client = new MyWebClient())
                 {
                     client.Encoding = Encoding.UTF8;
-                    plainJson = client.DownloadString(Constants.LinkGetJodelsFromChannel.ToLink(ChannelName));
+                    plainJson = client.DownloadString(Constants.LinkGetJodelsFromChannel.ToLinkSecond(ChannelName));
                 }
 
-                JsonGetJodelsFromChannel.RootObject myJodelsFromChannel =
-                    JsonConvert.DeserializeObject<JsonGetJodelsFromChannel.RootObject>(plainJson);
-                return myJodelsFromChannel.recent.Select(item => new ChannelJodel
+                JsonJodelsRecent.RootObject myJodelsFromChannel = JsonConvert.DeserializeObject<JsonJodelsRecent.RootObject>(plainJson);
+
+                List<ChannelJodel> jodels = new List<ChannelJodel>();
+                foreach (var item in myJodelsFromChannel.recent)
                 {
-                    PostId = item.post_id,
-                    Message = item.message,
-                    VoteCount = item.vote_count,
-                    PinCount = item.pin_count,
-                    IsOwn = item.post_own.Equals("own")
-                }).ToList();
+                    string image_url = "";
+                    bool isUrl = false;
+
+                    if (!string.IsNullOrWhiteSpace(item.image_url))
+                    {
+                        image_url = "http:" + item.image_url;
+                        isUrl = true;
+                    }
+
+                    ChannelJodel objJodels = new ChannelJodel
+                    {
+                        PostId = item.post_id,
+                        Message = item.message,
+                        HexColor = item.color,
+                        IsImage = isUrl,
+                        ImageUrl = image_url,
+                        VoteCount = item.vote_count,
+                        LocationName = item.location.name,
+                        CommentsCount = item.child_count ?? 0,
+                        ChildCount = item.child_count ?? 0,
+                        CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
+                        UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
+                        Distance = item.distance,
+                        IsNotificationEnabled = item.notifications_enabled,
+                        PinCount = item.pin_count,
+                        PostOwn = item.post_own,
+                        UserHandle = item.user_handle
+                    };
+
+                    jodels.Add(objJodels);
+                }
+                return jodels;
             }
 
             /// <summary>

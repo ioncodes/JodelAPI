@@ -77,8 +77,8 @@
     <Compile Include="GMaps.cs" />
     <Compile Include="Objects\Jodels.cs" />
     <Compile Include="Json\JsonComments.cs" />
-    <Compile Include="Json\JsonJodelsFirstRound.cs" />
-    <Compile Include="Json\JsonJodelsLastRound.cs" />
+    <Compile Include="Json\JsonJodelsRecent.cs" />
+    <Compile Include="Json\JsonJodelsPosts.cs" />
     <Compile Include="Json\JsonModeration.cs" />
     <Compile Include="Objects\ModerationQueue.cs" />
     <Compile Include="Objects\MyComments.cs" />
