@@ -13,9 +13,9 @@ namespace JodelAPI
     public class Jodel
     {
         private static User _user;
-        public Moderation Moderation = new Moderation();
-        public Account Account;
-        public Location Location;
+        public Moderation Moderation { get; private set; }
+        public Account Account { get; private set; }
+        public Location Location { get; private set; }
 
         public Jodel(string accessToken, string longitude, string latitude, string city, string countryCode, string googleApiToken = "")
             : this(new User(accessToken, latitude, longitude, countryCode, city, googleApiToken)) { }
@@ -24,6 +24,7 @@ namespace JodelAPI
         {
             _user = user;
             Helpers._user = user;
+            Moderation = new Moderation();
             Account = new Account(user);
             Location = new Location(user);
         }
@@ -43,7 +44,7 @@ namespace JodelAPI
         }
 
         /// <summary>
-        ///     Methods to sort List<Jodels>
+        ///     Methods to sort List&lt;Jodels%gt;
         /// </summary>
         public enum SortMethod
         {
