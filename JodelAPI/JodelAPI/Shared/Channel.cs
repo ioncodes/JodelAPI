@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JodelAPI;
 
-namespace JConsole
+namespace JodelAPI.Shared
 {
-    class Program
+    public class Channel
     {
-        static void Main(string[] args)
-        {
-            
-        }
     }
 }
