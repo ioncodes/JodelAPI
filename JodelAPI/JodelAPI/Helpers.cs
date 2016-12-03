@@ -60,7 +60,7 @@ namespace JodelAPI
 
         public static Coordinates GetCoords(string address)
         {
-            string[] coords = address.ToCoordinates();
+            string[] coords = address.GetLocationFromAddress();
             Coordinates coord = new Coordinates
             {
                 Latitude = coords[0],
