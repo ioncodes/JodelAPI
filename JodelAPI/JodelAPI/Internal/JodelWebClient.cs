@@ -18,11 +18,9 @@ namespace JodelAPI.Internal
             return request;
         }
 
-        internal static JodelWebClient GetJodelWebClientWithHeaders(string paylod, string method, string url, string accesstoken = "", bool addBearer = false)
+        internal static JodelWebClient GetJodelWebClientWithHeaders(string stringifiedPayload, string method, string accesstoken = "", bool addBearer = false)
         {
             DateTime time = DateTime.UtcNow;
-
-            string stringifiedPayload = method + "%" + url + $"%%{time:s}Z%%" + paylod;
 
             JodelWebClient client = new JodelWebClient();
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using JodelAPI.Shared;
@@ -10,113 +11,49 @@ namespace JodelAPI.Internal
 {
     internal static class Links
     {
-        #region Const
+        #region ApiCalls
 
-        //Placholder
-        public const string PhAccessToken = "{AT}";
-        public const string PhLat = "{LAT}";
-        public const string PhLng = "{LNG}";
-        public const string PhPostId = "{PID}";
-        public const string PhChannelId = "{CH}";
+        // Base URL
+        public const string ApiBaseUrl = "api.go-tellm.com";
 
+        // User API Calls
+        public static readonly ApiCall Register = new ApiCall(HttpMethod.Post, "/users/", "v2", authorize: false);
+        public static readonly ApiCall Refresh = new ApiCall(HttpMethod.Post, "/users/refreshToken", "v2");
+        public static readonly ApiCall SetPosition = new ApiCall(HttpMethod.Put, "/users/location/");
+        public static readonly ApiCall GetKarma = new ApiCall(HttpMethod.Get, "/users/karma/", "v2");
+        public static readonly ApiCall GetConfig = new ApiCall(HttpMethod.Get, "/user/config/");
+        public static readonly ApiCall GetMyPosts = new ApiCall(HttpMethod.Get, "/posts/mine/", "v2");
+        public static readonly ApiCall GetMyReplies = new ApiCall(HttpMethod.Get, "/posts/mine/replies/", "v2");
+        public static readonly ApiCall GetMyVotes = new ApiCall(HttpMethod.Get, "/posts/mine/votes/", "v2");
+        public static readonly ApiCall GetMyCombo = new ApiCall(HttpMethod.Get, "/posts/mine/combo/", "v2");
+        public static readonly ApiCall GetMyPopular = new ApiCall(HttpMethod.Get, "/posts/mine/popular/", "v2");
+        public static readonly ApiCall GetMyDiscussed = new ApiCall(HttpMethod.Get, "/posts/mine/discussed/", "v2");
+        public static readonly ApiCall GetMyPinned = new ApiCall(HttpMethod.Get, "/posts/mine/pinned/", "v2");
+        // Post API Calls
+        public static readonly ApiCall SetAction = new ApiCall(HttpMethod.Post, "/action");
+        public static readonly ApiCall GetPosts = new ApiCall(HttpMethod.Get, "/posts/location/", "v2");
+        public static readonly ApiCall GetCombo = new ApiCall(HttpMethod.Get, "/posts/location/combo/");
+        public static readonly ApiCall GetPopular = new ApiCall(HttpMethod.Get, "/posts/location/popular/", "v2");
+        public static readonly ApiCall GetDiscussed = new ApiCall(HttpMethod.Get, "/posts/location/discussed/", "v2");
+        public static readonly ApiCall GetPost = new ApiCall(HttpMethod.Get, "/posts/", "v2");
+        public static readonly ApiCall Upvote = new ApiCall(HttpMethod.Put, "/posts/", version: "v2", postAction: "/upvote/");
+        public static readonly ApiCall Downvote = new ApiCall(HttpMethod.Put, "/posts/", version: "v2", postAction: "/downvote/");
+        public static readonly ApiCall Pin = new ApiCall(HttpMethod.Put, "/posts/", version: "v2", postAction: "/pin/");
+        public static readonly ApiCall Unpin = new ApiCall(HttpMethod.Put, "/posts/", version: "v2", postAction: "/unpin/");
+        public static readonly ApiCall NewPost = new ApiCall(HttpMethod.Post, "/posts/", "v2");
+        public static readonly ApiCall DeletePost = new ApiCall(HttpMethod.Delete, "/posts/", "v2");
+        // Channel API calls
+        public static readonly ApiCall GetChannel = new ApiCall(HttpMethod.Get, "/posts/channel/combo/");
+        public static readonly ApiCall FollowChannel = new ApiCall(HttpMethod.Put, "/user/followChannel/");
+        public static readonly ApiCall UnfollowChannel = new ApiCall(HttpMethod.Put, "/user/unfollowChannel/");
+        public static readonly ApiCall GetRecommendedChannels = new ApiCall(HttpMethod.Get, "/user/recommendedChannels/");
 
-        //Links
-        public const string LinkGenAt = "https://api.go-tellm.com/api/v2/users/";
-        public const string LinkGenAtPayload = "api.go-tellm.com%443%/api/v2/users/";
-
-        public const string LinkRefreshToken = "https://api.go-tellm.com/api/v2/users/refreshToken?access_token=" + PhAccessToken;
-
-
-        //OldLinks
-        //TODO: Links auf Aktualitä̱t Checken (z.B. v2/v3)
-        public const string LinkFirstJodels =
-            "https://api.go-tellm.com/api/v2/posts/location/combo?lat=" + PhLat + "&lng=" + PhLng + "&access_token=" + PhAccessToken;
-
-        public const string LinkSecondJodels =
-            "https://api.go-tellm.com/api/v2/posts/location?lng=" + PhLng + "&lat=" + PhLat + "&after=" + PhPostId + "&access_token=" + PhAccessToken + "&limit=1000";
-
-        public const string LinkUpvoteJodel = "https://api.go-tellm.com/api/v2/posts/" + PhPostId + "/upvote/";
-        public const string LinkDownvoteJodel = "https://api.go-tellm.com/api/v2/posts/" + PhPostId + "/downvote/";
-        public const string LinkGetKarma = "https://api.go-tellm.com/api/v2/users/karma?access_token=" + PhAccessToken;
-        public const string LinkPostJodel = "https://api.go-tellm.com/api/v2/posts/";
-        public const string LinkGetComments = "https://api.go-tellm.com/api/v2/posts/" + PhPostId + "?access_token=" + PhAccessToken;
-        public const string LinkModeration = "https://api.go-tellm.com/api/v3/moderation/?access_token=" + PhAccessToken;
-        public const string LinkUserLocation = "https://api.go-tellm.com/api/v2/users/location?access_token=" + PhAccessToken;
-        public const string LinkReportJodel = "https://api.go-tellm.com/api/v2/posts/" + PhPostId + "/flag?" + PhAccessToken;
-        public const string LinkLoadFollowedChannels = "https://api.go-tellm.com/api/v3/user/followedChannelsMeta?access_token=" + PhAccessToken;
-
-        public const string LinkGetMyJodels =
-            "https://api.go-tellm.com/api/v2/posts/mine?limit=150&access_token=" + PhAccessToken + "&skip=0";
-
-        public const string LinkGetMyComments =
-            "https://api.go-tellm.com/api/v2/posts/mine/replies?skip=0&access_token=" + PhAccessToken + "&limit=150";
-
-        public const string LinkGetMyVotes =
-            "https://api.go-tellm.com/api/v2/posts/mine/votes?limit=150&access_token=" + PhAccessToken + "&skip=0";
-
-        public const string LinkConfig = "https://api.go-tellm.com/api/v3/user/config?access_token=" + PhAccessToken;
-        public const string LinkPinJodel = "https://api.go-tellm.com/api/v2/posts/" + PhPostId + "/pin?access_token=" + PhAccessToken;
-
-        public const string LinkMyPins =
-            "https://api.go-tellm.com/api/v2/posts/mine/pinned?limit=1000&access_token=" + PhAccessToken + "&skip=0";
-
-        public const string LinkFollowChannel = "https://api.go-tellm.com/api/v3/user/followChannel?channel="+ PhChannelId;
-
-        public const string LinkUnfollowChannel = "https://api.go-tellm.com/api/v3/user/unfollowChannel?channel=" + PhChannelId;
-
-        public const string LinkGetJodelsFromChannel =
-            "https://api.go-tellm.com/api/v3/posts/channel/combo?access_token=" + PhAccessToken + "&channel=" + PhChannelId;
-
-        public const string LinkGetRecommendedChannels =
-            "https://api.go-tellm.com/api/v3/user/recommendedChannels?access_token=" + PhAccessToken;
-
-        public const string LinkDeleteJodel = "https://api.go-tellm.com/api/v2/posts/" + PhPostId;
-        public const string LinkPostImage = "https://api.go-tellm.com/api/v2/posts?access_token=" + PhAccessToken;
-
-        #endregion
-
-        #region static Methods
-
-        internal static string ToLink(this string link, User user, string postIdOrChannel = "")
-        {
-            //AccessToken
-            if (link.Contains(PhAccessToken))
-            {
-                link = link.Replace(PhAccessToken, user.Token.Token);
-            }
-
-            //Latitide
-            if (link.Contains(PhLat))
-            {
-                link = link.Replace(PhLat, user.Place.Latitude.ToString(CultureInfo.InvariantCulture));
-            }
-
-            //Longitude
-            if (link.Contains(PhLng))
-            {
-                link = link.Replace(PhLng, user.Place.Longitude.ToString(CultureInfo.InvariantCulture));
-            }
-
-            //Longitude
-            if (link.Contains(PhLng))
-            {
-                link = link.Replace(PhLng, user.Place.Longitude.ToString(CultureInfo.InvariantCulture));
-            }
-
-            //PostId
-            if (link.Contains(PhPostId))
-            {
-                link = link.Replace(PhPostId, postIdOrChannel);
-            }
-
-            //ChannelId
-            if (link.Contains(PhChannelId))
-            {
-                link = link.Replace(PhChannelId, postIdOrChannel);
-            }
-            
-            return link;
-        }
+        // Links
+        public const string LinkModeration = "https://api.go-tellm.com/api/v3/moderation/?access_token={AT}";
+        public const string LinkReportJodel = "https://api.go-tellm.com/api/v2/posts/{PID}/flag?{AT}";
+        public const string LinkLoadFollowedChannels = "https://api.go-tellm.com/api/v3/user/followedChannelsMeta?access_token={AT}";
+        
+        public const string LinkPostImage = "https://api.go-tellm.com/api/v2/posts?access_token={AT}";
 
         #endregion
     }

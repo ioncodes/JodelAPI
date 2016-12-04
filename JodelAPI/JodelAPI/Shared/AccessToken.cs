@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JodelAPI.Internal;
 using JodelAPI.Json;
+using JodelAPI.Json.Request;
 using Newtonsoft.Json;
 
 namespace JodelAPI.Shared
@@ -83,19 +84,26 @@ namespace JodelAPI.Shared
                 if (DeviceUid == String.Empty)
                     DeviceUid = Helpers.GetRandomDeviceUid();
 
-                string jsonString;
-                string payload = @"{""device_uid"": """ +
-                    DeviceUid +
-                    @""", ""location"": {""City"": """ + UserConfig.CityName +
-                    @""", ""loc_accuracy"": 0, ""loc_coordinates"": " + @"{""lat"": " + UserConfig.Place.Latitude.ToString(CultureInfo.InvariantCulture) +
-                    @", ""lng"": " + UserConfig.Place.Longitude.ToString(CultureInfo.InvariantCulture) + @"}, ""country"": """ + UserConfig.CountryCode +
-                    @"""}, ""client_id"": """ + Constants.ClientId + @"""}";
-
-                
-                using (JodelWebClient client = JodelWebClient.GetJodelWebClientWithHeaders(payload, "POST", Links.LinkGenAtPayload))
+                JsonGenerateAccessToken payload = new JsonGenerateAccessToken
                 {
-                    jsonString = client.UploadString(Links.LinkGenAt, payload);
-                }
+                    device_uid = DeviceUid,
+                    location = new JsonGenerateAccessToken.Location
+                    {
+                        City = UserConfig.CityName,
+                        country = UserConfig.CountryCode,
+                        loc_accuracy = 0,
+                        loc_coordinates = new JsonGenerateAccessToken.Location.Coordiantes
+                        {
+                            lat = UserConfig.Place.Latitude,
+                            lng = UserConfig.Place.Longitude
+                        }
+                    },
+                    client_id = Constants.ClientId
+                };
+
+
+
+                string jsonString = Links.Register.ExecuteRequest(UserConfig, payload: payload);
 
                 JsonTokens.RootObject objTokens = JsonConvert.DeserializeObject<JsonTokens.RootObject>(jsonString);
 
@@ -103,7 +111,7 @@ namespace JodelAPI.Shared
                 this.DistinctId = objTokens.distinct_id;
                 this.ExpirationDate = objTokens.expiration_date;
                 this.TokenType = objTokens.token_type;
-
+                this.RefreshToken = objTokens.refresh_token;
             }
             catch (Exception ex)
             {
@@ -120,14 +128,9 @@ namespace JodelAPI.Shared
         {
             try
             {
-                string plainJson;
-                string payload = @"{""refresh_token"": """ + RefreshToken + @"""}";
-                using (var client = new JodelWebClient())
-                {
-                    client.Encoding = Encoding.UTF8;
-                    client.Headers.Add("Content-Type", "application/json");
-                    plainJson = client.UploadString(Links.LinkRefreshToken.ToLink(UserConfig), payload);
-                }
+                JsonRefreshAccessToken payload =new JsonRefreshAccessToken {refresh_token = RefreshToken};
+
+                string plainJson = Links.Refresh.ExecuteRequest(UserConfig, payload: payload);
 
                 JsonRefreshTokens.RootObject obj =
                     JsonConvert.DeserializeObject<JsonRefreshTokens.RootObject>(plainJson);
@@ -136,7 +139,7 @@ namespace JodelAPI.Shared
                 this.ExpirationDate = obj.expiration_date;
                 this.TokenType = obj.token_type;
             }
-            catch
+            catch(Exception ex)
             {
                 return false;
             }
