@@ -46,6 +46,11 @@ namespace JodelAPI.Json
             public string thumbnail_url { get; set; }
         }
 
+        public class Post : Recent
+        {
+            
+        }
+
         public class LocCoordinates2
         {
             public int lat { get; set; }
@@ -126,6 +131,7 @@ namespace JodelAPI.Json
             public List<Recent> recent { get; set; }
             public List<Replied> replied { get; set; }
             public List<Voted> voted { get; set; }
+            public List<Post> posts { get; set; }
             public int max { get; set; }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,20 +36,32 @@ namespace JodelAPI
             Authorize = authorize;
         }
 
-        internal string ExecuteRequest(Dictionary<string, string> parameters = null)
+        internal string ExecuteRequest(string authToken = null, Dictionary<string, string> parameters = null, string payload = null, string postId = null)
         {
-            string plainJson;
+            string plainJson = null;
             DateTime dt = DateTime.Now;
-            string payload = "{}";
-            string urlParam = Url + ParamsToString(parameters);
-            string stringifiedPayload = Method.Method + "%" + Constants.ApiBaseUrl + "%443%api/" + Version + urlParam + "%" + $"{dt:s}Z" + "%%" + payload;
+            string urlParam = Url;
+            if (!string.IsNullOrWhiteSpace(postId)) urlParam += postId;
+            if (!string.IsNullOrWhiteSpace(Action)) urlParam += Action;
+            urlParam += ParamsToString(parameters);
             string stringifiedUrl = "https://" + Constants.ApiBaseUrl + "/api/" + Version + urlParam;
-            
+
+            string stringifiedPayload = Method.Method + "%" + Constants.ApiBaseUrl + "%443%/api/" + Version + urlParam;
+            stringifiedPayload += "%" + authToken;
+            stringifiedPayload += "%" + $"{dt:s}Z" + "%%" + payload;
+
             using (var client = new MyWebClient())
             {
-                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow, Authorize));
+                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, dt, Authorize));
                 client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(stringifiedUrl);
+                if (Method == HttpMethod.Get)
+                {
+                    plainJson = client.DownloadString(stringifiedUrl);
+                }
+                else
+                {
+                    plainJson = client.UploadString(stringifiedUrl, Method.Method, payload ?? string.Empty);
+                }
             }
 
             return plainJson;
