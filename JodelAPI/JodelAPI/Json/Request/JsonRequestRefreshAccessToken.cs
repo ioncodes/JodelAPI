@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JodelAPI.Json.Request
 {
-    class JsonRefreshAccessToken : JsonRequest
+    class JsonRequestRefreshAccessToken : JsonRequest
     {
         public string refresh_token { get; set; }
     }

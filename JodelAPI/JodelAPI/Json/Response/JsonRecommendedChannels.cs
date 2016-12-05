@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace JodelAPI.Json
+namespace JodelAPI.Json.Response
 {
     internal class JsonRecommendedChannels
     {
@@ -8,6 +8,7 @@ namespace JodelAPI.Json
         {
             public string channel { get; set; }
             public int followers { get; set; }
+            public string image_url { get; set; }
         }
 
         public class RootObject

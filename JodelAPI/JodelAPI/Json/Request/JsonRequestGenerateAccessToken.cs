@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JodelAPI.Json.Request
 {
-    public class JsonGenerateAccessToken : JsonRequest
+    public class JsonRequestGenerateAccessToken : JsonRequest
     {
         public string device_uid { get; set; }
         public Location location { get; set; }

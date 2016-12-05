@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using JodelAPI.Json;
+using JodelAPI.Json.Response;
 using Newtonsoft.Json;
 
 namespace JodelAPI.Shared

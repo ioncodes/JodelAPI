@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JodelAPI.Shared;
 
 namespace JodelAPI
 {
@@ -11,18 +12,45 @@ namespace JodelAPI
     /// </summary>
     public class JodelApp
     {
-        public int Karma { get; private set; }
+        #region Fileds and Properties
 
-        public JodelApp()
+        public int Karma { get; private set; }
+        public Jodel MyJodel { get; private set; }
+        public JodelMainData JodelPosts { get; set; }
+
+        #endregion
+
+        #region Constructor
+
+        public JodelApp(Jodel jodel)
         {
             Karma = 0;
+            this.MyJodel = jodel;
         }
 
-        public bool Start()
+        #endregion
+
+        #region Methods
+
+        public void Start()
         {
-            return true;
+            MyJodel.GetConfig();
+            MyJodel.GetRecommendedChannels();
+            this.Karma = MyJodel.GerKarma();
+            JodelPosts = MyJodel.GetPostLocationCombo();
+            MyJodel.GetFollowedChannelsMeta();
         }
 
+        public bool RefreshToken()
+        {
+            return MyJodel.RefrashAccessToken();
+        }
 
+        public bool GenerateToken()
+        {
+            return MyJodel.GenerateAccessToken();
+        }
+
+        #endregion
     }
 }

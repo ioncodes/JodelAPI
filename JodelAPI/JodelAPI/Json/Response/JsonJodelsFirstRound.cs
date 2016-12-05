@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace JodelAPI.Json
+namespace JodelAPI.Json.Response
 {
     internal class JsonJodelsFirstRound
     {
@@ -13,6 +13,9 @@ namespace JodelAPI.Json
         public class Location
         {
             public string name { get; set; }
+            public string city { get; set; }
+            public string country { get; set; }
+            public double loc_accuracy { get; set; }
             public LocCoordinates loc_coordinates { get; set; }
         }
 
@@ -44,6 +47,7 @@ namespace JodelAPI.Json
             public string image_url { get; set; }
             public ImageHeaders image_headers { get; set; }
             public string thumbnail_url { get; set; }
+            public bool got_thanks { get; set; }
         }
 
         public class LocCoordinates2
@@ -55,6 +59,9 @@ namespace JodelAPI.Json
         public class Location2
         {
             public string name { get; set; }
+            public string city { get; set; }
+            public string country { get; set; }
+            public double loc_accuracy { get; set; }
             public LocCoordinates2 loc_coordinates { get; set; }
         }
 
@@ -86,6 +93,7 @@ namespace JodelAPI.Json
             public string image_url { get; set; }
             public ImageHeaders2 image_headers { get; set; }
             public string thumbnail_url { get; set; }
+            public bool got_thanks { get; set; }
         }
 
         public class LocCoordinates3
@@ -97,6 +105,9 @@ namespace JodelAPI.Json
         public class Location3
         {
             public string name { get; set; }
+            public string city { get; set; }
+            public string country { get; set; }
+            public double loc_accuracy { get; set; }
             public LocCoordinates3 loc_coordinates { get; set; }
         }
 
@@ -119,6 +130,10 @@ namespace JodelAPI.Json
             public Location3 location { get; set; }
             public List<object> tags { get; set; }
             public string user_handle { get; set; }
+            public string image_url { get; set; }
+            public ImageHeaders2 image_headers { get; set; }
+            public string thumbnail_url { get; set; }
+            public bool got_thanks { get; set; }
         }
 
         public class RootObject

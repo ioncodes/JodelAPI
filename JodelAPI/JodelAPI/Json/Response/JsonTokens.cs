@@ -1,4 +1,4 @@
-﻿namespace JodelAPI.Json
+﻿namespace JodelAPI.Json.Response
 {
     internal class JsonTokens
     {

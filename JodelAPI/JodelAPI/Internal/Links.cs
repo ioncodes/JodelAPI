@@ -47,11 +47,11 @@ namespace JodelAPI.Internal
         public static readonly ApiCall FollowChannel = new ApiCall(HttpMethod.Put, "/user/followChannel/");
         public static readonly ApiCall UnfollowChannel = new ApiCall(HttpMethod.Put, "/user/unfollowChannel/");
         public static readonly ApiCall GetRecommendedChannels = new ApiCall(HttpMethod.Get, "/user/recommendedChannels/");
+        public static readonly ApiCall GetFollowedChannelsMeta = new ApiCall(HttpMethod.Post, "/user/followedChannelsMeta/");
 
         // Links
         public const string LinkModeration = "https://api.go-tellm.com/api/v3/moderation/?access_token={AT}";
         public const string LinkReportJodel = "https://api.go-tellm.com/api/v2/posts/{PID}/flag?{AT}";
-        public const string LinkLoadFollowedChannels = "https://api.go-tellm.com/api/v3/user/followedChannelsMeta?access_token={AT}";
         
         public const string LinkPostImage = "https://api.go-tellm.com/api/v2/posts?access_token={AT}";
 

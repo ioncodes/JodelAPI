@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace JodelAPI.Json
+namespace JodelAPI.Json.Response
 {
     internal class JsonJodelsLastRound
     {

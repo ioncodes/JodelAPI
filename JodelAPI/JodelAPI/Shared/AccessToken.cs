@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using JodelAPI.Internal;
 using JodelAPI.Json;
 using JodelAPI.Json.Request;
+using JodelAPI.Json.Response;
 using Newtonsoft.Json;
 
 namespace JodelAPI.Shared
@@ -84,15 +85,15 @@ namespace JodelAPI.Shared
                 if (DeviceUid == String.Empty)
                     DeviceUid = Helpers.GetRandomDeviceUid();
 
-                JsonGenerateAccessToken payload = new JsonGenerateAccessToken
+                JsonRequestGenerateAccessToken payload = new JsonRequestGenerateAccessToken
                 {
                     device_uid = DeviceUid,
-                    location = new JsonGenerateAccessToken.Location
+                    location = new JsonRequestGenerateAccessToken.Location
                     {
                         City = UserConfig.CityName,
                         country = UserConfig.CountryCode,
                         loc_accuracy = 0,
-                        loc_coordinates = new JsonGenerateAccessToken.Location.Coordiantes
+                        loc_coordinates = new JsonRequestGenerateAccessToken.Location.Coordiantes
                         {
                             lat = UserConfig.Place.Latitude,
                             lng = UserConfig.Place.Longitude
@@ -128,7 +129,7 @@ namespace JodelAPI.Shared
         {
             try
             {
-                JsonRefreshAccessToken payload =new JsonRefreshAccessToken {refresh_token = RefreshToken};
+                JsonRequestRefreshAccessToken payload =new JsonRequestRefreshAccessToken {refresh_token = RefreshToken};
 
                 string plainJson = Links.Refresh.ExecuteRequest(UserConfig, payload: payload);
 
