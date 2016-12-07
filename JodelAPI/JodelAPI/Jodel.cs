@@ -48,7 +48,7 @@ namespace JodelAPI
             return Account.Token.GenerateNewAccessToken();
         }
 
-        public bool RefrashAccessToken()
+        public bool RefreshAccessToken()
         {
             return Account.Token.RefreshAccessToken();
         }

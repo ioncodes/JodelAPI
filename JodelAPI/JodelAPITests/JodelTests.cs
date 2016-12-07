@@ -24,7 +24,7 @@ namespace JodelAPI.Tests
         public void RefrashAccessTokenTest()
         {
             Assert.IsTrue(jodel.GenerateAccessToken());
-            Assert.IsTrue(jodel.RefrashAccessToken());
+            Assert.IsTrue(jodel.RefreshAccessToken());
         }
 
         [TestMethod()]
