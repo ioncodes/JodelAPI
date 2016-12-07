@@ -43,7 +43,7 @@ namespace JodelAPI
 
         public bool RefreshToken()
         {
-            return MyJodel.RefrashAccessToken();
+            return MyJodel.RefreshAccessToken();
         }
 
         public bool GenerateToken()

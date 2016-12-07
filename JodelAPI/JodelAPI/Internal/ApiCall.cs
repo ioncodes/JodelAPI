@@ -54,14 +54,9 @@ namespace JodelAPI.Internal
 
             using (var client = JodelWebClient.GetJodelWebClientWithHeaders(stringifiedPayload, Method.Method.ToUpper(), user.Token.Token, Authorize))
             {
-                if (Method == HttpMethod.Get)
-                {
-                    plainJson = client.DownloadString(stringifiedUrl);
-                }
-                else
-                {
-                    plainJson = client.UploadString(stringifiedUrl, Method.Method, payload?.ToString() ?? string.Empty);
-                }
+                plainJson = Method == HttpMethod.Get ? client.DownloadString(stringifiedUrl) 
+                    : client.UploadString(stringifiedUrl, Method.Method, payload?.ToString() 
+                    ?? string.Empty);
             }
 
             return plainJson;

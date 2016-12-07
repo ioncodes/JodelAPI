@@ -10,7 +10,7 @@ namespace JodelAPI.Shared
     {
         #region Fields and Properties
 
-        public List<JodelPost> RencentJodels { get; set; }
+        public List<JodelPost> RecentJodels { get; set; }
         public List<JodelPost> RepliedJodels { get; set; }
         public List<JodelPost> VotedJodels { get; set; }
 
@@ -20,7 +20,7 @@ namespace JodelAPI.Shared
 
         public JodelMainData()
         {
-            RencentJodels = new List<JodelPost>();
+            RecentJodels = new List<JodelPost>();
             RepliedJodels = new List<JodelPost>();
             VotedJodels = new List<JodelPost>();
         }
