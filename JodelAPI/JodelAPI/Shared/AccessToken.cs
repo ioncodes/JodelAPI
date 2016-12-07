@@ -114,7 +114,7 @@ namespace JodelAPI.Shared
                 this.TokenType = objTokens.token_type;
                 this.RefreshToken = objTokens.refresh_token;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -140,7 +140,7 @@ namespace JodelAPI.Shared
                 this.ExpirationDate = obj.expiration_date;
                 this.TokenType = obj.token_type;
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 return false;
             }
