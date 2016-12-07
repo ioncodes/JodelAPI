@@ -12,6 +12,8 @@ namespace JodelAPI.Json.Request
 
         public string Lat { get; set; }
         public string Lng { get; set; }
+        public bool Stickies { get; set; }
+        public bool Home { get; set; }
 
         #endregion
 
@@ -19,10 +21,10 @@ namespace JodelAPI.Json.Request
 
         public override string ToString()
         {
-            return @"lat:      " + Lat + "@\r\n" +
-                   @"lng:      " + Lng + "@\r\n" +
-                   @"stickers: true\r\n" +
-                   @"home:     false";
+            return @"lat:      " + Lat + "@\n" +
+                   @"lng:      " + Lng + "@\n" +
+                   @"stickers: " + Stickies + @"\n" +
+                   @"home:     " + Home;
         }
 
         #endregion

@@ -41,6 +41,12 @@ namespace JodelAPI.Shared
             FindCoordinates();
         }
 
+        public void SetNewPlace(double lat,double lng)
+        {
+            Latitude = lat;
+            Longitude = lng;
+        }
+
         private void FindCoordinates()
         {
             string api = "https://maps.googleapis.com/maps/api/geocode/json?address=" + Place.Replace(" ", "+");

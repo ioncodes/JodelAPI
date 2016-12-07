@@ -85,7 +85,7 @@ namespace JodelAPI
             Account.FollowedChannels = channels;
         }
 
-        public int GerKarma()
+        public int GetKarma()
         {
             string jsonString = Links.GetKarma.ExecuteRequest(Account);
 
@@ -147,19 +147,22 @@ namespace JodelAPI
 
         #region Jodels
 
-        public JodelMainData GetPostLocationCombo()
+        public JodelMainData GetPostLocationCombo(bool stickies = false, bool home = false)
         {
+            JsonRequestPostsLocationCombo payload = new JsonRequestPostsLocationCombo
+            {
+                Lat = Account.Place.Latitude.ToString(CultureInfo.InvariantCulture),
+                Lng = Account.Place.Longitude.ToString(CultureInfo.InvariantCulture),
+                Home = home,
+                Stickies=stickies
+            };
             string jsonString = Links.GetCombo.ExecuteRequest(Account, new Dictionary<string, string>
             {
                 { "lat", Account.Place.Latitude.ToString(CultureInfo.InvariantCulture) },
                 { "lng", Account.Place.Longitude.ToString(CultureInfo.InvariantCulture) },
-                { "stickies", "true" },
-                { "home", "false" }
-            }, payload: new JsonRequestPostsLocationCombo
-            {
-                Lat = Account.Place.Latitude.ToString(CultureInfo.InvariantCulture),
-                Lng = Account.Place.Longitude.ToString(CultureInfo.InvariantCulture)
-            });
+                { "stickies", stickies.ToString() },
+                { "home", home.ToString() }
+            }, payload: payload);
             JsonJodelsFirstRound.RootObject jodels = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(jsonString);
             JodelMainData data = new JodelMainData();
 

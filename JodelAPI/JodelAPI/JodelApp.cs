@@ -36,8 +36,8 @@ namespace JodelAPI
         {
             MyJodel.GetConfig();
             MyJodel.GetRecommendedChannels();
-            this.Karma = MyJodel.GerKarma();
-            JodelPosts = MyJodel.GetPostLocationCombo();
+            this.Karma = MyJodel.GetKarma();
+            JodelPosts = MyJodel.GetPostLocationCombo(stickies: true);
             MyJodel.GetFollowedChannelsMeta();
         }
 
@@ -50,6 +50,18 @@ namespace JodelAPI
         {
             return MyJodel.GenerateAccessToken();
         }
+
+        #region Reload
+
+        public JodelMainData ReloadMain()
+        {
+            Karma = MyJodel.GetKarma();
+            JodelPosts = MyJodel.GetPostLocationCombo();
+
+            return JodelPosts;
+        }
+
+        #endregion
 
         #endregion
     }
