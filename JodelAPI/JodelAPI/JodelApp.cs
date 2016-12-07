@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JodelAPI.Objects;
+using JodelAPI.Shared;
 
 namespace JodelAPI
 {
@@ -12,100 +12,57 @@ namespace JodelAPI
     /// </summary>
     public class JodelApp
     {
-        public Jodel Jodel { get; private set; }
+        #region Fileds and Properties
+
         public int Karma { get; private set; }
+        public Jodel MyJodel { get; private set; }
+        public JodelMainData JodelPosts { get; set; }
 
-        public JodelApp(string accessToken, string longitude, string latitude, string city, string countryCode, string googleApiToken = "")
-            : this(new User(accessToken, latitude, longitude, countryCode, city, googleApiToken)) { }
+        #endregion
 
-        public JodelApp(User user)
+        #region Constructor
+
+        public JodelApp(Jodel jodel)
         {
-            Jodel = new Jodel(user);
+            Karma = 0;
+            this.MyJodel = jodel;
         }
 
-        /// <summary>
-        /// Does all what Jodel does on opening
-        /// </summary>
-        public void StartJodel()
+        #endregion
+
+        #region Methods
+
+        public void Start()
         {
-            //GetUserConfig
-            Jodel.GetUserConfig();
-
-            //LoadFollowedChannels
-            Jodel.LoadFollowedChannels();
-
-            //LoadRecommendedChannels
-            Jodel.GetRecommendedChannels();
-
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            //LoadFirstJodels
-            Jodel.GetFirstJodels();
+            MyJodel.GetConfig();
+            MyJodel.GetRecommendedChannels();
+            this.Karma = MyJodel.GetKarma();
+            JodelPosts = MyJodel.GetPostLocationCombo(stickies: true);
+            MyJodel.GetFollowedChannelsMeta();
         }
 
-        public List<Jodels> ReloadInMain()
+        public bool RefreshToken()
         {
-            //LoadFirstJodels
-            var jodels = Jodel.GetFirstJodels();
-
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            return jodels;
+            return MyJodel.RefrashAccessToken();
         }
 
-        public List<MyJodels> ReloadInMyJodels()
+        public bool GenerateToken()
         {
-            //LoadMine
-            var jodels = Jodel.GetMyJodels();
-
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            return jodels;
+            return MyJodel.GenerateAccessToken();
         }
 
-        public List<MyComments> ReloadInMyComments()
+        #region Reload
+
+        public JodelMainData ReloadMain()
         {
-            //LoadMyComments
-            var comments = Jodel.GetMyComments();
+            Karma = MyJodel.GetKarma();
+            JodelPosts = MyJodel.GetPostLocationCombo();
 
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            return comments;
+            return JodelPosts;
         }
 
-        public List<MyVotes> ReloadInMyVotes()
-        {
-            //LoadMyResponses
-            var votes = Jodel.GetMyVotes();
+        #endregion
 
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            return votes;
-        }
-
-        public List<MyPins> ReloadInMyPins()
-        {
-            //LoadMyResponses
-            var pins = Jodel.GetMyPins();
-
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            return pins;
-        }
-
-        public List<ChannelJodel> ReloadInChannel(Jodel.Channel channel)
-        {
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            //LoadChannelPosts
-            return channel.GetJodels();
-        }
+        #endregion
     }
 }

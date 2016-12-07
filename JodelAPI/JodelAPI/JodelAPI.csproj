@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JodelAPI</RootNamespace>
     <AssemblyName>JodelAPI</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,49 +47,48 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="Distance.cs" />
-    <Compile Include="Exceptions\InternalException.cs" />
-    <Compile Include="Exceptions\GoogleApiTokenInvalidException.cs" />
-    <Compile Include="Exceptions\GoogleApiTokenEmptyException.cs" />
     <Compile Include="Exceptions\LocationNotFoundException.cs" />
-    <Compile Include="Helpers.cs" />
+    <Compile Include="Internal\ApiCall.cs" />
+    <Compile Include="Internal\Constants.cs" />
+    <Compile Include="Internal\Helpers.cs" />
+    <Compile Include="Internal\JodelWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Internal\Links.cs" />
     <Compile Include="Jodel.cs" />
     <Compile Include="JodelApp.cs" />
-    <Compile Include="Json\JsonConfig.cs" />
-    <Compile Include="Json\JsonGCoordinates.cs" />
-    <Compile Include="Json\JsonGetJodelsFromChannel.cs" />
-    <Compile Include="Json\JsonMyComments.cs" />
-    <Compile Include="Json\JsonMyJodels.cs" />
-    <Compile Include="Json\JsonMyPins.cs" />
-    <Compile Include="Json\JsonMyVotes.cs" />
-    <Compile Include="Json\JsonPostJodels.cs" />
-    <Compile Include="Json\JsonRecommendedChannels.cs" />
-    <Compile Include="Json\JsonRefreshTokens.cs" />
-    <Compile Include="Json\JsonTokens.cs" />
-    <Compile Include="Location.cs" />
-    <Compile Include="Moderation.cs" />
-    <Compile Include="Objects\ChannelJodel.cs" />
-    <Compile Include="Objects\Comments.cs" />
-    <Compile Include="Objects\Config.cs" />
-    <Compile Include="Objects\Coordinates.cs" />
-    <Compile Include="GMaps.cs" />
-    <Compile Include="Objects\Jodels.cs" />
-    <Compile Include="Json\JsonComments.cs" />
-    <Compile Include="Json\JsonJodelsFirstRound.cs" />
-    <Compile Include="Json\JsonJodelsLastRound.cs" />
-    <Compile Include="Json\JsonModeration.cs" />
-    <Compile Include="Objects\ModerationQueue.cs" />
-    <Compile Include="Objects\MyComments.cs" />
-    <Compile Include="Objects\MyJodels.cs" />
-    <Compile Include="Objects\MyPins.cs" />
-    <Compile Include="Objects\MyVotes.cs" />
-    <Compile Include="Objects\RecommendedChannel.cs" />
-    <Compile Include="Objects\Tokens.cs" />
+    <Compile Include="Json\Request\JsonRequestFollowedChannelMeta.cs" />
+    <Compile Include="Json\Request\JsonRequestPostsLocationCombo.cs" />
+    <Compile Include="Json\Request\JsonRequestRecommendedChannels.cs" />
+    <Compile Include="Json\Request\JsonRequestRefreshAccessToken.cs" />
+    <Compile Include="Json\Response\JsonComments.cs" />
+    <Compile Include="Json\Response\JsonConfig.cs" />
+    <Compile Include="Json\Response\JsonFollowedChannelsMeta.cs" />
+    <Compile Include="Json\Response\JsonGCoordinates.cs" />
+    <Compile Include="Json\Response\JsonGetJodelsFromChannel.cs" />
+    <Compile Include="Json\Response\JsonJodelsFirstRound.cs" />
+    <Compile Include="Json\Response\JsonJodelsLastRound.cs" />
+    <Compile Include="Json\Response\JsonKarma.cs" />
+    <Compile Include="Json\Response\JsonModeration.cs" />
+    <Compile Include="Json\Response\JsonMyComments.cs" />
+    <Compile Include="Json\Response\JsonMyJodels.cs" />
+    <Compile Include="Json\Response\JsonMyPins.cs" />
+    <Compile Include="Json\Response\JsonMyVotes.cs" />
+    <Compile Include="Json\Response\JsonPostJodels.cs" />
+    <Compile Include="Json\Response\JsonRecommendedChannels.cs" />
+    <Compile Include="Json\Response\JsonRefreshTokens.cs" />
+    <Compile Include="Json\Response\JsonTokens.cs" />
+    <Compile Include="Json\Request\JsonRequestGenerateAccessToken.cs" />
+    <Compile Include="Json\Request\JsonRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="User.cs" />
+    <Compile Include="Shared\AccessToken.cs" />
+    <Compile Include="Shared\Channel.cs" />
+    <Compile Include="Shared\JodelMainData.cs" />
+    <Compile Include="Shared\JodelPost.cs" />
+    <Compile Include="Shared\Location.cs" />
+    <Compile Include="Shared\User.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
