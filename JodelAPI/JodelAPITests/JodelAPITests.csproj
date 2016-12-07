@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{09BDDB23-563A-429B-93B0-D53394F1323D}</ProjectGuid>
+    <ProjectGuid>{F10ED5B5-3F17-44F0-950F-2F323D9B0A48}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JodelAPITests</RootNamespace>
