@@ -191,7 +191,7 @@ namespace JodelAPI
                     UserHandle = jodel.user_handle,
                     VoteCount = jodel.vote_count
                 };
-                data.RencentJodels.Add(item);
+                data.RecentJodels.Add(item);
             }
 
             foreach (JsonJodelsFirstRound.Replied jodel in jodels.replied)
