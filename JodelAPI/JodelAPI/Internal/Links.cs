@@ -19,9 +19,9 @@ namespace JodelAPI.Internal
         // User API Calls
         public static readonly ApiCall Register = new ApiCall(HttpMethod.Post, "/users/", "v2", authorize: false);
         public static readonly ApiCall Refresh = new ApiCall(HttpMethod.Post, "/users/refreshToken", "v2");
-        public static readonly ApiCall SetPosition = new ApiCall(HttpMethod.Put, "/users/location/");
-        public static readonly ApiCall GetKarma = new ApiCall(HttpMethod.Get, "/users/karma/", "v2");
-        public static readonly ApiCall GetConfig = new ApiCall(HttpMethod.Get, "/user/config/");
+        public static readonly ApiCall SetPosition = new ApiCall(HttpMethod.Put, "/users/location", "v2");
+        public static readonly ApiCall GetKarma = new ApiCall(HttpMethod.Get, "/users/karma", "v2");
+        public static readonly ApiCall GetConfig = new ApiCall(HttpMethod.Get, "/user/config");
         public static readonly ApiCall GetMyPosts = new ApiCall(HttpMethod.Get, "/posts/mine/", "v2");
         public static readonly ApiCall GetMyReplies = new ApiCall(HttpMethod.Get, "/posts/mine/replies/", "v2");
         public static readonly ApiCall GetMyVotes = new ApiCall(HttpMethod.Get, "/posts/mine/votes/", "v2");
@@ -32,7 +32,7 @@ namespace JodelAPI.Internal
         // Post API Calls
         public static readonly ApiCall SetAction = new ApiCall(HttpMethod.Post, "/action");
         public static readonly ApiCall GetPosts = new ApiCall(HttpMethod.Get, "/posts/location/", "v2");
-        public static readonly ApiCall GetCombo = new ApiCall(HttpMethod.Get, "/posts/location/combo/");
+        public static readonly ApiCall GetCombo = new ApiCall(HttpMethod.Get, "/posts/location/combo");
         public static readonly ApiCall GetPopular = new ApiCall(HttpMethod.Get, "/posts/location/popular/", "v2");
         public static readonly ApiCall GetDiscussed = new ApiCall(HttpMethod.Get, "/posts/location/discussed/", "v2");
         public static readonly ApiCall GetPost = new ApiCall(HttpMethod.Get, "/posts/", "v2");
@@ -46,8 +46,8 @@ namespace JodelAPI.Internal
         public static readonly ApiCall GetChannel = new ApiCall(HttpMethod.Get, "/posts/channel/combo/");
         public static readonly ApiCall FollowChannel = new ApiCall(HttpMethod.Put, "/user/followChannel/");
         public static readonly ApiCall UnfollowChannel = new ApiCall(HttpMethod.Put, "/user/unfollowChannel/");
-        public static readonly ApiCall GetRecommendedChannels = new ApiCall(HttpMethod.Get, "/user/recommendedChannels/");
-        public static readonly ApiCall GetFollowedChannelsMeta = new ApiCall(HttpMethod.Post, "/user/followedChannelsMeta/");
+        public static readonly ApiCall GetRecommendedChannels = new ApiCall(HttpMethod.Get, "/user/recommendedChannels");
+        public static readonly ApiCall GetFollowedChannelsMeta = new ApiCall(HttpMethod.Post, "/user/followedChannelsMeta");
 
         // Links
         public const string LinkModeration = "https://api.go-tellm.com/api/v3/moderation/?access_token={AT}";

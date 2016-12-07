@@ -58,7 +58,7 @@
     <Compile Include="Jodel.cs" />
     <Compile Include="JodelApp.cs" />
     <Compile Include="Json\Request\JsonRequestFollowedChannelMeta.cs" />
-    <Compile Include="Json\Request\JsonRequestPostsLocationCombo.cs" />
+    <Compile Include="Json\Request\JsonRequestSetLocation.cs" />
     <Compile Include="Json\Request\JsonRequestRecommendedChannels.cs" />
     <Compile Include="Json\Request\JsonRequestRefreshAccessToken.cs" />
     <Compile Include="Json\Response\JsonComments.cs" />

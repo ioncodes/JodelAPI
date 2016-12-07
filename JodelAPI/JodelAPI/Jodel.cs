@@ -90,6 +90,27 @@ namespace JodelAPI
             return karma.karma;
         }
 
+        public void SetLocation()
+        {
+            JsonRequestSetLocation payload = new JsonRequestSetLocation
+            {
+                location =
+                {
+                    city = Account.CityName,
+                    country = Account.CountryCode,
+                    loc_accuracy = 0.0,
+                    name = Account.CityName,
+                    loc_coordinates =
+                    {
+                        lat = Account.Place.Latitude,
+                        lng = Account.Place.Longitude
+                    }
+                }
+            };
+
+            Links.SetPosition.ExecuteRequest(Account, payload: payload);
+        }
+
         #endregion
 
         #region Channels
@@ -119,8 +140,8 @@ namespace JodelAPI
 
         public List<Channel> GetFollowedChannelsMeta()
         {
-            JsonRequestFollowedChannelMeta payload= new JsonRequestFollowedChannelMeta();
-            foreach (Channel channel in Account.FollowedChannels.Where(x=>x.Following).ToList())
+            JsonRequestFollowedChannelMeta payload = new JsonRequestFollowedChannelMeta();
+            foreach (Channel channel in Account.FollowedChannels.Where(x => x.Following).ToList())
             {
                 payload.Values.Add(channel.ChannelName, -1);
             }
@@ -141,22 +162,17 @@ namespace JodelAPI
 
         public JodelMainData GetPostLocationCombo(bool stickies = false, bool home = false)
         {
-            JsonRequestPostsLocationCombo payload = new JsonRequestPostsLocationCombo
-            {
-                Lat = Account.Place.Latitude.ToString(CultureInfo.InvariantCulture),
-                Lng = Account.Place.Longitude.ToString(CultureInfo.InvariantCulture),
-                Home = home,
-                Stickies=stickies
-            };
             string jsonString = Links.GetCombo.ExecuteRequest(Account, new Dictionary<string, string>
             {
-                { "lat", Account.Place.Latitude.ToString(CultureInfo.InvariantCulture) },
-                { "lng", Account.Place.Longitude.ToString(CultureInfo.InvariantCulture) },
-                { "stickies", stickies.ToString() },
-                { "home", home.ToString() }
-            }, payload: payload);
+                { "lat", Account.Place.Latitude.ToString("F",CultureInfo.InvariantCulture) },
+                { "lng", Account.Place.Longitude.ToString("F",CultureInfo.InvariantCulture) },
+                { "stickies", stickies.ToString().ToLower() },
+                { "home", home.ToString().ToLower() }
+            });
+
             JsonJodelsFirstRound.RootObject jodels = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(jsonString);
-            JodelMainData data = new JodelMainData();
+            JodelMainData data = new JodelMainData { Max = jodels.max };
+
 
             foreach (JsonJodelsFirstRound.Recent jodel in jodels.recent)
             {
@@ -265,6 +281,58 @@ namespace JodelAPI
             }
 
             return data;
+        }
+
+        public List<JodelPost> GetRecentPostsAfter(string afterPostId, bool home = false)
+        {
+
+            string jsonString = Links.GetPosts.ExecuteRequest(Account, new Dictionary<string, string>
+            {
+                { "after", afterPostId },
+                { "lat", Account.Place.Latitude.ToString(CultureInfo.InvariantCulture) },
+                { "lng", Account.Place.Longitude.ToString(CultureInfo.InvariantCulture) },
+                { "home", home.ToString().ToLower() }
+            });
+
+            JsonPostJodels.RootObject data = JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(jsonString);
+
+            List<JodelPost> jodels = new List<JodelPost>();
+
+            foreach (JsonPostJodels.Post jodel in data.posts)
+            {
+                jodels.Add(new JodelPost
+                {
+                    ColorHex = int.Parse(jodel.color, NumberStyles.HexNumber),
+                    ChildCount = jodel.child_count ?? 0,
+                    CreatedAt = jodel.created_at,
+                    Discovered = jodel.discovered,
+                    DiscoveredBy = jodel.discovered_by,
+                    Distance = jodel.distance,
+                    GotThanks = jodel.got_thanks,
+                    ImageAuthorization = jodel.image_headers?.Authorization,
+                    ImageUrl = jodel.image_url,
+                    ImageHost = jodel.image_headers?.Host,
+                    Message = jodel.message,
+                    NotificationsEnabled = jodel.notifications_enabled,
+                    PinCounted = jodel.pin_count,
+                    Place = new JodelPost.Location
+                    {
+                        Longitude = jodel.location.loc_coordinates.lng,
+                        Latitude = jodel.location.loc_coordinates.lat,
+                        City = jodel.location.city,
+                        Accuracy = jodel.location.loc_accuracy,
+                        Name = jodel.location.name,
+                        Country = jodel.location.country
+                    },
+                    PostId = jodel.post_id,
+                    PostOwn = jodel.post_own,
+                    ThumbnailUrl = jodel.thumbnail_url,
+                    UpdatedAt = jodel.updated_at,
+                    UserHandle = jodel.user_handle,
+                    VoteCount = jodel.vote_count
+                });
+            }
+            return jodels;
         }
 
         #endregion
