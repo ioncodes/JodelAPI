@@ -28,14 +28,17 @@ namespace JodelAPI
             this.Account = user;
         }
 
-        public Jodel(string place, string countrCode, string cityName)
+        public Jodel(string place, string countrCode, string cityName, bool createToken = true)
             : this(new User
             {
                 CountryCode = countrCode,
                 CityName = cityName,
-                Place = new Location(place)
+                Place = new Location(place),
             })
-        { }
+        {
+            if (createToken)
+                GenerateAccessToken();
+        }
 
         #endregion
 
