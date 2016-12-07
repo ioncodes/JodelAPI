@@ -14,15 +14,7 @@ namespace JodelAPI.Tests
     {
         public Jodel GetJodelObject()
         {   
-            var location = Location.GetCoordinates("Baden, Aargau, Schweiz");
-            Assert.IsNotNull(location);
-            string accessToken = Account.GenerateAccessToken(location.Latitude, location.Longitude, "CH", "Baden").AccessToken;
-            Assert.IsTrue(accessToken.Length > 0);
-            User user = new User(accessToken, location.Latitude, location.Longitude, "CH", "Baden");
-            Assert.IsNotNull(user);
-            Jodel jodel = new Jodel(user);
-            Assert.IsNotNull(jodel);
-            return jodel;
+            
         }
 
         [TestMethod()]
