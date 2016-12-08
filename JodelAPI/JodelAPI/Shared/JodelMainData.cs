@@ -10,6 +10,8 @@ namespace JodelAPI.Shared
     {
         #region Fields and Properties
 
+        public int Max { get; set; }
+
         public List<JodelPost> RecentJodels { get; set; }
         public List<JodelPost> RepliedJodels { get; set; }
         public List<JodelPost> VotedJodels { get; set; }

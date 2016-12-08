@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace JodelAPI.Internal
             return request;
         }
 
-        internal static JodelWebClient GetJodelWebClientWithHeaders(string stringifiedPayload, string method, string accesstoken = "", bool addBearer = false)
+        internal static JodelWebClient GetJodelWebClientWithHeaders(string stringifiedPayload, string accesstoken = "", bool addBearer = false, HttpMethod method = null)
         {
             DateTime time = DateTime.UtcNow;
 
@@ -43,6 +44,9 @@ namespace JodelAPI.Internal
             }
 
             client.Headers.Add(headers);
+
+            if (method != HttpMethod.Get)
+                client.Headers.Add(Constants.JsonHeader);
 
             client.Encoding = Encoding.UTF8;
 

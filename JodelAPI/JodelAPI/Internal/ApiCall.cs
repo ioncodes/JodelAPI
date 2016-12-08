@@ -52,11 +52,36 @@ namespace JodelAPI.Internal
             stringifiedPayload += "%" + user.Token.Token;
             stringifiedPayload += "%" + $"{dt:s}Z" + "%%" + payload;
 
-            using (var client = JodelWebClient.GetJodelWebClientWithHeaders(stringifiedPayload, Method.Method.ToUpper(), user.Token.Token, Authorize))
+            using (var client = JodelWebClient.GetJodelWebClientWithHeaders(stringifiedPayload, user.Token.Token, Authorize, Method))
             {
-                plainJson = Method == HttpMethod.Get ? client.DownloadString(stringifiedUrl) 
-                    : client.UploadString(stringifiedUrl, Method.Method, payload?.ToString() 
-                    ?? string.Empty);
+#if DEBUG
+                Console.WriteLine("****************************************************************");
+                Console.WriteLine("{0} {1}", Method, stringifiedUrl);
+                Console.WriteLine("----------------------------------------------------------------");
+                Console.WriteLine("----------------------------------------------------------------");
+                for (int i = 0; i < client.Headers.Count; i++)
+                {
+                    Console.WriteLine("{0,-30}{1}", client.Headers.AllKeys[i], client.Headers.GetValues(i).Aggregate((a, b) => a + ", " + b));
+                }
+                Console.WriteLine("----------------------------------------------------------------");
+                Console.WriteLine("----------------------------------------------------------------");
+                Console.WriteLine(stringifiedPayload);
+                Console.WriteLine("----------------------------------------------------------------");
+                Console.WriteLine(payload);
+#endif
+                if (Method == HttpMethod.Get)
+                {
+                    plainJson = client.DownloadString(stringifiedUrl);
+                }
+                else
+                {
+                    plainJson = client.UploadString(stringifiedUrl, Method.Method, payload?.ToString() ?? string.Empty);
+                }
+#if DEBUG
+                //Console.WriteLine("----------------------------------------------------------------");
+                //Console.WriteLine(plainJson);
+                Console.WriteLine("****************************************************************");
+#endif
             }
 
             return plainJson;

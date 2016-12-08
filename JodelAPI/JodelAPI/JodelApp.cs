@@ -36,6 +36,7 @@ namespace JodelAPI
         {
             MyJodel.GetConfig();
             MyJodel.GetRecommendedChannels();
+            MyJodel.SetLocation();
             this.Karma = MyJodel.GetKarma();
             JodelPosts = MyJodel.GetPostLocationCombo(stickies: true);
             MyJodel.GetFollowedChannelsMeta();
@@ -59,6 +60,19 @@ namespace JodelAPI
             JodelPosts = MyJodel.GetPostLocationCombo();
 
             return JodelPosts;
+        }
+
+        /// <summary>
+        /// Loads more Jodels
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns>The loaded Posts</returns>
+        public List<JodelPost> LoadMoreRecentPosts(string postId = "")
+        {
+            List<JodelPost> posts = MyJodel.GetRecentPostsAfter(String.IsNullOrWhiteSpace(postId) ? JodelPosts.RecentJodels.Last().PostId : postId);
+            JodelPosts.RecentJodels.AddRange(posts);
+
+            return posts;
         }
 
         #endregion
