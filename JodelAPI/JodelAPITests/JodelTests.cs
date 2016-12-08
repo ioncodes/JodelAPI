@@ -59,12 +59,7 @@ namespace JodelAPI.Tests
         public void GetPostLocationComboTest()
         {
             Assert.IsTrue(jodel.GenerateAccessToken());
-            var jodelsData = jodel.GetPostLocationCombo();
-            Assert.IsNotNull(jodelsData);
-            foreach (var j in jodelsData.RecentJodels)
-            {
-                Console.WriteLine(j.Message);
-            }
+            Assert.IsNotNull(jodel.GetPostLocationCombo());
         }
     }
 }
