@@ -43,7 +43,7 @@ namespace JodelAPI
         {
             DateTime dt = DateTime.UtcNow;
             string jsonString;
-            string deviceUid = Helpers.Sha256(Helpers.RandomString(5, true));
+            string deviceUid = Helpers.Sha256(Helpers.RandomString(20, true));
 
             string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/users/%%" + $"{dt:s}Z" +
                                         @"%%{""device_uid"": """ + deviceUid + @""", ""location"": {""City"": """ + _user.City +
