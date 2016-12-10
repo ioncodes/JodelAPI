@@ -335,6 +335,16 @@ namespace JodelAPI
             return jodels;
         }
 
+        public void Upvote(string postId)
+        {
+            Links.Upvote.ExecuteRequest(Account, null, null, postId);
+        }
+
+        public void Downvote(string postId)
+        {
+            Links.Downvote.ExecuteRequest(Account, null, null, postId);
+        }
+
         #endregion
 
         #endregion
