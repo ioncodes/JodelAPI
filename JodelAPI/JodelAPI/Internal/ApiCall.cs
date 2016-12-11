@@ -52,7 +52,7 @@ namespace JodelAPI.Internal
             stringifiedPayload += "%" + user.Token.Token;
             stringifiedPayload += "%" + $"{dt:s}Z" + "%%" + payload;
 
-            using (var client = JodelWebClient.GetJodelWebClientWithHeaders(stringifiedPayload, user.Token.Token, Authorize, Method))
+            using (var client = JodelWebClient.GetJodelWebClientWithHeaders(dt, stringifiedPayload, user.Token.Token, Authorize, Method))
             {
 #if DEBUG
                 Console.WriteLine("****************************************************************");
