@@ -32,30 +32,19 @@ namespace JodelAPI.Internal
             }
         }
 
-        public static string GetRandomDeviceUid(int size = 5, bool lowerCase = true)
+        public static string GetRandomDeviceUid()
         {
-            StringBuilder builder = new StringBuilder();
-            Random random = new Random(DateTime.Now.Millisecond);
-            for (int i = 1; i < size + 1; i++)
+            byte[] tokenData = new byte[32];
+            using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
             {
-                var ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
-                builder.Append(ch);
+                rng.GetBytes(tokenData);
             }
-
-            string value = lowerCase ? builder.ToString().ToLower() : builder.ToString();
-
-            StringBuilder sb = new StringBuilder();
 
             using (SHA256 hash = SHA256.Create())
             {
-                Encoding enc = Encoding.UTF8;
-                byte[] result = hash.ComputeHash(enc.GetBytes(value));
-
-                foreach (byte b in result)
-                    sb.Append(b.ToString("x2"));
+                byte[] result = hash.ComputeHash(tokenData);
+                return BitConverter.ToString(result).Replace("-", "").ToLower();
             }
-
-            return sb.ToString();
         }
     }
 }
