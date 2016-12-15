@@ -10,9 +10,9 @@ namespace JodelAPI.Internal
     internal class Constants
     {
         // Key Values
-        public const string Key = "dIHNtHWOxFmoFouufSflpTKYjPmCIhWUCQHgbNzR";
+        public const string Key = "zpwKnTvubiKritHEnjOTcTeHxLJJNTEVumuNZqcE";
         public const string ClientId = "81e8a76e-1e02-4d17-9ba0-8a7020261b26";
-        public const string AppVersion = "4.29.1";
+        public const string AppVersion = "4.30.2";
 
 
         // Headers
