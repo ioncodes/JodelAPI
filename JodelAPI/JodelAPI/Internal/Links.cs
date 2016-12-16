@@ -40,7 +40,7 @@ namespace JodelAPI.Internal
         public static readonly ApiCall Downvote = new ApiCall(HttpMethod.Put, "/posts/", version: "v2", postAction: "/downvote/");
         public static readonly ApiCall Pin = new ApiCall(HttpMethod.Put, "/posts/", version: "v2", postAction: "/pin/");
         public static readonly ApiCall Unpin = new ApiCall(HttpMethod.Put, "/posts/", version: "v2", postAction: "/unpin/");
-        public static readonly ApiCall NewPost = new ApiCall(HttpMethod.Post, "/posts/", "v2");
+        public static readonly ApiCall NewPost = new ApiCall(HttpMethod.Post, "/posts/");
         public static readonly ApiCall DeletePost = new ApiCall(HttpMethod.Delete, "/posts/", "v2");
         // Channel API calls
         public static readonly ApiCall GetChannel = new ApiCall(HttpMethod.Get, "/posts/channel/combo/");

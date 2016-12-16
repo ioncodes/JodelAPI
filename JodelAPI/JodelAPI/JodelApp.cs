@@ -77,6 +77,27 @@ namespace JodelAPI
 
         #endregion
 
+        #region Posts
+
+        public void UpVote(string postId)
+        {
+            MyJodel.UpVote(postId);
+        }
+
+        public void DownVote(string postId)
+        {
+            MyJodel.DownVote(postId);
+        }
+
+        public string Post(string message, JodelPost.PostColor color = JodelPost.PostColor.Random, bool home = false)
+        {
+            string postId = MyJodel.Post(message, color, home);
+            JodelPosts = MyJodel.GetPostLocationCombo();
+            return postId;
+        }
+
+        #endregion
+
         #endregion
     }
 }
