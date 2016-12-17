@@ -21,6 +21,32 @@ namespace JodelAPI
 
         #endregion
 
+        #region Enums
+
+        public enum UpvoteReason
+        {
+            Stub = -1,
+            Cancel = 1,
+            Funny = 1,
+            Interesting = 2,
+            SoTrue = 3,
+            SaveJodel = 4,
+            Other = 5
+        }
+
+        public enum DownvoteReason
+        {
+            Stub = -1,
+            Cancel = 1,
+            NotInteresting = 1,
+            Repost = 2,
+            NotAllowedOnJodel = 3,
+            GoogleIt = 4,
+            Other = 5
+        }
+
+        #endregion
+
         #region Constructor
 
         public Jodel(User user)
@@ -335,14 +361,14 @@ namespace JodelAPI
             return jodels;
         }
 
-        public void Upvote(string postId)
+        public void Upvote(string postId, UpvoteReason reason = UpvoteReason.Stub)
         {
-            Links.UpvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote(), postId: postId);
+            Links.UpvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId);
         }
 
-        public void Downvote(string postId)
+        public void Downvote(string postId, DownvoteReason reason = DownvoteReason.Stub)
         {
-            Links.DownvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote(), postId: postId);
+            Links.DownvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId);
         }
 
         /// <summary>
