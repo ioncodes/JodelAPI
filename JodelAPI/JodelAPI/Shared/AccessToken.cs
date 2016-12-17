@@ -82,8 +82,10 @@ namespace JodelAPI.Shared
         {
             try
             {
-                if (DeviceUid == String.Empty)
+                if (string.IsNullOrWhiteSpace(DeviceUid))
+                {
                     DeviceUid = Helpers.GetRandomDeviceUid();
+                }
 
                 JsonRequestGenerateAccessToken payload = new JsonRequestGenerateAccessToken
                 {
@@ -101,8 +103,6 @@ namespace JodelAPI.Shared
                     },
                     client_id = Constants.ClientId
                 };
-
-
 
                 string jsonString = Links.GetRequestToken.ExecuteRequest(UserConfig, payload: payload);
 
