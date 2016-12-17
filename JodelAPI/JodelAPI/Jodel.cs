@@ -141,7 +141,7 @@ namespace JodelAPI
 
         #region Channels
 
-        public List<Channel> GetRecommendedChannels()
+        public IEnumerable<Channel> GetRecommendedChannels()
         {
             string jsonString = Links.GetRecommendedChannels.ExecuteRequest(Account, new Dictionary<string, string> { { "home", "false" } }, payload: new JsonRequestRecommendedChannels());
 
@@ -164,22 +164,21 @@ namespace JodelAPI
             return recommendedChannels;
         }
 
-        public List<Channel> GetFollowedChannelsMeta()
+        public IEnumerable<Channel> GetFollowedChannelsMeta(bool home = false)
         {
             JsonRequestFollowedChannelMeta payload = new JsonRequestFollowedChannelMeta();
-            foreach (Channel channel in Account.FollowedChannels.Where(x => x.Following).ToList())
+            foreach (Channel channel in Account.FollowedChannels.Where(x => x.Following))
             {
                 payload.Values.Add(channel.ChannelName, -1);
             }
-            string jsonString = Links.GetFollowedChannelsMeta.ExecuteRequest(Account, new Dictionary<string, string>() { { "home", "false" } }, payload: payload);
+            string jsonString = Links.GetFollowedChannelsMeta.ExecuteRequest(Account, new Dictionary<string, string> { { "home", home.ToString().ToLower() } }, payload);
 
             JsonFollowedChannelsMeta.RootObject data = JsonConvert.DeserializeObject<JsonFollowedChannelsMeta.RootObject>(jsonString);
-
-
+            
             return data.channels.Select(channel => Account.FollowedChannels
                 .FirstOrDefault(x => x.ChannelName == channel.channel)?
                 .UpdateProperties(channel.followers, channel.sponsored, channel.unread))
-                .Where(c => c != null).ToList();
+                .Where(c => c != null);
         }
 
         #endregion
@@ -199,12 +198,12 @@ namespace JodelAPI
             JsonJodelsFirstRound.RootObject jodels = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(jsonString);
             JodelMainData data = new JodelMainData { Max = jodels.max };
             data.RecentJodels.AddRange(jodels.recent.Select(r => new JodelPost(r)));
-            data.RecentJodels.AddRange(jodels.replied.Select(r => new JodelPost(r)));
-            data.RecentJodels.AddRange(jodels.voted.Select(v => new JodelPost(v)));
+            data.RepliedJodels.AddRange(jodels.replied.Select(r => new JodelPost(r)));
+            data.VotedJodels.AddRange(jodels.voted.Select(v => new JodelPost(v)));
             return data;
         }
 
-        public List<JodelPost> GetRecentPostsAfter(string afterPostId, bool home = false)
+        public IEnumerable<JodelPost> GetRecentPostsAfter(string afterPostId, bool home = false)
         {
             string jsonString = Links.GetMostRecentPosts.ExecuteRequest(Account, new Dictionary<string, string>
             {
@@ -214,7 +213,7 @@ namespace JodelAPI
                 { "home", home.ToString().ToLower() }
             });
 
-            return JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(jsonString).posts.Select(p => new JodelPost(p)).ToList();
+            return JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(jsonString).posts.Select(p => new JodelPost(p));
         }
 
         public void Upvote(string postId, UpvoteReason reason = UpvoteReason.Stub)
