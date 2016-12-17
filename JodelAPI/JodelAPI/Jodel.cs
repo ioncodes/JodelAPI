@@ -345,6 +345,46 @@ namespace JodelAPI
             Links.Downvote.ExecuteRequest(Account, null, null, postId);
         }
 
+        public void UpVote(string postId)
+        {
+            Links.Upvote.ExecuteRequest(Account, payload: new JsonRequestUpDownVote(), postId: postId);
+        }
+
+        public void DownVote(string postId)
+        {
+            Links.Downvote.ExecuteRequest(Account, payload: new JsonRequestUpDownVote(), postId: postId);
+        }
+
+        /// <summary>
+        /// Posts a Jodel and returns the PostId
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="color"></param>
+        /// <param name="home"></param>
+        /// <returns>PostId</returns>
+        public string Post(string message, JodelPost.PostColor color = JodelPost.PostColor.Random, bool home = false)
+        {
+
+            JsonRequestPostJodel payload = new JsonRequestPostJodel
+            {
+                location = {
+                    city = Account.CityName,
+                    name = Account.CityName,
+                    country = Account.CountryCode,
+                    loc_coordinates = {
+                        lat = Account.Place.Latitude,
+                        lng = Account.Place.Longitude
+                    },
+                },
+                color = color.ToString(),
+                message = message,
+                to_home = home
+            };
+            string jsonString = Links.NewPost.ExecuteRequest(Account, payload: payload);
+            JsonPostJodel.RootObject data = JsonConvert.DeserializeObject<JsonPostJodel.RootObject>(jsonString);
+            return data.post_id;
+        }
+
         #endregion
 
         #endregion

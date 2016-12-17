@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,9 +21,9 @@ namespace JodelAPI.Shared
 
         public bool Moderator { get; set; }
         public object UserType { get; set; }
-        public List<Experiment> Experiments { get; set; }
-        public List<Channel> FollowedChannels { get; set; }
-        public List<string> FollowedHashtags { get; set; }
+        public List<Experiment> Experiments { get; set; } = new List<Experiment>();
+        public List<Channel> FollowedChannels { get; set; } = new List<Channel>();
+        public List<string> FollowedHashtags { get; set; } = new List<string>();
         public int ChannelsFollowLimit { get; set; }
         public bool TripleFeedEnabled { get; set; }
         public string HomeName { get; set; }
@@ -43,7 +44,7 @@ namespace JodelAPI.Shared
 
         public User(string deviceUid, string accessToken)
         {
-            this.Token = new AccessToken(this,deviceUid, accessToken);
+            this.Token = new AccessToken(this, deviceUid, accessToken);
         }
 
         public User(AccessToken token)
@@ -52,7 +53,6 @@ namespace JodelAPI.Shared
         }
 
         #endregion
-
 
         #region UserClasses
 
