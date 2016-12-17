@@ -21,32 +21,6 @@ namespace JodelAPI
 
         #endregion
 
-        #region Enums
-
-        public enum UpvoteReason
-        {
-            Stub = -1,
-            Cancel = 1,
-            Funny = 1,
-            Interesting = 2,
-            SoTrue = 3,
-            SaveJodel = 4,
-            Other = 5
-        }
-
-        public enum DownvoteReason
-        {
-            Stub = -1,
-            Cancel = 1,
-            NotInteresting = 1,
-            Repost = 2,
-            NotAllowedOnJodel = 3,
-            GoogleIt = 4,
-            Other = 5
-        }
-
-        #endregion
-
         #region Constructor
 
         public Jodel(User user)
@@ -87,7 +61,6 @@ namespace JodelAPI
             string jsonString = Links.GetUserConfig.ExecuteRequest(Account);
 
             JsonConfig.RootObject config = JsonConvert.DeserializeObject<JsonConfig.RootObject>(jsonString);
-
 
             List<User.Experiment> experiments = new List<User.Experiment>(config.experiments.Count);
             experiments.AddRange(config.experiments.Select(experiment => new User.Experiment(experiment.name, experiment.@group, experiment.features)));
@@ -216,12 +189,12 @@ namespace JodelAPI
             return JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(jsonString).posts.Select(p => new JodelPost(p));
         }
 
-        public void Upvote(string postId, UpvoteReason reason = UpvoteReason.Stub)
+        public void Upvote(string postId, JodelPost.UpvoteReason reason = JodelPost.UpvoteReason.Stub)
         {
             Links.UpvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId);
         }
 
-        public void Downvote(string postId, DownvoteReason reason = DownvoteReason.Stub)
+        public void Downvote(string postId, JodelPost.DownvoteReason reason = JodelPost.DownvoteReason.Stub)
         {
             Links.DownvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId);
         }

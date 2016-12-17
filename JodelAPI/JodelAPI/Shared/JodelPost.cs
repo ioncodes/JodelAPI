@@ -41,6 +41,32 @@ namespace JodelAPI.Shared
 
         #endregion
 
+        #region Enum
+
+        public enum UpvoteReason
+        {
+            Stub = -1,
+            Cancel = 1,
+            Funny = 1,
+            Interesting = 2,
+            SoTrue = 3,
+            SaveJodel = 4,
+            Other = 5
+        }
+
+        public enum DownvoteReason
+        {
+            Stub = -1,
+            Cancel = 1,
+            NotInteresting = 1,
+            Repost = 2,
+            NotAllowedOnJodel = 3,
+            GoogleIt = 4,
+            Other = 5
+        }
+
+        #endregion
+
         #region Constructor
 
         internal JodelPost()
