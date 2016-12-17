@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JodelAPI.Json.Response;
 
 namespace JodelAPI.Shared
 {
@@ -21,7 +23,7 @@ namespace JodelAPI.Shared
         public bool NotificationsEnabled { get; set; }
         public int PinCounted { get; set; }
         public string PostOwn { get; set; }
-        public string UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public string UserHandle { get; set; }
         public int VoteCount { get; set; }
         public PostColor Color { get; set; }
@@ -31,6 +33,7 @@ namespace JodelAPI.Shared
             set { Color = (PostColor)value; }
         }
         public int ChildCount { get; set; }
+        public List<JodelPost> Children { get; set; }
         public string ImageUrl { get; set; }
         public string ImageHost { get; set; }
         public string ImageAuthorization { get; set; }
@@ -43,6 +46,39 @@ namespace JodelAPI.Shared
         internal JodelPost()
         {
 
+        }
+
+        internal JodelPost(JsonPostJodels.Post jodel)
+        {
+            ColorHex = int.Parse(jodel.color, NumberStyles.HexNumber);
+            ChildCount = jodel.child_count ?? 0;
+            Children = jodel.children?.Select(c => new JodelPost(c)).ToList();
+            CreatedAt = DateTime.ParseExact(jodel.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
+            Discovered = jodel.discovered;
+            DiscoveredBy = jodel.discovered_by;
+            Distance = jodel.distance;
+            GotThanks = jodel.got_thanks;
+            ImageAuthorization = jodel.image_headers?.Authorization;
+            ImageUrl = jodel.image_url;
+            ImageHost = jodel.image_headers?.Host;
+            Message = jodel.message;
+            NotificationsEnabled = jodel.notifications_enabled;
+            PinCounted = jodel.pin_count;
+            Place = new Location
+            {
+                Longitude = jodel.location.loc_coordinates.lng,
+                Latitude = jodel.location.loc_coordinates.lat,
+                City = jodel.location.city,
+                Accuracy = jodel.location.loc_accuracy,
+                Name = jodel.location.name,
+                Country = jodel.location.country
+            };
+            PostId = jodel.post_id;
+            PostOwn = jodel.post_own;
+            ThumbnailUrl = jodel.thumbnail_url;
+            UpdatedAt = DateTime.ParseExact(jodel.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
+            UserHandle = jodel.user_handle;
+            VoteCount = jodel.vote_count;
         }
 
         #endregion
