@@ -337,20 +337,10 @@ namespace JodelAPI
 
         public void Upvote(string postId)
         {
-            Links.Upvote.ExecuteRequest(Account, null, null, postId);
-        }
-
-        public void Downvote(string postId)
-        {
-            Links.Downvote.ExecuteRequest(Account, null, null, postId);
-        }
-
-        public void UpVote(string postId)
-        {
             Links.Upvote.ExecuteRequest(Account, payload: new JsonRequestUpDownVote(), postId: postId);
         }
 
-        public void DownVote(string postId)
+        public void Downvote(string postId)
         {
             Links.Downvote.ExecuteRequest(Account, payload: new JsonRequestUpDownVote(), postId: postId);
         }
