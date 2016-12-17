@@ -198,120 +198,14 @@ namespace JodelAPI
 
             JsonJodelsFirstRound.RootObject jodels = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(jsonString);
             JodelMainData data = new JodelMainData { Max = jodels.max };
-
-
-            foreach (JsonJodelsFirstRound.Recent jodel in jodels.recent)
-            {
-                var item = new JodelPost
-                {
-                    ColorHex = int.Parse(jodel.color, NumberStyles.HexNumber),
-                    ChildCount = jodel.child_count ?? 0,
-                    CreatedAt = DateTime.ParseExact(jodel.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                    Discovered = jodel.discovered,
-                    DiscoveredBy = jodel.discovered_by,
-                    Distance = jodel.distance,
-                    GotThanks = jodel.got_thanks,
-                    ImageAuthorization = jodel.image_headers?.Authorization,
-                    ImageUrl = jodel.image_url,
-                    ImageHost = jodel.image_headers?.Host,
-                    Message = jodel.message,
-                    NotificationsEnabled = jodel.notifications_enabled,
-                    PinCounted = jodel.pin_count,
-                    Place = new JodelPost.Location
-                    {
-                        Longitude = jodel.location.loc_coordinates.lng,
-                        Latitude = jodel.location.loc_coordinates.lat,
-                        City = jodel.location.city,
-                        Accuracy = jodel.location.loc_accuracy,
-                        Name = jodel.location.name,
-                        Country = jodel.location.country
-                    },
-                    PostId = jodel.post_id,
-                    PostOwn = jodel.post_own,
-                    ThumbnailUrl = jodel.thumbnail_url,
-                    UpdatedAt = jodel.updated_at,
-                    UserHandle = jodel.user_handle,
-                    VoteCount = jodel.vote_count
-                };
-                data.RecentJodels.Add(item);
-            }
-
-            foreach (JsonJodelsFirstRound.Replied jodel in jodels.replied)
-            {
-                data.RepliedJodels.Add(new JodelPost
-                {
-                    ColorHex = int.Parse(jodel.color, NumberStyles.HexNumber),
-                    ChildCount = jodel.child_count,
-                    CreatedAt = DateTime.ParseExact(jodel.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                    Discovered = jodel.discovered,
-                    DiscoveredBy = jodel.discovered_by,
-                    Distance = jodel.distance,
-                    GotThanks = jodel.got_thanks,
-                    ImageAuthorization = jodel.image_headers?.Authorization,
-                    ImageUrl = jodel.image_url,
-                    ImageHost = jodel.image_headers?.Host,
-                    Message = jodel.message,
-                    NotificationsEnabled = jodel.notifications_enabled,
-                    PinCounted = jodel.pin_count,
-                    Place = new JodelPost.Location
-                    {
-                        Longitude = jodel.location.loc_coordinates.lng,
-                        Latitude = jodel.location.loc_coordinates.lat,
-                        City = jodel.location.city,
-                        Accuracy = jodel.location.loc_accuracy,
-                        Name = jodel.location.name,
-                        Country = jodel.location.country
-                    },
-                    PostId = jodel.post_id,
-                    PostOwn = jodel.post_own,
-                    ThumbnailUrl = jodel.thumbnail_url,
-                    UpdatedAt = jodel.updated_at,
-                    UserHandle = jodel.user_handle,
-                    VoteCount = jodel.vote_count
-                });
-            }
-
-            foreach (JsonJodelsFirstRound.Voted jodel in jodels.voted)
-            {
-                data.VotedJodels.Add(new JodelPost
-                {
-                    ColorHex = int.Parse(jodel.color, NumberStyles.HexNumber),
-                    ChildCount = jodel.child_count,
-                    CreatedAt = DateTime.ParseExact(jodel.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                    Discovered = jodel.discovered,
-                    DiscoveredBy = jodel.discovered_by,
-                    Distance = jodel.distance,
-                    GotThanks = jodel.got_thanks,
-                    ImageAuthorization = jodel.image_headers?.Authorization,
-                    ImageUrl = jodel.image_url,
-                    ImageHost = jodel.image_headers?.Host,
-                    Message = jodel.message,
-                    NotificationsEnabled = jodel.notifications_enabled,
-                    PinCounted = jodel.pin_count,
-                    Place = new JodelPost.Location
-                    {
-                        Longitude = jodel.location.loc_coordinates.lng,
-                        Latitude = jodel.location.loc_coordinates.lat,
-                        City = jodel.location.city,
-                        Accuracy = jodel.location.loc_accuracy,
-                        Name = jodel.location.name,
-                        Country = jodel.location.country
-                    },
-                    PostId = jodel.post_id,
-                    PostOwn = jodel.post_own,
-                    ThumbnailUrl = jodel.thumbnail_url,
-                    UpdatedAt = jodel.updated_at,
-                    UserHandle = jodel.user_handle,
-                    VoteCount = jodel.vote_count
-                });
-            }
-
+            data.RecentJodels.AddRange(jodels.recent.Select(r => new JodelPost(r)));
+            data.RecentJodels.AddRange(jodels.replied.Select(r => new JodelPost(r)));
+            data.RecentJodels.AddRange(jodels.voted.Select(v => new JodelPost(v)));
             return data;
         }
 
         public List<JodelPost> GetRecentPostsAfter(string afterPostId, bool home = false)
         {
-
             string jsonString = Links.GetMostRecentPosts.ExecuteRequest(Account, new Dictionary<string, string>
             {
                 { "after", afterPostId },
@@ -320,45 +214,7 @@ namespace JodelAPI
                 { "home", home.ToString().ToLower() }
             });
 
-            JsonPostJodels.RootObject data = JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(jsonString);
-
-            List<JodelPost> jodels = new List<JodelPost>();
-
-            foreach (JsonPostJodels.Post jodel in data.posts)
-            {
-                jodels.Add(new JodelPost
-                {
-                    ColorHex = int.Parse(jodel.color, NumberStyles.HexNumber),
-                    ChildCount = jodel.child_count ?? 0,
-                    CreatedAt = DateTime.ParseExact(jodel.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                    Discovered = jodel.discovered,
-                    DiscoveredBy = jodel.discovered_by,
-                    Distance = jodel.distance,
-                    GotThanks = jodel.got_thanks,
-                    ImageAuthorization = jodel.image_headers?.Authorization,
-                    ImageUrl = jodel.image_url,
-                    ImageHost = jodel.image_headers?.Host,
-                    Message = jodel.message,
-                    NotificationsEnabled = jodel.notifications_enabled,
-                    PinCounted = jodel.pin_count,
-                    Place = new JodelPost.Location
-                    {
-                        Longitude = jodel.location.loc_coordinates.lng,
-                        Latitude = jodel.location.loc_coordinates.lat,
-                        City = jodel.location.city,
-                        Accuracy = jodel.location.loc_accuracy,
-                        Name = jodel.location.name,
-                        Country = jodel.location.country
-                    },
-                    PostId = jodel.post_id,
-                    PostOwn = jodel.post_own,
-                    ThumbnailUrl = jodel.thumbnail_url,
-                    UpdatedAt = jodel.updated_at,
-                    UserHandle = jodel.user_handle,
-                    VoteCount = jodel.vote_count
-                });
-            }
-            return jodels;
+            return JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(jsonString).posts.Select(p => new JodelPost(p)).ToList();
         }
 
         public void Upvote(string postId, UpvoteReason reason = UpvoteReason.Stub)
@@ -399,6 +255,12 @@ namespace JodelAPI
             string jsonString = Links.SendPost.ExecuteRequest(Account, payload: payload);
             JsonPostJodel.RootObject data = JsonConvert.DeserializeObject<JsonPostJodel.RootObject>(jsonString);
             return data.post_id;
+        }
+
+        public JodelPost GetPost(string postId)
+        {
+            string jsonString = Links.GetPost.ExecuteRequest(Account, postId: postId);
+            return new JodelPost(JsonConvert.DeserializeObject<JsonPostJodels.Post>(jsonString));
         }
 
         #endregion
