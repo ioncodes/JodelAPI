@@ -56,9 +56,9 @@ namespace JodelAPI
             return Account.Token.RefreshAccessToken();
         }
 
-        public void GetConfig()
+        public void GetUserConfig()
         {
-            string jsonString = Links.GetConfig.ExecuteRequest(Account);
+            string jsonString = Links.GetUserConfig.ExecuteRequest(Account);
 
             JsonConfig.RootObject config = JsonConvert.DeserializeObject<JsonConfig.RootObject>(jsonString);
 
@@ -108,7 +108,7 @@ namespace JodelAPI
                 }
             };
 
-            Links.SetPosition.ExecuteRequest(Account, payload: payload);
+            Links.SendUserLocation.ExecuteRequest(Account, payload: payload);
         }
 
         #endregion
@@ -162,7 +162,7 @@ namespace JodelAPI
 
         public JodelMainData GetPostLocationCombo(bool stickies = false, bool home = false)
         {
-            string jsonString = Links.GetCombo.ExecuteRequest(Account, new Dictionary<string, string>
+            string jsonString = Links.GetPostsCombo.ExecuteRequest(Account, new Dictionary<string, string>
             {
                 { "lat", Account.Place.Latitude.ToString("F",CultureInfo.InvariantCulture) },
                 { "lng", Account.Place.Longitude.ToString("F",CultureInfo.InvariantCulture) },
@@ -286,7 +286,7 @@ namespace JodelAPI
         public List<JodelPost> GetRecentPostsAfter(string afterPostId, bool home = false)
         {
 
-            string jsonString = Links.GetPosts.ExecuteRequest(Account, new Dictionary<string, string>
+            string jsonString = Links.GetMostRecentPosts.ExecuteRequest(Account, new Dictionary<string, string>
             {
                 { "after", afterPostId },
                 { "lat", Account.Place.Latitude.ToString(CultureInfo.InvariantCulture) },
@@ -337,12 +337,12 @@ namespace JodelAPI
 
         public void Upvote(string postId)
         {
-            Links.Upvote.ExecuteRequest(Account, payload: new JsonRequestUpDownVote(), postId: postId);
+            Links.UpvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote(), postId: postId);
         }
 
         public void Downvote(string postId)
         {
-            Links.Downvote.ExecuteRequest(Account, payload: new JsonRequestUpDownVote(), postId: postId);
+            Links.DownvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote(), postId: postId);
         }
 
         /// <summary>
@@ -370,7 +370,7 @@ namespace JodelAPI
                 message = message,
                 to_home = home
             };
-            string jsonString = Links.NewPost.ExecuteRequest(Account, payload: payload);
+            string jsonString = Links.SendPost.ExecuteRequest(Account, payload: payload);
             JsonPostJodel.RootObject data = JsonConvert.DeserializeObject<JsonPostJodel.RootObject>(jsonString);
             return data.post_id;
         }

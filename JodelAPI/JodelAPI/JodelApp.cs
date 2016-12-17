@@ -34,7 +34,7 @@ namespace JodelAPI
 
         public void Start()
         {
-            MyJodel.GetConfig();
+            MyJodel.GetUserConfig();
             MyJodel.GetRecommendedChannels();
             MyJodel.SetLocation();
             this.Karma = MyJodel.GetKarma();
@@ -79,14 +79,14 @@ namespace JodelAPI
 
         #region Posts
 
-        public void UpVote(string postId)
+        public void Upvote(string postId)
         {
-            MyJodel.UpVote(postId);
+            MyJodel.Upvote(postId);
         }
 
-        public void DownVote(string postId)
+        public void Downvote(string postId)
         {
-            MyJodel.DownVote(postId);
+            MyJodel.Downvote(postId);
         }
 
         public string Post(string message, JodelPost.PostColor color = JodelPost.PostColor.Random, bool home = false)

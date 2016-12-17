@@ -104,7 +104,7 @@ namespace JodelAPI.Shared
 
 
 
-                string jsonString = Links.Register.ExecuteRequest(UserConfig, payload: payload);
+                string jsonString = Links.GetRequestToken.ExecuteRequest(UserConfig, payload: payload);
 
                 JsonTokens.RootObject objTokens = JsonConvert.DeserializeObject<JsonTokens.RootObject>(jsonString);
 
@@ -129,9 +129,9 @@ namespace JodelAPI.Shared
         {
             try
             {
-                JsonRequestRefreshAccessToken payload =new JsonRequestRefreshAccessToken {refresh_token = RefreshToken};
+                JsonRequestRefreshAccessToken payload = new JsonRequestRefreshAccessToken {refresh_token = RefreshToken};
 
-                string plainJson = Links.Refresh.ExecuteRequest(UserConfig, payload: payload);
+                string plainJson = Links.GetNewAccessToken.ExecuteRequest(UserConfig, payload: payload);
 
                 JsonRefreshTokens.RootObject obj =
                     JsonConvert.DeserializeObject<JsonRefreshTokens.RootObject>(plainJson);
