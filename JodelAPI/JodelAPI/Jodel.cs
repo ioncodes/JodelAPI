@@ -202,13 +202,13 @@ namespace JodelAPI
         /// <summary>
         /// Posts a Jodel and returns the PostId
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="color"></param>
-        /// <param name="home"></param>
+        /// <param name="message">Text to post to Jodel</param>
+        /// <param name="parentPostId">Comment to this post</param>
+        /// <param name="color">Color of Jodel</param>
+        /// <param name="home">Post at home</param>
         /// <returns>PostId</returns>
-        public string Post(string message, JodelPost.PostColor color = JodelPost.PostColor.Random, bool home = false)
+        public string Post(string message, string parentPostId = null, JodelPost.PostColor color = JodelPost.PostColor.Random, bool home = false)
         {
-
             JsonRequestPostJodel payload = new JsonRequestPostJodel
             {
                 location = {
@@ -222,6 +222,7 @@ namespace JodelAPI
                 },
                 color = color.ToString(),
                 message = message,
+                ancestor = parentPostId,
                 to_home = home
             };
             string jsonString = Links.SendPost.ExecuteRequest(Account, payload: payload);

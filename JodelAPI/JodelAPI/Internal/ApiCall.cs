@@ -41,6 +41,11 @@ namespace JodelAPI.Internal
         internal string ExecuteRequest(User user, Dictionary<string, string> parameters = null, JsonRequest payload = null, string postId = null)
         {
             string plainJson = null;
+            string payloadString = Newtonsoft.Json.JsonConvert.SerializeObject(payload, Newtonsoft.Json.Formatting.None,
+                    new Newtonsoft.Json.JsonSerializerSettings
+                    {
+                        NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore
+                    });
             DateTime dt = DateTime.Now;
             string urlParam = Url;
             if (!string.IsNullOrWhiteSpace(postId)) urlParam += postId;
@@ -50,7 +55,7 @@ namespace JodelAPI.Internal
 
             string stringifiedPayload = Method.Method + "%" + Links.ApiBaseUrl + "%443%/api/" + Version + urlParam;
             stringifiedPayload += "%" + user.Token.Token;
-            stringifiedPayload += "%" + $"{dt:s}Z" + "%%" + payload;
+            stringifiedPayload += "%" + $"{dt:s}Z" + "%%" + payloadString;
 
             using (var client = JodelWebClient.GetJodelWebClientWithHeaders(dt, stringifiedPayload, user.Token.Token, Authorize, Method))
             {
@@ -67,7 +72,7 @@ namespace JodelAPI.Internal
                 Console.WriteLine("----------------------------------------------------------------");
                 Console.WriteLine(stringifiedPayload);
                 Console.WriteLine("----------------------------------------------------------------");
-                Console.WriteLine(payload);
+                Console.WriteLine(payloadString);
 #endif
                 if (Method == HttpMethod.Get)
                 {
@@ -75,7 +80,7 @@ namespace JodelAPI.Internal
                 }
                 else
                 {
-                    plainJson = client.UploadString(stringifiedUrl, Method.Method, payload?.ToString() ?? string.Empty);
+                    plainJson = client.UploadString(stringifiedUrl, Method.Method, payloadString ?? string.Empty);
                 }
 #if DEBUG
                 //Console.WriteLine("----------------------------------------------------------------");
