@@ -176,6 +176,38 @@ namespace JodelAPI
             return data;
         }
 
+        public JodelMainData GetPostHashtagCombo(string hashtag, bool home = false)
+        {
+            string jsonString = Links.GetHashtagCombo.ExecuteRequest(Account, new Dictionary<string, string>
+            {
+                { "hashtag", hashtag},
+                { "home", home.ToString().ToLower() }
+            });
+
+            JsonJodelsFirstRound.RootObject jodels = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(jsonString);
+            JodelMainData data = new JodelMainData { Max = jodels.max };
+            data.RecentJodels.AddRange(jodels.recent.Select(r => new JodelPost(r)));
+            data.RepliedJodels.AddRange(jodels.replied.Select(r => new JodelPost(r)));
+            data.VotedJodels.AddRange(jodels.voted.Select(v => new JodelPost(v)));
+            return data;
+        }
+
+        public JodelMainData GetPostChannelCombo(string channel, bool home = false)
+        {
+            string jsonString = Links.GetChannelCombo.ExecuteRequest(Account, new Dictionary<string, string>
+            {
+                { "channel", channel},
+                { "home", home.ToString().ToLower() }
+            });
+
+            JsonJodelsFirstRound.RootObject jodels = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(jsonString);
+            JodelMainData data = new JodelMainData { Max = jodels.max };
+            data.RecentJodels.AddRange(jodels.recent.Select(r => new JodelPost(r)));
+            data.RepliedJodels.AddRange(jodels.replied.Select(r => new JodelPost(r)));
+            data.VotedJodels.AddRange(jodels.voted.Select(v => new JodelPost(v)));
+            return data;
+        }
+
         public IEnumerable<JodelPost> GetRecentPostsAfter(string afterPostId, bool home = false)
         {
             string jsonString = Links.GetMostRecentPosts.ExecuteRequest(Account, new Dictionary<string, string>
