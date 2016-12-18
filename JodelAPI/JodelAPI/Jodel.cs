@@ -236,6 +236,17 @@ namespace JodelAPI
             return new JodelPost(JsonConvert.DeserializeObject<JsonPostJodels.Post>(jsonString));
         }
 
+        public JodelPost GetPostDetails(string postId, bool details = true, bool reversed = false, int next = 0)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("details", details.ToString().ToLower());
+            if (next > 0) parameters.Add("reply", next.ToString());
+            parameters.Add("reversed", reversed.ToString().ToLower());
+
+            string jsonString = Links.GetPostDetails.ExecuteRequest(Account, postId: postId, parameters: parameters);
+            return new JodelPost(JsonConvert.DeserializeObject<JsonPostDetail.RootObject>(jsonString));
+        }
+
         #endregion
 
         #endregion

@@ -39,6 +39,9 @@ namespace JodelAPI.Shared
         public string ImageAuthorization { get; set; }
         public string ThumbnailUrl { get; set; }
 
+        public int? Next { get; set; } = null;
+        public int Remaining { get; set; } = 0;
+
         #endregion
 
         #region Enum
@@ -105,6 +108,45 @@ namespace JodelAPI.Shared
             UpdatedAt = DateTime.ParseExact(jodel.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
             UserHandle = jodel.user_handle;
             VoteCount = jodel.vote_count;
+        }
+
+        internal JodelPost(JsonPostDetail.RootObject jodel)
+        {
+            Children = jodel.replies?.Select(c => new JodelPost(c)).ToList();
+            Next = !string.IsNullOrWhiteSpace(jodel.next) ? int.Parse(jodel.next) : (int?)null;
+            Remaining = jodel.remaining;
+
+            if (jodel.details != null)
+            {
+                ColorHex = int.Parse(jodel.details.color, NumberStyles.HexNumber);
+                ChildCount = jodel.details.child_count ?? 0;
+                CreatedAt = DateTime.ParseExact(jodel.details.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
+                Discovered = jodel.details.discovered;
+                DiscoveredBy = jodel.details.discovered_by;
+                Distance = jodel.details.distance;
+                GotThanks = jodel.details.got_thanks;
+                ImageAuthorization = jodel.details.image_headers?.Authorization;
+                ImageUrl = jodel.details.image_url;
+                ImageHost = jodel.details.image_headers?.Host;
+                Message = jodel.details.message;
+                NotificationsEnabled = jodel.details.notifications_enabled;
+                PinCounted = jodel.details.pin_count;
+                Place = new Location
+                {
+                    Longitude = jodel.details.location.loc_coordinates.lng,
+                    Latitude = jodel.details.location.loc_coordinates.lat,
+                    City = jodel.details.location.city,
+                    Accuracy = jodel.details.location.loc_accuracy,
+                    Name = jodel.details.location.name,
+                    Country = jodel.details.location.country
+                };
+                PostId = jodel.details.post_id;
+                PostOwn = jodel.details.post_own;
+                ThumbnailUrl = jodel.details.thumbnail_url;
+                UpdatedAt = DateTime.ParseExact(jodel.details.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
+                UserHandle = jodel.details.user_handle;
+                VoteCount = jodel.details.vote_count;
+            }
         }
 
         #endregion
