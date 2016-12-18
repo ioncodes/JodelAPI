@@ -41,11 +41,13 @@ namespace JodelAPI.Internal
         internal string ExecuteRequest(User user, Dictionary<string, string> parameters = null, JsonRequest payload = null, string postId = null)
         {
             string plainJson = null;
-            string payloadString = Newtonsoft.Json.JsonConvert.SerializeObject(payload, Newtonsoft.Json.Formatting.None,
+            string payloadString = payload != null
+                ? Newtonsoft.Json.JsonConvert.SerializeObject(payload, Newtonsoft.Json.Formatting.None,
                     new Newtonsoft.Json.JsonSerializerSettings
                     {
                         NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore
-                    });
+                    })
+                : null;
             DateTime dt = DateTime.Now;
             string urlParam = Url;
             if (!string.IsNullOrWhiteSpace(postId)) urlParam += postId;
