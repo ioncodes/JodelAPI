@@ -34,7 +34,7 @@ namespace JodelAPI
 
         public void Start()
         {
-            MyJodel.GetConfig();
+            MyJodel.GetUserConfig();
             MyJodel.GetRecommendedChannels();
             MyJodel.SetLocation();
             this.Karma = MyJodel.GetKarma();
@@ -67,11 +67,10 @@ namespace JodelAPI
         /// </summary>
         /// <param name="postId"></param>
         /// <returns>The loaded Posts</returns>
-        public List<JodelPost> LoadMoreRecentPosts(string postId = "")
+        public IEnumerable<JodelPost> LoadMoreRecentPosts(string postId = "")
         {
-            List<JodelPost> posts = MyJodel.GetRecentPostsAfter(String.IsNullOrWhiteSpace(postId) ? JodelPosts.RecentJodels.Last().PostId : postId);
+            List<JodelPost> posts = MyJodel.GetRecentPostsAfter(string.IsNullOrWhiteSpace(postId) ? JodelPosts.RecentJodels.Last().PostId : postId).ToList();
             JodelPosts.RecentJodels.AddRange(posts);
-
             return posts;
         }
 
@@ -79,19 +78,19 @@ namespace JodelAPI
 
         #region Posts
 
-        public void UpVote(string postId)
+        public void Upvote(string postId)
         {
-            MyJodel.UpVote(postId);
+            MyJodel.Upvote(postId);
         }
 
-        public void DownVote(string postId)
+        public void Downvote(string postId)
         {
-            MyJodel.DownVote(postId);
+            MyJodel.Downvote(postId);
         }
 
         public string Post(string message, JodelPost.PostColor color = JodelPost.PostColor.Random, bool home = false)
         {
-            string postId = MyJodel.Post(message, color, home);
+            string postId = MyJodel.Post(message, color: color, home: home);
             JodelPosts = MyJodel.GetPostLocationCombo();
             return postId;
         }

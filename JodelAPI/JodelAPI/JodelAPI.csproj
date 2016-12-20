@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2FE543A6-F341-49D3-9CFD-98559341C69C}</ProjectGuid>
+    <ProjectGuid>{2D8CD3F5-3BCB-443E-8B84-03655D22C420}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JodelAPI</RootNamespace>
@@ -77,6 +77,7 @@
     <Compile Include="Json\Response\JsonMyPins.cs" />
     <Compile Include="Json\Response\JsonMyVotes.cs" />
     <Compile Include="Json\Response\JsonPostJodel.cs" />
+    <Compile Include="Json\Response\JsonPostDetail.cs" />
     <Compile Include="Json\Response\JsonPostJodels.cs" />
     <Compile Include="Json\Response\JsonRecommendedChannels.cs" />
     <Compile Include="Json\Response\JsonRefreshTokens.cs" />

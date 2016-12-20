@@ -10,6 +10,7 @@ namespace JodelAPI.Json.Request
     {
         #region Fields and Properties
 
+        public string ancestor { get; set; } = null;
         public string color { get; set; }
         public Location location { get; set; } = new Location();
         public string message { get; set; }

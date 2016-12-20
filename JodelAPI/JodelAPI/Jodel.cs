@@ -56,12 +56,11 @@ namespace JodelAPI
             return Account.Token.RefreshAccessToken();
         }
 
-        public void GetConfig()
+        public void GetUserConfig()
         {
-            string jsonString = Links.GetConfig.ExecuteRequest(Account);
+            string jsonString = Links.GetUserConfig.ExecuteRequest(Account);
 
             JsonConfig.RootObject config = JsonConvert.DeserializeObject<JsonConfig.RootObject>(jsonString);
-
 
             List<User.Experiment> experiments = new List<User.Experiment>(config.experiments.Count);
             experiments.AddRange(config.experiments.Select(experiment => new User.Experiment(experiment.name, experiment.@group, experiment.features)));
@@ -108,14 +107,14 @@ namespace JodelAPI
                 }
             };
 
-            Links.SetPosition.ExecuteRequest(Account, payload: payload);
+            Links.SendUserLocation.ExecuteRequest(Account, payload: payload);
         }
 
         #endregion
 
         #region Channels
 
-        public List<Channel> GetRecommendedChannels()
+        public IEnumerable<Channel> GetRecommendedChannels()
         {
             string jsonString = Links.GetRecommendedChannels.ExecuteRequest(Account, new Dictionary<string, string> { { "home", "false" } }, payload: new JsonRequestRecommendedChannels());
 
@@ -138,22 +137,21 @@ namespace JodelAPI
             return recommendedChannels;
         }
 
-        public List<Channel> GetFollowedChannelsMeta()
+        public IEnumerable<Channel> GetFollowedChannelsMeta(bool home = false)
         {
             JsonRequestFollowedChannelMeta payload = new JsonRequestFollowedChannelMeta();
-            foreach (Channel channel in Account.FollowedChannels.Where(x => x.Following).ToList())
+            foreach (Channel channel in Account.FollowedChannels.Where(x => x.Following))
             {
                 payload.Values.Add(channel.ChannelName, -1);
             }
-            string jsonString = Links.GetFollowedChannelsMeta.ExecuteRequest(Account, new Dictionary<string, string>() { { "home", "false" } }, payload: payload);
+            string jsonString = Links.GetFollowedChannelsMeta.ExecuteRequest(Account, new Dictionary<string, string> { { "home", home.ToString().ToLower() } }, payload);
 
             JsonFollowedChannelsMeta.RootObject data = JsonConvert.DeserializeObject<JsonFollowedChannelsMeta.RootObject>(jsonString);
-
-
+            
             return data.channels.Select(channel => Account.FollowedChannels
                 .FirstOrDefault(x => x.ChannelName == channel.channel)?
                 .UpdateProperties(channel.followers, channel.sponsored, channel.unread))
-                .Where(c => c != null).ToList();
+                .Where(c => c != null);
         }
 
         #endregion
@@ -162,7 +160,7 @@ namespace JodelAPI
 
         public JodelMainData GetPostLocationCombo(bool stickies = false, bool home = false)
         {
-            string jsonString = Links.GetCombo.ExecuteRequest(Account, new Dictionary<string, string>
+            string jsonString = Links.GetPostsCombo.ExecuteRequest(Account, new Dictionary<string, string>
             {
                 { "lat", Account.Place.Latitude.ToString("F",CultureInfo.InvariantCulture) },
                 { "lng", Account.Place.Longitude.ToString("F",CultureInfo.InvariantCulture) },
@@ -172,121 +170,47 @@ namespace JodelAPI
 
             JsonJodelsFirstRound.RootObject jodels = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(jsonString);
             JodelMainData data = new JodelMainData { Max = jodels.max };
-
-
-            foreach (JsonJodelsFirstRound.Recent jodel in jodels.recent)
-            {
-                var item = new JodelPost
-                {
-                    ColorHex = int.Parse(jodel.color, NumberStyles.HexNumber),
-                    ChildCount = jodel.child_count ?? 0,
-                    CreatedAt = jodel.created_at,
-                    Discovered = jodel.discovered,
-                    DiscoveredBy = jodel.discovered_by,
-                    Distance = jodel.distance,
-                    GotThanks = jodel.got_thanks,
-                    ImageAuthorization = jodel.image_headers?.Authorization,
-                    ImageUrl = jodel.image_url,
-                    ImageHost = jodel.image_headers?.Host,
-                    Message = jodel.message,
-                    NotificationsEnabled = jodel.notifications_enabled,
-                    PinCounted = jodel.pin_count,
-                    Place = new JodelPost.Location
-                    {
-                        Longitude = jodel.location.loc_coordinates.lng,
-                        Latitude = jodel.location.loc_coordinates.lat,
-                        City = jodel.location.city,
-                        Accuracy = jodel.location.loc_accuracy,
-                        Name = jodel.location.name,
-                        Country = jodel.location.country
-                    },
-                    PostId = jodel.post_id,
-                    PostOwn = jodel.post_own,
-                    ThumbnailUrl = jodel.thumbnail_url,
-                    UpdatedAt = jodel.updated_at,
-                    UserHandle = jodel.user_handle,
-                    VoteCount = jodel.vote_count
-                };
-                data.RecentJodels.Add(item);
-            }
-
-            foreach (JsonJodelsFirstRound.Replied jodel in jodels.replied)
-            {
-                data.RepliedJodels.Add(new JodelPost
-                {
-                    ColorHex = int.Parse(jodel.color, NumberStyles.HexNumber),
-                    ChildCount = jodel.child_count,
-                    CreatedAt = jodel.created_at,
-                    Discovered = jodel.discovered,
-                    DiscoveredBy = jodel.discovered_by,
-                    Distance = jodel.distance,
-                    GotThanks = jodel.got_thanks,
-                    ImageAuthorization = jodel.image_headers?.Authorization,
-                    ImageUrl = jodel.image_url,
-                    ImageHost = jodel.image_headers?.Host,
-                    Message = jodel.message,
-                    NotificationsEnabled = jodel.notifications_enabled,
-                    PinCounted = jodel.pin_count,
-                    Place = new JodelPost.Location
-                    {
-                        Longitude = jodel.location.loc_coordinates.lng,
-                        Latitude = jodel.location.loc_coordinates.lat,
-                        City = jodel.location.city,
-                        Accuracy = jodel.location.loc_accuracy,
-                        Name = jodel.location.name,
-                        Country = jodel.location.country
-                    },
-                    PostId = jodel.post_id,
-                    PostOwn = jodel.post_own,
-                    ThumbnailUrl = jodel.thumbnail_url,
-                    UpdatedAt = jodel.updated_at,
-                    UserHandle = jodel.user_handle,
-                    VoteCount = jodel.vote_count
-                });
-            }
-
-            foreach (JsonJodelsFirstRound.Voted jodel in jodels.voted)
-            {
-                data.VotedJodels.Add(new JodelPost
-                {
-                    ColorHex = int.Parse(jodel.color, NumberStyles.HexNumber),
-                    ChildCount = jodel.child_count,
-                    CreatedAt = jodel.created_at,
-                    Discovered = jodel.discovered,
-                    DiscoveredBy = jodel.discovered_by,
-                    Distance = jodel.distance,
-                    GotThanks = jodel.got_thanks,
-                    ImageAuthorization = jodel.image_headers?.Authorization,
-                    ImageUrl = jodel.image_url,
-                    ImageHost = jodel.image_headers?.Host,
-                    Message = jodel.message,
-                    NotificationsEnabled = jodel.notifications_enabled,
-                    PinCounted = jodel.pin_count,
-                    Place = new JodelPost.Location
-                    {
-                        Longitude = jodel.location.loc_coordinates.lng,
-                        Latitude = jodel.location.loc_coordinates.lat,
-                        City = jodel.location.city,
-                        Accuracy = jodel.location.loc_accuracy,
-                        Name = jodel.location.name,
-                        Country = jodel.location.country
-                    },
-                    PostId = jodel.post_id,
-                    PostOwn = jodel.post_own,
-                    ThumbnailUrl = jodel.thumbnail_url,
-                    UpdatedAt = jodel.updated_at,
-                    UserHandle = jodel.user_handle,
-                    VoteCount = jodel.vote_count
-                });
-            }
-
+            data.RecentJodels.AddRange(jodels.recent.Select(r => new JodelPost(r)));
+            data.RepliedJodels.AddRange(jodels.replied.Select(r => new JodelPost(r)));
+            data.VotedJodels.AddRange(jodels.voted.Select(v => new JodelPost(v)));
             return data;
         }
 
-        public List<JodelPost> GetRecentPostsAfter(string afterPostId, bool home = false)
+        public JodelMainData GetPostHashtagCombo(string hashtag, bool home = false)
         {
+            string jsonString = Links.GetHashtagCombo.ExecuteRequest(Account, new Dictionary<string, string>
+            {
+                { "hashtag", hashtag},
+                { "home", home.ToString().ToLower() }
+            });
 
-            string jsonString = Links.GetPosts.ExecuteRequest(Account, new Dictionary<string, string>
+            JsonJodelsFirstRound.RootObject jodels = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(jsonString);
+            JodelMainData data = new JodelMainData { Max = jodels.max };
+            data.RecentJodels.AddRange(jodels.recent.Select(r => new JodelPost(r)));
+            data.RepliedJodels.AddRange(jodels.replied.Select(r => new JodelPost(r)));
+            data.VotedJodels.AddRange(jodels.voted.Select(v => new JodelPost(v)));
+            return data;
+        }
+
+        public JodelMainData GetPostChannelCombo(string channel, bool home = false)
+        {
+            string jsonString = Links.GetChannelCombo.ExecuteRequest(Account, new Dictionary<string, string>
+            {
+                { "channel", channel},
+                { "home", home.ToString().ToLower() }
+            });
+
+            JsonJodelsFirstRound.RootObject jodels = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(jsonString);
+            JodelMainData data = new JodelMainData { Max = jodels.max };
+            data.RecentJodels.AddRange(jodels.recent.Select(r => new JodelPost(r)));
+            data.RepliedJodels.AddRange(jodels.replied.Select(r => new JodelPost(r)));
+            data.VotedJodels.AddRange(jodels.voted.Select(v => new JodelPost(v)));
+            return data;
+        }
+
+        public IEnumerable<JodelPost> GetRecentPostsAfter(string afterPostId, bool home = false)
+        {
+            string jsonString = Links.GetMostRecentPosts.ExecuteRequest(Account, new Dictionary<string, string>
             {
                 { "after", afterPostId },
                 { "lat", Account.Place.Latitude.ToString(CultureInfo.InvariantCulture) },
@@ -294,67 +218,29 @@ namespace JodelAPI
                 { "home", home.ToString().ToLower() }
             });
 
-            JsonPostJodels.RootObject data = JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(jsonString);
-
-            List<JodelPost> jodels = new List<JodelPost>();
-
-            foreach (JsonPostJodels.Post jodel in data.posts)
-            {
-                jodels.Add(new JodelPost
-                {
-                    ColorHex = int.Parse(jodel.color, NumberStyles.HexNumber),
-                    ChildCount = jodel.child_count ?? 0,
-                    CreatedAt = jodel.created_at,
-                    Discovered = jodel.discovered,
-                    DiscoveredBy = jodel.discovered_by,
-                    Distance = jodel.distance,
-                    GotThanks = jodel.got_thanks,
-                    ImageAuthorization = jodel.image_headers?.Authorization,
-                    ImageUrl = jodel.image_url,
-                    ImageHost = jodel.image_headers?.Host,
-                    Message = jodel.message,
-                    NotificationsEnabled = jodel.notifications_enabled,
-                    PinCounted = jodel.pin_count,
-                    Place = new JodelPost.Location
-                    {
-                        Longitude = jodel.location.loc_coordinates.lng,
-                        Latitude = jodel.location.loc_coordinates.lat,
-                        City = jodel.location.city,
-                        Accuracy = jodel.location.loc_accuracy,
-                        Name = jodel.location.name,
-                        Country = jodel.location.country
-                    },
-                    PostId = jodel.post_id,
-                    PostOwn = jodel.post_own,
-                    ThumbnailUrl = jodel.thumbnail_url,
-                    UpdatedAt = jodel.updated_at,
-                    UserHandle = jodel.user_handle,
-                    VoteCount = jodel.vote_count
-                });
-            }
-            return jodels;
+            return JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(jsonString).posts.Select(p => new JodelPost(p));
         }
 
-        public void UpVote(string postId)
+        public void Upvote(string postId, JodelPost.UpvoteReason reason = JodelPost.UpvoteReason.Stub)
         {
-            Links.Upvote.ExecuteRequest(Account, payload: new JsonRequestUpDownVote(), postId: postId);
+            Links.UpvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId);
         }
 
-        public void DownVote(string postId)
+        public void Downvote(string postId, JodelPost.DownvoteReason reason = JodelPost.DownvoteReason.Stub)
         {
-            Links.Downvote.ExecuteRequest(Account, payload: new JsonRequestUpDownVote(), postId: postId);
+            Links.DownvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId);
         }
 
         /// <summary>
         /// Posts a Jodel and returns the PostId
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="color"></param>
-        /// <param name="home"></param>
+        /// <param name="message">Text to post to Jodel</param>
+        /// <param name="parentPostId">Comment to this post</param>
+        /// <param name="color">Color of Jodel</param>
+        /// <param name="home">Post at home</param>
         /// <returns>PostId</returns>
-        public string Post(string message, JodelPost.PostColor color = JodelPost.PostColor.Random, bool home = false)
+        public string Post(string message, string parentPostId = null, JodelPost.PostColor color = JodelPost.PostColor.Random, bool home = false)
         {
-
             JsonRequestPostJodel payload = new JsonRequestPostJodel
             {
                 location = {
@@ -368,11 +254,29 @@ namespace JodelAPI
                 },
                 color = color.ToString(),
                 message = message,
+                ancestor = parentPostId,
                 to_home = home
             };
-            string jsonString = Links.NewPost.ExecuteRequest(Account, payload: payload);
+            string jsonString = Links.SendPost.ExecuteRequest(Account, payload: payload);
             JsonPostJodel.RootObject data = JsonConvert.DeserializeObject<JsonPostJodel.RootObject>(jsonString);
             return data.post_id;
+        }
+
+        public JodelPost GetPost(string postId)
+        {
+            string jsonString = Links.GetPost.ExecuteRequest(Account, postId: postId);
+            return new JodelPost(JsonConvert.DeserializeObject<JsonPostJodels.Post>(jsonString));
+        }
+
+        public JodelPost GetPostDetails(string postId, bool details = true, bool reversed = false, int next = 0)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("details", details.ToString().ToLower());
+            if (next > 0) parameters.Add("reply", next.ToString());
+            parameters.Add("reversed", reversed.ToString().ToLower());
+
+            string jsonString = Links.GetPostDetails.ExecuteRequest(Account, postId: postId, parameters: parameters);
+            return new JodelPost(JsonConvert.DeserializeObject<JsonPostDetail.RootObject>(jsonString));
         }
 
         #endregion
