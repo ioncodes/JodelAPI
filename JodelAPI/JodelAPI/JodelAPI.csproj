@@ -58,9 +58,11 @@
     <Compile Include="Jodel.cs" />
     <Compile Include="JodelApp.cs" />
     <Compile Include="Json\Request\JsonRequestFollowedChannelMeta.cs" />
+    <Compile Include="Json\Request\JsonRequestPostJodel.cs" />
     <Compile Include="Json\Request\JsonRequestSetLocation.cs" />
     <Compile Include="Json\Request\JsonRequestRecommendedChannels.cs" />
     <Compile Include="Json\Request\JsonRequestRefreshAccessToken.cs" />
+    <Compile Include="Json\Request\JsonRequestUpDownVote.cs" />
     <Compile Include="Json\Response\JsonComments.cs" />
     <Compile Include="Json\Response\JsonConfig.cs" />
     <Compile Include="Json\Response\JsonFollowedChannelsMeta.cs" />
@@ -74,6 +76,8 @@
     <Compile Include="Json\Response\JsonMyJodels.cs" />
     <Compile Include="Json\Response\JsonMyPins.cs" />
     <Compile Include="Json\Response\JsonMyVotes.cs" />
+    <Compile Include="Json\Response\JsonPostJodel.cs" />
+    <Compile Include="Json\Response\JsonPostDetail.cs" />
     <Compile Include="Json\Response\JsonPostJodels.cs" />
     <Compile Include="Json\Response\JsonRecommendedChannels.cs" />
     <Compile Include="Json\Response\JsonRefreshTokens.cs" />

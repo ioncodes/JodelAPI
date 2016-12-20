@@ -4,137 +4,27 @@ namespace JodelAPI.Json.Response
 {
     internal class JsonJodelsFirstRound
     {
-        public class LocCoordinates
-        {
-            public int lat { get; set; }
-            public int lng { get; set; }
-        }
+        public class LocCoordinates : JsonPostJodels.LocCoordinates { }
 
-        public class Location
-        {
-            public string name { get; set; }
-            public string city { get; set; }
-            public string country { get; set; }
-            public double loc_accuracy { get; set; }
-            public LocCoordinates loc_coordinates { get; set; }
-        }
+        public class Location : JsonPostJodels.Location { }
 
-        public class ImageHeaders
-        {
-            public string Host { get; set; }
-            public string Authorization { get; set; }
-        }
+        public class ImageHeaders : JsonPostJodels.ImageHeaders { }
 
-        public class Recent
-        {
-            public string post_id { get; set; }
-            public string created_at { get; set; }
-            public string message { get; set; }
-            public int discovered_by { get; set; }
-            public string updated_at { get; set; }
-            public string post_own { get; set; }
-            public int discovered { get; set; }
-            public int distance { get; set; }
-            public int pin_count { get; set; }
-            public int vote_count { get; set; }
-            public string color { get; set; }
-            public bool notifications_enabled { get; set; }
-            public Location location { get; set; }
-            public List<object> tags { get; set; }
-            public string user_handle { get; set; }
-            public int? child_count { get; set; }
-            public List<object> children { get; set; }
-            public string image_url { get; set; }
-            public ImageHeaders image_headers { get; set; }
-            public string thumbnail_url { get; set; }
-            public bool got_thanks { get; set; }
-        }
+        public class Recent : JsonPostJodels.Post { }
 
-        public class LocCoordinates2
-        {
-            public int lat { get; set; }
-            public int lng { get; set; }
-        }
+        public class LocCoordinates2 : JsonPostJodels.LocCoordinates { }
 
-        public class Location2
-        {
-            public string name { get; set; }
-            public string city { get; set; }
-            public string country { get; set; }
-            public double loc_accuracy { get; set; }
-            public LocCoordinates2 loc_coordinates { get; set; }
-        }
+        public class Location2 : JsonPostJodels.Location { }
 
-        public class ImageHeaders2
-        {
-            public string Host { get; set; }
-            public string Authorization { get; set; }
-        }
+        public class ImageHeaders2 : JsonPostJodels.ImageHeaders { }
 
-        public class Replied
-        {
-            public string post_id { get; set; }
-            public string created_at { get; set; }
-            public string message { get; set; }
-            public int discovered_by { get; set; }
-            public string updated_at { get; set; }
-            public string post_own { get; set; }
-            public int discovered { get; set; }
-            public int distance { get; set; }
-            public int pin_count { get; set; }
-            public int child_count { get; set; }
-            public List<object> children { get; set; }
-            public int vote_count { get; set; }
-            public string color { get; set; }
-            public bool notifications_enabled { get; set; }
-            public Location2 location { get; set; }
-            public List<object> tags { get; set; }
-            public string user_handle { get; set; }
-            public string image_url { get; set; }
-            public ImageHeaders2 image_headers { get; set; }
-            public string thumbnail_url { get; set; }
-            public bool got_thanks { get; set; }
-        }
+        public class Replied : JsonPostJodels.Post { }
 
-        public class LocCoordinates3
-        {
-            public int lat { get; set; }
-            public int lng { get; set; }
-        }
+        public class LocCoordinates3 : JsonPostJodels.LocCoordinates { }
 
-        public class Location3
-        {
-            public string name { get; set; }
-            public string city { get; set; }
-            public string country { get; set; }
-            public double loc_accuracy { get; set; }
-            public LocCoordinates3 loc_coordinates { get; set; }
-        }
+        public class Location3 : JsonPostJodels.Location { }
 
-        public class Voted
-        {
-            public string post_id { get; set; }
-            public string created_at { get; set; }
-            public string message { get; set; }
-            public int discovered_by { get; set; }
-            public string updated_at { get; set; }
-            public string post_own { get; set; }
-            public int discovered { get; set; }
-            public int distance { get; set; }
-            public int pin_count { get; set; }
-            public int child_count { get; set; }
-            public List<object> children { get; set; }
-            public int vote_count { get; set; }
-            public string color { get; set; }
-            public bool notifications_enabled { get; set; }
-            public Location3 location { get; set; }
-            public List<object> tags { get; set; }
-            public string user_handle { get; set; }
-            public string image_url { get; set; }
-            public ImageHeaders2 image_headers { get; set; }
-            public string thumbnail_url { get; set; }
-            public bool got_thanks { get; set; }
-        }
+        public class Voted : JsonPostJodels.Post { }
 
         public class RootObject
         {

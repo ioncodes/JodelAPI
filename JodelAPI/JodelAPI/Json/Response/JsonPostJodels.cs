@@ -45,7 +45,7 @@ namespace JodelAPI.Json.Response
             public string thumbnail_url { get; set; }
             public string voted { get; set; }
             public int? child_count { get; set; }
-            public List<object> children { get; set; }
+            public List<Post> children { get; set; }
             public bool got_thanks { get; set; }
             public bool notifications_enabled { get; set; }
             public int pin_count { get; set; }
