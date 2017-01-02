@@ -252,3 +252,4 @@ paket-files/
 *.sln.iml
 /JodelAPI/JodelAPI Tester
 /JodelAPI/Console
+/JodelAPI/test

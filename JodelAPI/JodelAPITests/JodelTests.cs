@@ -28,13 +28,6 @@ namespace JodelAPI.Tests
         }
 
         [TestMethod()]
-        public void GetConfigTest()
-        {
-            Assert.IsTrue(jodel.GenerateAccessToken());
-            jodel.GetConfig();
-        }
-
-        [TestMethod()]
         public void GetKarmaTest()
         {
             Assert.IsTrue(jodel.GenerateAccessToken());
