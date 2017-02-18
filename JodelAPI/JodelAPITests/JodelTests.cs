@@ -42,17 +42,26 @@ namespace JodelAPI.Tests
         }
 
         [TestMethod()]
-        public void GetFollowedChannelsMetaTest()
-        {
-            Assert.IsTrue(jodel.GenerateAccessToken());
-            Assert.IsNotNull(jodel.GetFollowedChannelsMeta());
-        }
-
-        [TestMethod()]
         public void GetPostLocationComboTest()
         {
             Assert.IsTrue(jodel.GenerateAccessToken());
             Assert.IsNotNull(jodel.GetPostLocationCombo());
+        }
+
+        [TestMethod()]
+        public void GetCaptcha()
+        {
+            Assert.IsNotNull(jodel.GetCaptcha());
+            Console.WriteLine(jodel.GetCaptcha().ImageUrl + ":" + jodel.GetCaptcha().Key);
+        }
+
+        [TestMethod()]
+        public void SolveCaptcha()
+        {
+            var captcha = jodel.GetCaptcha();
+            Assert.IsNotNull(captcha);
+            Console.WriteLine(captcha.ImageUrl + ":" + captcha.Key);
+            Assert.IsInstanceOfType(jodel.SolveCaptcha(captcha, new[] {1}), typeof(bool));
         }
     }
 }

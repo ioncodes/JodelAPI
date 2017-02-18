@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using JodelAPI.Json.Request;
+using JodelAPI.Json.Response;
 using JodelAPI.Shared;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace JodelAPI.Internal
 {
@@ -29,13 +34,37 @@ namespace JodelAPI.Internal
         /// <param name="version">API version to be used</param>
         /// <param name="postAction">Action to be applied to post</param>
         /// <param name="authorize"><c>true</c> if authorization bearer needs to be added to request header, otherwise <c>false</c></param>
-        internal ApiCall(System.Net.Http.HttpMethod method, string url, string version = "v3", string postAction = "", bool authorize = true)
+        internal ApiCall(HttpMethod method, string url, string version = "v3", string postAction = "", bool authorize = true)
         {
             Method = method;
             Url = url;
             Version = version;
             Action = postAction;
             Authorize = authorize;
+        }
+
+        internal JsonCaptcha.RootObject GetCaptcha(User user)
+        {
+            string url = "https://" + Links.ApiBaseUrl + "/api/" + Version + Url + user.Token.Token;
+            var json = JsonConvert.DeserializeObject<JsonCaptcha.RootObject>(new WebClient().DownloadString(url));
+            return json;
+        }
+
+        internal bool PostCaptcha(User user, Captcha captcha, int[] answer)
+        {
+            string url = "https://" + Links.ApiBaseUrl + "/api/" + Version + Url + user.Token.Token;
+            string an = "[";
+            for (var index = 0; index < answer.Length; index++)
+            {
+                var a = answer[index];
+                an += a;
+                if (an.Length != index + 1)
+                    an += ",";
+                else
+                    an += "]";
+            }
+            var json = JObject.Parse(new WebClient().UploadString(url, "{\"key\":\"" + captcha.Key + "\",\"answer\":" + an + "}"));
+            return json.Value<bool>("verified");
         }
 
         internal string ExecuteRequest(User user, Dictionary<string, string> parameters = null, JsonRequest payload = null, string postId = null)

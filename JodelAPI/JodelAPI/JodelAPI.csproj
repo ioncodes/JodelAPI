@@ -63,6 +63,7 @@
     <Compile Include="Json\Request\JsonRequestRecommendedChannels.cs" />
     <Compile Include="Json\Request\JsonRequestRefreshAccessToken.cs" />
     <Compile Include="Json\Request\JsonRequestUpDownVote.cs" />
+    <Compile Include="Json\Response\JsonCaptcha.cs" />
     <Compile Include="Json\Response\JsonComments.cs" />
     <Compile Include="Json\Response\JsonConfig.cs" />
     <Compile Include="Json\Response\JsonFollowedChannelsMeta.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Json\Request\JsonRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shared\AccessToken.cs" />
+    <Compile Include="Shared\Captcha.cs" />
     <Compile Include="Shared\Channel.cs" />
     <Compile Include="Shared\JodelMainData.cs" />
     <Compile Include="Shared\JodelPost.cs" />

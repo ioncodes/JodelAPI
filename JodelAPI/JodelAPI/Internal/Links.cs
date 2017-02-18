@@ -34,6 +34,8 @@ namespace JodelAPI.Internal
         public static readonly ApiCall GetMyPopularPosts = new ApiCall(HttpMethod.Get, "/posts/mine/popular/", "v2");
         public static readonly ApiCall GetMyMostDiscussedPosts = new ApiCall(HttpMethod.Get, "/posts/mine/discussed/", "v2");
         public static readonly ApiCall GetMyPinnedPosts = new ApiCall(HttpMethod.Get, "/posts/mine/pinned/", "v2");
+        public static readonly ApiCall GetCaptcha = new ApiCall(HttpMethod.Get, "/user/verification/imageCaptcha?access_token=");
+        public static readonly ApiCall VerifyCaptcha = new ApiCall(HttpMethod.Post, "/user/verification/imageCaptcha?access_token=");
 
         #endregion
 

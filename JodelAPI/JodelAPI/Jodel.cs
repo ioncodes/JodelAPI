@@ -110,6 +110,17 @@ namespace JodelAPI
             Links.SendUserLocation.ExecuteRequest(Account, payload: payload);
         }
 
+        public Captcha GetCaptcha(bool advanced = false)
+        {
+            var captchaRoot = Links.GetCaptcha.GetCaptcha(Account);
+            return advanced ? new Captcha(new JodelWebClient().DownloadData(captchaRoot.image_url), captchaRoot.key, captchaRoot.image_url, captchaRoot.image_size) : new Captcha(new JodelWebClient().DownloadData(captchaRoot.image_url), captchaRoot.key, captchaRoot.image_url);
+        }
+
+        public bool SolveCaptcha(Captcha captcha, int[] answer)
+        {
+            return Links.VerifyCaptcha.PostCaptcha(Account, captcha, answer);
+        }
+
         #endregion
 
         #region Channels
