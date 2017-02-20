@@ -63,5 +63,11 @@ namespace JodelAPI.Tests
             Console.WriteLine(captcha.ImageUrl + ":" + captcha.Key);
             Assert.IsInstanceOfType(jodel.SolveCaptcha(captcha, new[] {1}), typeof(bool));
         }
+
+        [TestMethod()]
+        public void VerifyAutomatically()
+        {
+            Assert.IsTrue(jodel.VerifyAutomatically());
+        }
     }
 }

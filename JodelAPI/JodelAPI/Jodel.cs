@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using JodelAPI.Internal;
@@ -119,6 +121,23 @@ namespace JodelAPI
         public bool SolveCaptcha(Captcha captcha, int[] answer)
         {
             return Links.VerifyCaptcha.PostCaptcha(Account, captcha, answer);
+        }
+
+        public bool VerifyAutomatically()
+        {
+            var captcha = GetCaptcha();
+            MD5 md5 = MD5.Create();
+            byte[] bhash = md5.ComputeHash(captcha.Image);
+            File.WriteAllBytes("test.png", captcha.Image);
+            StringBuilder sb = new StringBuilder();
+            foreach (byte t in bhash)
+            {
+                sb.Append(t.ToString("x2"));
+            }
+            string hash = sb.ToString();
+            Console.WriteLine(hash);
+            int[] answer = Captcha.Solutions.FirstOrDefault(t => t.Key == hash).Value;
+            return SolveCaptcha(captcha, answer);
         }
 
         #endregion
