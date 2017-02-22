@@ -53,17 +53,12 @@ namespace JodelAPI.Internal
         internal bool PostCaptcha(User user, Captcha captcha, int[] answer)
         {
             string url = "https://" + Links.ApiBaseUrl + "/api/" + Version + Url + user.Token.Token;
-            string an = "[";
-            for (var index = 0; index < answer.Length; index++)
-            {
-                var a = answer[index];
-                an += a;
-                if (an.Length != index + 1)
-                    an += ",";
-                else
-                    an += "]";
-            }
-            var json = JObject.Parse(new WebClient().UploadString(url, "{\"key\":\"" + captcha.Key + "\",\"answer\":" + an + "}"));
+            string an =  string.Join(",", answer);
+            
+            string payload = @"{""key"":"""+captcha.Key+@""",""answer"":["+an+"]}";
+            var myClient = new WebClient();
+			myClient.Headers.Add("Content-Type", "application/json");
+			var json = JObject.Parse(myClient.UploadString(url, payload));
             return json.Value<bool>("verified");
         }
 
