@@ -53,7 +53,7 @@ namespace JodelAPI.Internal
         internal bool PostCaptcha(User user, Captcha captcha, int[] answer)
         {
             string url = "https://" + Links.ApiBaseUrl + "/api/" + Version + Url + user.Token.Token;
-            string an =  string.Join(",", answer);
+            string an =  string.Join(",", answer ?? new int[0]);
             
             string payload = @"{""key"":"""+captcha.Key+@""",""answer"":["+an+"]}";
             var myClient = new WebClient();
