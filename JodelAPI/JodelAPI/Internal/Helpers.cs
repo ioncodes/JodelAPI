@@ -34,7 +34,7 @@ namespace JodelAPI.Internal
 
         public static string GetRandomDeviceUid()
         {
-            byte[] tokenData = new byte[32];
+            byte[] tokenData = new byte[64];
             using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
             {
                 rng.GetBytes(tokenData);
