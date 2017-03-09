@@ -1,782 +1,316 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using JodelAPI.Internal;
 using JodelAPI.Json;
-using JodelAPI.Objects;
+using JodelAPI.Json.Request;
+using JodelAPI.Json.Response;
+using JodelAPI.Shared;
 using Newtonsoft.Json;
 
 namespace JodelAPI
 {
     public class Jodel
     {
-        private static User _user;
-        public Moderation Moderation = new Moderation();
-        public Account Account;
-        public Location Location;
+        #region Fields and Properties
 
-        public Jodel(string accessToken, string longitude, string latitude, string city, string countryCode, string googleApiToken = "")
-            : this(new User(accessToken, latitude, longitude, countryCode, city, googleApiToken)) { }
+        public User Account { get; private set; }
+
+        #endregion
+
+        #region Constructor
 
         public Jodel(User user)
         {
-            _user = user;
-            Helpers._user = user;
-            Account = new Account(user);
-            Location = new Location(user);
+            this.Account = user;
         }
 
-        /// <summary>
-        ///     Colors for Jodels
-        /// </summary>
-        public enum PostColor
-        {
-            Orange,
-            Yellow,
-            Red,
-            Blue,
-            Bluegreyish,
-            Green,
-            Random
-        }
-
-        /// <summary>
-        ///     Methods to sort List<Jodels>
-        /// </summary>
-        public enum SortMethod
-        {
-            MostCommented,
-            Top
-        }
-
-        private string _lastPostId = "";
-
-        /// <summary>
-        /// Gets the UserConfig
-        /// </summary>
-        public User.UserConfig GetUserConfig()
-        {
-            string plainJson;
-            using (var client = new MyWebClient())
+        public Jodel(string place, string countrCode, string cityName, bool createToken = true)
+            : this(new User
             {
-                client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(Constants.LinkConfig.ToLink());
-            }
+                CountryCode = countrCode,
+                CityName = cityName,
+                Place = new Location(place),
+            })
+        {
+            if (createToken)
+                GenerateAccessToken();
+        }
 
-            JsonConfig.RootObject config = JsonConvert.DeserializeObject<JsonConfig.RootObject>(plainJson);
+        #endregion
+
+        #region Methods
+
+        #region Account
+
+        public bool GenerateAccessToken()
+        {
+            return Account.Token.GenerateNewAccessToken();
+        }
+
+        public bool RefreshAccessToken()
+        {
+            return Account.Token.RefreshAccessToken();
+        }
+
+        public void GetUserConfig()
+        {
+            string jsonString = Links.GetUserConfig.ExecuteRequest(Account);
+
+            JsonConfig.RootObject config = JsonConvert.DeserializeObject<JsonConfig.RootObject>(jsonString);
 
             List<User.Experiment> experiments = new List<User.Experiment>(config.experiments.Count);
-            foreach (JsonConfig.Experiment experiment in config.experiments)
-            {
-                experiments.Add(new User.Experiment
-                {
-                    Features = experiment.features,
-                    Group = experiment.group,
-                    Name = experiment.name
-                });
-            }
+            experiments.AddRange(config.experiments.Select(experiment => new User.Experiment(experiment.name, experiment.@group, experiment.features)));
 
             List<Channel> channels = new List<Channel>(config.followed_hashtags.Count);
-            foreach (string channelname in config.followed_channels)
-            {
-                channels.Add(new Channel(channelname));
-            }
+            channels.AddRange(config.followed_channels.Select(channelname => new Channel(channelname, true)));
 
-            User.UserConfig uconfig = new User.UserConfig
+            Account.ChannelsFollowLimit = config.channels_follow_limit;
+            Account.Experiments = experiments;
+            Account.HomeName = config.home_name;
+            Account.HomeSet = config.home_set;
+            Account.FollowedHashtags = config.followed_hashtags;
+            Account.Location = config.location;
+            Account.Moderator = config.moderator;
+            Account.TripleFeedEnabled = config.triple_feed_enabled;
+            Account.UserType = config.user_type;
+            Account.Verified = config.verified;
+            Account.FollowedChannels = channels;
+        }
+
+        public int GetKarma()
+        {
+            string jsonString = Links.GetKarma.ExecuteRequest(Account);
+
+            JsonKarma.RootObject karma = JsonConvert.DeserializeObject<JsonKarma.RootObject>(jsonString);
+            return karma.karma;
+        }
+
+        public void SetLocation()
+        {
+            JsonRequestSetLocation payload = new JsonRequestSetLocation
             {
-                ChannelsFollowLimit = config.channels_follow_limit,
-                Experiments = experiments,
-                HomeName = config.home_name,
-                HomeSet = config.home_set,
-                FollowedHashtags = config.followed_hashtags,
-                Location = config.location,
-                Moderator = config.moderator,
-                TripleFeedEnabled = config.triple_feed_enabled,
-                UserType = config.user_type,
-                Verified = config.verified,
-                FollowedChannels = channels
+                location =
+                {
+                    city = Account.CityName,
+                    country = Account.CountryCode,
+                    loc_accuracy = 0.0,
+                    name = Account.CityName,
+                    loc_coordinates =
+                    {
+                        lat = Account.Place.Latitude,
+                        lng = Account.Place.Longitude
+                    }
+                }
             };
-            _user.Config = uconfig;
-            return uconfig;
+
+            Links.SendUserLocation.ExecuteRequest(Account, payload: payload);
         }
 
-        /// <summary>
-        /// Initial Load of all Followed Channels
-        /// </summary>
-        public void LoadFollowedChannels()
+        public Captcha GetCaptcha(bool advanced = false)
         {
-            if (_user.Config == null)
-                return;
+            var captchaRoot = Links.GetCaptcha.GetCaptcha(Account);
+            return advanced ? new Captcha(new JodelWebClient().DownloadData(captchaRoot.image_url), captchaRoot.key, captchaRoot.image_url, captchaRoot.image_size) : new Captcha(new JodelWebClient().DownloadData(captchaRoot.image_url), captchaRoot.key, captchaRoot.image_url);
+        }
 
-            DateTime dt = DateTime.UtcNow;
-            string jsonString;
+        public bool SolveCaptcha(Captcha captcha, int[] answer)
+        {
+            return Links.VerifyCaptcha.PostCaptcha(Account, captcha, answer);
+        }
 
-
-            string payload = "{";
-
-            List<string> channelnames = _user.Config.FollowedChannels.Select(x => x.ChannelName).ToList();
-            if (channelnames.Count != 0)
+        public bool VerifyAutomatically()
+        {
+            var captcha = GetCaptcha();
+            MD5 md5 = MD5.Create();
+            byte[] bhash = md5.ComputeHash(captcha.Image);
+            File.WriteAllBytes("test.png", captcha.Image);
+            StringBuilder sb = new StringBuilder();
+            foreach (byte t in bhash)
             {
-                for (int i = 0; i < channelnames.Count; i++)
+                sb.Append(t.ToString("x2"));
+            }
+            string hash = sb.ToString();
+            Console.WriteLine(hash);
+            int[] answer = Captcha.Solutions.FirstOrDefault(t => t.Key == hash).Value;
+            return SolveCaptcha(captcha, answer);
+        }
+
+        #endregion
+
+        #region Channels
+
+        public IEnumerable<Channel> GetRecommendedChannels()
+        {
+            string jsonString = Links.GetRecommendedChannels.ExecuteRequest(Account, new Dictionary<string, string> { { "home", "false" } }, payload: new JsonRequestRecommendedChannels());
+
+            JsonRecommendedChannels.RootObject channels = JsonConvert.DeserializeObject<JsonRecommendedChannels.RootObject>(jsonString);
+
+            List<Channel> recommendedChannels = new List<Channel>();
+            foreach (JsonRecommendedChannels.Recommended recommended in channels.recommended)
+            {
+                if (Account.FollowedChannels.Any(x => x.ChannelName == recommended.channel))
                 {
-                    channelnames[i] = @"""" + channelnames[i] + @""":-1";
+                    Channel ch = Account.FollowedChannels.First(x => x.ChannelName == recommended.channel).UpdateProperties(recommended.image_url, recommended.followers);
+                    recommendedChannels.Add(ch);
                 }
-                payload += channelnames.Aggregate((i, j) => i + "," + j);
-            }
-
-
-            payload += "}";
-
-
-            string stringifiedPayload = "POST%api.go-tellm.com%443%/api/v3/user/followedChannelsMeta%%" + $"{dt:s}Z" + "%%" + payload;
-
-            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
-            using (var hmacsha1 = new HMACSHA1(keyByte))
-            {
-                hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
-
-                using (var client = new MyWebClient())
+                else
                 {
-                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow));
-                    client.Encoding = Encoding.UTF8;
-                    jsonString = client.UploadString(Constants.LinkLoadFollowedChannels.ToLink(), payload);
-                }
-            }
-
-            //TODO: Channels laden
-        }
-
-        /// <summary>
-        ///     Gets the first amount of Jodels (internal usage)
-        /// </summary>
-        /// <returns>List&lt;Jodels&gt;.</returns>
-        public List<Jodels> GetFirstJodels(string accessToken = null)
-        {
-            string plainJson;
-            using (var client = new MyWebClient())
-            {
-                client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(Constants.LinkFirstJodels.ToLink(accessToken));
-            }
-            JsonJodelsFirstRound.RootObject jfr =
-                JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(plainJson);
-            List<Jodels> temp = new List<Jodels>(); // List<post_id,message>
-
-            foreach (var item in jfr.recent)
-            {
-                string image_url = "";
-                bool isUrl = false;
-
-                if (item.image_url != null)
-                {
-                    image_url = "http:" + item.image_url;
-                    isUrl = true;
-                }
-
-                Jodels objJodels = new Jodels
-                {
-                    PostId = item.post_id,
-                    Message = item.message,
-                    HexColor = item.color,
-                    IsImage = isUrl,
-                    ImageUrl = image_url,
-                    VoteCount = item.vote_count,
-                    LocationName = item.location.name,
-                    CommentsCount = item.child_count ?? 0,
-                    ChildCount = item.child_count ?? 0,
-                    CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                    UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                    Distance = item.distance,
-                    IsNotificationEnabled = item.notifications_enabled,
-                    PinCount = item.pin_count,
-                    PostOwn = item.post_own,
-                    UserHandle = item.user_handle
-                };
-
-                temp.Add(objJodels);
-            }
-
-            _lastPostId = temp.Last().PostId; // Set the last post_id for next jodels
-
-            return temp;
-        }
-
-        /// <summary>
-        ///     Gets the second amount of Jodels (internal usage)
-        /// </summary>
-        /// <returns>List&lt;Jodels&gt;.</returns>
-        public List<Jodels> GetNextJodels(string accessToken = null)
-        {
-            List<Jodels> temp = new List<Jodels>();
-            for (int e = 0; e < 3; e++)
-            {
-                string plainJson;
-                using (var client = new MyWebClient())
-                {
-                    client.Encoding = Encoding.UTF8;
-                    plainJson = client.DownloadString(Constants.LinkSecondJodels.ToLinkSecond(_lastPostId, accessToken));
-                }
-                JsonJodelsLastRound.RootObject jlr = JsonConvert.DeserializeObject<JsonJodelsLastRound.RootObject>(plainJson);
-                foreach (var item in jlr.posts)
-                {
-                    string image_url = "";
-                    bool isUrl = false;
-
-                    if (item.image_url != null)
-                    {
-                        image_url = "http:" + item.image_url;
-                        isUrl = true;
-                    }
-
-                    Jodels objJodels = new Jodels
-                    {
-                        PostId = item.post_id,
-                        Message = item.message,
-                        HexColor = item.color,
-                        IsImage = isUrl,
-                        ImageUrl = image_url,
-                        VoteCount = item.vote_count,
-                        LocationName = item.location.name,
-                        CommentsCount = item.child_count ?? 0,
-                        ChildCount = item.child_count ?? 0,
-                        CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                        UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                        Distance = item.distance,
-                        IsNotificationEnabled = item.notifications_enabled,
-                        PinCount = item.pin_count,
-                        PostOwn = item.post_own,
-                        UserHandle = item.user_handle
-                    };
-
-                    temp.Add(objJodels);
-                }
-                if (temp.Count == 0)
-                    return temp; // not enough Jodels anymore.
-                _lastPostId = temp.Last().PostId; // Set the last post_id for next jodels
-            }
-            return temp;
-        }
-
-        /// <summary>
-        ///     Gets all jodels.
-        /// </summary>
-        /// <returns>List&lt;Jodels&gt;.</returns>
-        public List<Jodels> GetAllJodels()
-        {
-            var allJodels = GetFirstJodels();
-            allJodels.AddRange(GetNextJodels());
-            return allJodels;
-        }
-
-        /// <summary>
-        ///     Gets all jodels.
-        /// </summary>
-        /// <returns>List&lt;Jodels&gt;.</returns>
-        public List<Jodels> GetAllJodels(string accessToken)
-        {
-            var allJodels = GetFirstJodels(accessToken);
-            allJodels.AddRange(GetNextJodels(accessToken));
-            return allJodels;
-        }
-
-        /// <summary>
-        ///     Upvotes the specified post identifier (Jodel).
-        /// </summary>
-        /// <param name="postId">The post identifier.</param>
-        public void Upvote(string postId)
-        {
-            DateTime dt = DateTime.UtcNow;
-
-            string stringifiedPayload =
-                @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "/" + "upvote/%" + _user.AccessToken + "%" +
-                $"{dt:s}Z" + "%%";
-
-            using (var client = new MyWebClient())
-            {
-                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, dt, true));
-                client.Encoding = Encoding.UTF8;
-                client.UploadData(Constants.LinkUpvoteJodel.ToLink(_user.AccessToken, postId), "PUT", new byte[] { });
-            }
-        }
-
-        /// <summary>
-        ///     Downvotes the specified post identifier (Jodel).
-        /// </summary>
-        /// <param name="postId">The post identifier.</param>
-        public void Downvote(string postId)
-        {
-            DateTime dt = DateTime.UtcNow;
-
-            string stringifiedPayload =
-                @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "/" + "downvote/%" + _user.AccessToken + "%" +
-                $"{dt:s}Z" + "%%";
-
-            using (var client = new MyWebClient())
-            {
-                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, dt, true));
-                client.Encoding = Encoding.UTF8;
-                client.UploadData(Constants.LinkDownvoteJodel.ToLink(_user.AccessToken, postId), "PUT", new byte[] { });
-            }
-        }
-
-        /// <summary>
-        ///     Posts a jodel.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <param name="colorParam">The color parameter.</param>
-        /// <param name="postId">The post identifier.</param>
-        public string PostJodel(string message, PostColor colorParam = PostColor.Random, string postId = null)
-        {
-            DateTime dt = DateTime.UtcNow;
-
-            var color = Helpers.GetColor(colorParam);
-
-            string jsonCommentFragment = string.Empty;
-            if (postId != null)
-            {
-                jsonCommentFragment = @"""ancestor"": """ + postId + @""", ";
-            }
-
-            string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/posts/%" + _user.AccessToken + "%" +
-                                        $"{dt:s}Z" +
-                                        @"%%{""color"": """ + color + @""", " + jsonCommentFragment +
-                                        @"""message"": """ + message +
-                                        @""", ""location"": {""loc_accuracy"": 1, ""city"": """ + _user.City +
-                                        @""", ""loc_coordinates"": {""lat"": " + _user.Latitude + @", ""lng"": " +
-                                        _user.Longitude +
-                                        @"}, ""country"": """ + _user.CountryCode + @""", ""name"": """ + _user.City +
-                                        @"""}}";
-
-            string payload = @"{""color"": """ + color + @""", " + jsonCommentFragment +
-                             @"""message"": """ + message + @""", ""location"": {""loc_accuracy"": 1, ""city"": """ +
-                             _user.City +
-                             @""", ""loc_coordinates"": " + @"{""lat"": " + _user.Latitude + @", ""lng"": " +
-                             _user.Longitude +
-                             @"}, ""country"": """ + _user.CountryCode + @""", ""name"": """ + _user.City + @"""}}";
-
-            var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
-            using (var hmacsha1 = new HMACSHA1(keyByte))
-            {
-                hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
-
-                using (var client = new MyWebClient())
-                {
-                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, dt, true));
-                    client.Encoding = Encoding.UTF8;
-                    string newJodels = client.UploadString(Constants.LinkPostJodel, payload);
-                    JsonPostJodels.RootObject temp = JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(newJodels);
-                    return temp.posts[0].post_id;
-                }
-            }
-        }
-
-        //TODO: FIXME!
-        //public static string PostJodel(Image image, PostColor colorParam = PostColor.Random, string postId = null)
-        //{
-        //    DateTime dt = DateTime.UtcNow;
-
-        //    var color = Helpers.GetColor(colorParam);
-
-        //    ImageConverter ic = new ImageConverter();
-        //    byte[] buffer = (byte[]) ic.ConvertTo(image, typeof(byte[]));
-        //    string base64 = Convert.ToBase64String(buffer, Base64FormattingOptions.InsertLineBreaks);
-
-        //    string stringifiedPayload = @"POST%api.go-tellm.com%443%/api/v2/posts/%" + _user.AccessToken + "%" +
-        //                                $"{dt:s}Z" +
-        //                                "%%{\"color\": \"" + color +
-        //                                "\", \"message\": \"\", \"location\": {\"loc_accuracy\": 1, \"city\": \"" +
-        //                                _user.City +
-        //                                "\", \"loc_coordinates\": " + "{\"lat\": " + _user.Latitude + ", \"lng\": " +
-        //                                _user.Longitude + "}, \"country\": \"" + _user.CountryCode +
-        //                                "\", \"name\": \"" + _user.City + "\"}, \"image\": \"" + base64 + "\"}";
-
-        //    string payload = "{\"color\": \"" + color +
-        //                     "\", \"message\": \"\", \"location\": {\"loc_accuracy\": 1, \"city\": \"" + _user.City +
-        //                     "\", \"loc_coordinates\": " + "{\"lat\": " + _user.Latitude + ", \"lng\": " +
-        //                     _user.Longitude + "}, \"country\": \"" + _user.CountryCode +
-        //                     "\", \"name\": \"" + _user.City + "\"}, \"image\": \"" + base64 + "\"}";
-
-        //    var keyByte = Encoding.UTF8.GetBytes(Constants.Key);
-        //    using (var hmacsha1 = new HMACSHA1(keyByte))
-        //    {
-        //        hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
-
-        //        using (var client = new MyWebClient())
-        //        {
-        //            client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, true));
-        //            client.Encoding = Encoding.UTF8;
-        //            string newJodels = client.UploadString(Constants.LinkPostImage, payload);
-        //            JsonPostJodels.RootObject temp = JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(newJodels);
-        //            return temp.posts[0].post_id;
-        //        }
-        //    }
-        //}
-
-        /// <summary>
-        ///     Gets the comments.
-        /// </summary>
-        /// <param name="postId">The post identifier.</param>
-        /// <returns>List&lt;Comments&gt;.</returns>
-        public List<Comments> GetComments(string postId)
-        {
-            string plainJson;
-            using (var client = new MyWebClient())
-            {
-                client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(Constants.LinkGetComments.ToLink(_user.AccessToken, postId));
-            }
-            JsonComments.RootObject com = JsonConvert.DeserializeObject<JsonComments.RootObject>(plainJson);
-
-            var result = new List<Comments>();
-
-            if (com.children != null)
-            {
-                foreach (var child in com.children)
-                {
-                    string image_url = "";
-                    bool isUrl = false;
-
-                    if (child.image_url != null)
-                    {
-                        image_url = "http:" + child.image_url;
-                        isUrl = true;
-                    }
-
-                    result.Add(new Comments
-                    {
-                        Message = child.message,
-                        PostId = child.post_id,
-                        CreatedAt = DateTime.ParseExact(child.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                        UpdatedAt = DateTime.ParseExact(child.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                        IsImage = isUrl,
-                        ImageUrl = image_url,
-                        UserHandle = child.user_handle,
-                        VoteCount = child.vote_count
-                    });
+                    recommendedChannels.Add(new Channel(recommended.channel) { ImageUrl = recommended.image_url, Followers = recommended.followers });
                 }
             }
 
-            return result;
+            return recommendedChannels;
+        }
+
+        public IEnumerable<Channel> GetFollowedChannelsMeta(bool home = false)
+        {
+            JsonRequestFollowedChannelMeta payload = new JsonRequestFollowedChannelMeta();
+            foreach (Channel channel in Account.FollowedChannels.Where(x => x.Following))
+            {
+                payload.Values.Add(channel.ChannelName, -1);
+            }
+            string jsonString = Links.GetFollowedChannelsMeta.ExecuteRequest(Account, new Dictionary<string, string> { { "home", home.ToString().ToLower() } }, payload);
+
+            JsonFollowedChannelsMeta.RootObject data = JsonConvert.DeserializeObject<JsonFollowedChannelsMeta.RootObject>(jsonString);
+            
+            return data.channels.Select(channel => Account.FollowedChannels
+                .FirstOrDefault(x => x.ChannelName == channel.channel)?
+                .UpdateProperties(channel.followers, channel.sponsored, channel.unread))
+                .Where(c => c != null);
+        }
+
+        #endregion
+
+        #region Jodels
+
+        public JodelMainData GetPostLocationCombo(bool stickies = false, bool home = false)
+        {
+            string jsonString = Links.GetPostsCombo.ExecuteRequest(Account, new Dictionary<string, string>
+            {
+                { "lat", Account.Place.Latitude.ToString("F",CultureInfo.InvariantCulture) },
+                { "lng", Account.Place.Longitude.ToString("F",CultureInfo.InvariantCulture) },
+                { "stickies", stickies.ToString().ToLower() },
+                { "home", home.ToString().ToLower() }
+            });
+
+            JsonJodelsFirstRound.RootObject jodels = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(jsonString);
+            JodelMainData data = new JodelMainData { Max = jodels.max };
+            data.RecentJodels.AddRange(jodels.recent.Select(r => new JodelPost(r)));
+            data.RepliedJodels.AddRange(jodels.replied.Select(r => new JodelPost(r)));
+            data.VotedJodels.AddRange(jodels.voted.Select(v => new JodelPost(v)));
+            return data;
+        }
+
+        public JodelMainData GetPostHashtagCombo(string hashtag, bool home = false)
+        {
+            string jsonString = Links.GetHashtagCombo.ExecuteRequest(Account, new Dictionary<string, string>
+            {
+                { "hashtag", hashtag},
+                { "home", home.ToString().ToLower() }
+            });
+
+            JsonJodelsFirstRound.RootObject jodels = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(jsonString);
+            JodelMainData data = new JodelMainData { Max = jodels.max };
+            data.RecentJodels.AddRange(jodels.recent.Select(r => new JodelPost(r)));
+            data.RepliedJodels.AddRange(jodels.replied.Select(r => new JodelPost(r)));
+            data.VotedJodels.AddRange(jodels.voted.Select(v => new JodelPost(v)));
+            return data;
+        }
+
+        public JodelMainData GetPostChannelCombo(string channel, bool home = false)
+        {
+            string jsonString = Links.GetChannelCombo.ExecuteRequest(Account, new Dictionary<string, string>
+            {
+                { "channel", channel},
+                { "home", home.ToString().ToLower() }
+            });
+
+            JsonJodelsFirstRound.RootObject jodels = JsonConvert.DeserializeObject<JsonJodelsFirstRound.RootObject>(jsonString);
+            JodelMainData data = new JodelMainData { Max = jodels.max };
+            data.RecentJodels.AddRange(jodels.recent.Select(r => new JodelPost(r)));
+            data.RepliedJodels.AddRange(jodels.replied.Select(r => new JodelPost(r)));
+            data.VotedJodels.AddRange(jodels.voted.Select(v => new JodelPost(v)));
+            return data;
+        }
+
+        public IEnumerable<JodelPost> GetRecentPostsAfter(string afterPostId, bool home = false)
+        {
+            string jsonString = Links.GetMostRecentPosts.ExecuteRequest(Account, new Dictionary<string, string>
+            {
+                { "after", afterPostId },
+                { "lat", Account.Place.Latitude.ToString(CultureInfo.InvariantCulture) },
+                { "lng", Account.Place.Longitude.ToString(CultureInfo.InvariantCulture) },
+                { "home", home.ToString().ToLower() }
+            });
+
+            return JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(jsonString).posts.Select(p => new JodelPost(p));
+        }
+
+        public void Upvote(string postId, JodelPost.UpvoteReason reason = JodelPost.UpvoteReason.Stub)
+        {
+            Links.UpvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId);
+        }
+
+        public void Downvote(string postId, JodelPost.DownvoteReason reason = JodelPost.DownvoteReason.Stub)
+        {
+            Links.DownvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId);
         }
 
         /// <summary>
-        ///     Gets my jodels.
+        /// Posts a Jodel and returns the PostId
         /// </summary>
-        /// <returns>List&lt;MyJodels&gt;.</returns>
-        public List<MyJodels> GetMyJodels()
+        /// <param name="message">Text to post to Jodel</param>
+        /// <param name="parentPostId">Comment to this post</param>
+        /// <param name="color">Color of Jodel</param>
+        /// <param name="home">Post at home</param>
+        /// <returns>PostId</returns>
+        public string Post(string message, string parentPostId = null, JodelPost.PostColor color = JodelPost.PostColor.Random, bool home = false)
         {
-            string plainJson;
-            using (var client = new MyWebClient())
+            JsonRequestPostJodel payload = new JsonRequestPostJodel
             {
-                client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(Constants.LinkGetMyJodels.ToLink());
-            }
-
-            JsonMyJodels.RootObject myJodels = JsonConvert.DeserializeObject<JsonMyJodels.RootObject>(plainJson);
-            return myJodels.posts.Select(item => new MyJodels
-            {
-                PostId = item.post_id,
-                Message = item.message,
-                HexColor = item.color,
-                VoteCount = item.vote_count,
-                Latitude = item.location.loc_coordinates.lat,
-                Longitude = item.location.loc_coordinates.lng,
-                LocationName = item.location.name,
-                ChildCount = item.child_count,
-                CreatedAt = DateTime.ParseExact(item.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                UpdatedAt = DateTime.ParseExact(item.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null),
-                Distance = item.distance,
-                IsNotificationEnabled = item.notifications_enabled,
-                PinCount = item.pin_count,
-                PostOwn = item.post_own,
-                UserHandle = item.user_handle
-            }).ToList();
+                location = {
+                    city = Account.CityName,
+                    name = Account.CityName,
+                    country = Account.CountryCode,
+                    loc_coordinates = {
+                        lat = Account.Place.Latitude,
+                        lng = Account.Place.Longitude
+                    },
+                },
+                color = color.ToString(),
+                message = message,
+                ancestor = parentPostId,
+                to_home = home
+            };
+            string jsonString = Links.SendPost.ExecuteRequest(Account, payload: payload);
+            JsonPostJodel.RootObject data = JsonConvert.DeserializeObject<JsonPostJodel.RootObject>(jsonString);
+            return data.post_id;
         }
 
-        /// <summary>
-        ///     Gets my comments.
-        /// </summary>
-        /// <returns>List&lt;MyComments&gt;.</returns>
-        public List<MyComments> GetMyComments()
+        public JodelPost GetPost(string postId)
         {
-            string plainJson;
-            using (var client = new MyWebClient())
-            {
-                client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(Constants.LinkGetMyComments.ToLink());
-            }
-
-            JsonMyComments.RootObject myComments = JsonConvert.DeserializeObject<JsonMyComments.RootObject>(plainJson);
-            return myComments.posts.Select(item => new MyComments
-            {
-                PostId = item.post_id,
-                Message = item.message,
-                HexColor = item.color,
-                VoteCount = item.vote_count,
-                IsOwn = item.post_own.Equals("own"),
-                Latitude = item.location.loc_coordinates.lat.ToString(),
-                Longitude = item.location.loc_coordinates.lng.ToString(),
-                LocationName = item.location.name
-            }).ToList();
+            string jsonString = Links.GetPost.ExecuteRequest(Account, postId: postId);
+            return new JodelPost(JsonConvert.DeserializeObject<JsonPostJodels.Post>(jsonString));
         }
 
-        /// <summary>
-        ///     Gets my votes.
-        /// </summary>
-        /// <returns>List&lt;MyVotes&gt;.</returns>
-        public List<MyVotes> GetMyVotes()
+        public JodelPost GetPostDetails(string postId, bool details = true, bool reversed = false, int next = 0)
         {
-            string plainJson;
-            using (var client = new MyWebClient())
-            {
-                client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(Constants.LinkGetMyVotes.ToLink());
-            }
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("details", details.ToString().ToLower());
+            if (next > 0) parameters.Add("reply", next.ToString());
+            parameters.Add("reversed", reversed.ToString().ToLower());
 
-            JsonMyVotes.RootObject myVotes = JsonConvert.DeserializeObject<JsonMyVotes.RootObject>(plainJson);
-            return myVotes.posts.Select(item => new MyVotes
-            {
-                PostId = item.post_id,
-                Message = item.message,
-                HexColor = item.color,
-                VoteCount = item.vote_count,
-                IsOwn = item.post_own.Equals("own"),
-                LocationName = item.location.name
-            }).ToList();
+            string jsonString = Links.GetPostDetails.ExecuteRequest(Account, postId: postId, parameters: parameters);
+            return new JodelPost(JsonConvert.DeserializeObject<JsonPostDetail.RootObject>(jsonString));
         }
 
-        /// <summary>
-        ///     Sorts the jodels.
-        /// </summary>
-        /// <param name="jodels">The jodels.</param>
-        /// <param name="method">The method.</param>
-        /// <returns>List&lt;Jodels&gt;.</returns>
-        public List<Jodels> Sort(List<Jodels> jodels, SortMethod method)
-        {
-            return method == SortMethod.MostCommented
-                ? jodels.OrderByDescending(o => o.CommentsCount).ToList()
-                : jodels.OrderByDescending(o => o.VoteCount).ToList();
-        }
+        #endregion
 
-        /// <summary>
-        ///     Reports the jodel.
-        /// </summary>
-        /// <param name="postId"></param>
-        /// <param name="reason"></param>
-        public void ReportJodel(string postId, Moderation.Reason reason)
-        {
-            string rea = Convert.ChangeType(reason, reason.GetTypeCode())?.ToString(); // get int from enum.
-            string stringifiedPayload = @"{""reason_id"":" + rea + "}";
-
-            using (var client = new MyWebClient())
-            {
-                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow, true));
-                client.Encoding = Encoding.UTF8;
-                client.UploadData(Constants.LinkReportJodel.ToLink(_user.AccessToken, postId), "PUT", new byte[] { });
-            }
-        }
-
-        /// <summary>
-        ///     Pins a Jodel.
-        /// </summary>
-        /// <param name="postId"></param>
-        public void PinJodel(string postId)
-        {
-            DateTime dt = DateTime.UtcNow;
-
-            string stringifiedPayload =
-                @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "/" + "pin?access_token=/%" + _user.AccessToken +
-                "%" + $"{dt:s}Z" + "%%";
-
-            using (var client = new MyWebClient())
-            {
-                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow));
-                client.Encoding = Encoding.UTF8;
-                client.UploadData(Constants.LinkPinJodel.ToLink(_user.AccessToken, postId), "PUT", new byte[] { });
-            }
-        }
-
-        /// <summary>
-        ///     Get's all pinned Jodels.
-        /// </summary>
-        /// <returns>List&lt;MyPins&gt;.</returns>
-        public List<MyPins> GetMyPins()
-        {
-            string plainJson;
-            using (var client = new MyWebClient())
-            {
-                client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(Constants.LinkMyPins.ToLink());
-            }
-
-            JsonMyPins.RootObject myPins = JsonConvert.DeserializeObject<JsonMyPins.RootObject>(plainJson);
-            return myPins.posts.Select(item => new MyPins
-            {
-                PostId = item.post_id,
-                Message = item.message,
-                VoteCount = item.vote_count,
-                PinCount = item.pin_count,
-                IsOwn = item.post_own.Equals("own")
-            }).ToList();
-        }
-
-        public void DeleteJodel(string postId)
-        {
-            DateTime dt = DateTime.UtcNow;
-
-            string stringifiedPayload =
-                @"PUT%api.go-tellm.com%443%/api/v2/posts/" + postId + "%" + _user.AccessToken + "%" + $"{dt:s}Z" +
-                "%%";
-
-            using (var client = new MyWebClient())
-            {
-                client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow, true));
-                client.Encoding = Encoding.UTF8;
-                client.UploadData(Constants.LinkDeleteJodel.ToLink(_user.AccessToken, postId), "DELETE", new byte[] { });
-            }
-        }
-
-        /// <summary>
-        ///     Get's the recommended channels.
-        /// </summary>
-        /// <returns>List&lt;RecommendedChannel&gt;.</returns>
-        public List<RecommendedChannel> GetRecommendedChannels()
-        {
-            string plainJson;
-            using (var client = new MyWebClient())
-            {
-                client.Encoding = Encoding.UTF8;
-                plainJson = client.DownloadString(Constants.LinkGetRecommendedChannels.ToLink());
-            }
-
-            JsonRecommendedChannels.RootObject recommendedChannels =
-                JsonConvert.DeserializeObject<JsonRecommendedChannels.RootObject>(plainJson);
-            return recommendedChannels.recommended.Select(item => new RecommendedChannel
-            {
-                Name = item.channel,
-                Followers = item.followers
-            }).ToList();
-        }
-
-        public class Channel
-        {
-            public readonly string ChannelName;
-
-            public Channel(string channelname)
-            {
-                if (channelname[0] == '#')
-                    channelname = channelname.Remove(0, 1);
-                ChannelName = channelname;
-            }
-
-            /// <summary>
-            ///     Follows a channel.
-            /// </summary>
-            /// <param name="channel"></param>
-            //public void FollowChannel()
-            //{
-            //    DateTime dt = DateTime.UtcNow;
-
-            //    string stringifiedPayload =
-            //        @"PUT%api.go-tellm.com%443%/api/v3/user/followChannel?access_token=" + _user.AccessToken + "%" +
-            //        "&channel=" + ChannelName + $"{dt:s}Z" + "%%";
-
-            //    using (var client = new MyWebClient())
-            //    {
-            //        client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, DateTime.UtcNow));
-            //        client.Encoding = Encoding.UTF8;
-            //        client.UploadData(Constants.LinkFollowChannel.ToLink(ChannelName), "PUT", new byte[] { });
-            //    }
-            //}            
-            public void FollowChannel()
-            {
-                DateTime dt = DateTime.UtcNow;
-
-                string payload = "{}";
-                string stringifiedPayload = @"PUT%api.go-tellm.com%443%/api/v3/user/followChannel?channel=" + ChannelName + "%" + $"{dt:s}Z" + "%%" + payload;
-
-                using (var client = new MyWebClient())
-                {
-                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, dt, true));
-                    client.Encoding = Encoding.UTF8;
-                    client.UploadString(Constants.LinkFollowChannel.ToLinkSecond(ChannelName), "PUT", payload);
-                }
-            }
-
-            /// <summary>
-            ///     Unfollows a channel.
-            /// </summary>
-            /// <param name="channel"></param>
-            public void UnfollowChannel()
-            {
-                DateTime dt = DateTime.UtcNow;
-
-                string payload = "{}";
-                string stringifiedPayload = @"PUT%api.go-tellm.com%443%/api/v3/user/unfollowChannel?channel=" + ChannelName + "%" + $"{dt:s}Z" + "%%" + payload;
-
-                using (var client = new MyWebClient())
-                {
-                    client.Headers.Add(Constants.Header.ToHeader(stringifiedPayload, dt, true));
-                    client.Encoding = Encoding.UTF8;
-                    client.UploadString(Constants.LinkUnfollowChannel.ToLinkSecond(ChannelName), "PUT", payload);
-                }
-            }
-
-            /// <summary>
-            ///     Get's all Jodels from this channel.
-            /// </summary>
-            /// <param name="channel">The channel.</param>
-            /// <returns>List&lt;ChannelJodel&gt;.</returns>
-            public List<ChannelJodel> GetJodels()
-            {
-                string plainJson;
-                using (var client = new MyWebClient())
-                {
-                    client.Encoding = Encoding.UTF8;
-                    plainJson = client.DownloadString(Constants.LinkGetJodelsFromChannel.ToLink(ChannelName));
-                }
-
-                JsonGetJodelsFromChannel.RootObject myJodelsFromChannel =
-                    JsonConvert.DeserializeObject<JsonGetJodelsFromChannel.RootObject>(plainJson);
-                return myJodelsFromChannel.recent.Select(item => new ChannelJodel
-                {
-                    PostId = item.post_id,
-                    Message = item.message,
-                    VoteCount = item.vote_count,
-                    PinCount = item.pin_count,
-                    IsOwn = item.post_own.Equals("own")
-                }).ToList();
-            }
-
-            /// <summary>
-            ///     Get's all Jodels from this channel.
-            /// </summary>
-            /// <param name="channel">The channel.</param>
-            /// <returns>List&lt;ChannelJodel&gt;.</returns>
-            public async Task<List<ChannelJodel>> GetJodelsAsync()
-            {
-                string plainJson;
-                using (var client = new MyWebClient())
-                {
-                    client.Encoding = Encoding.UTF8;
-                    var taskResult = await Task.FromResult(
-                        client.DownloadStringTaskAsync(new Uri(Constants.LinkGetJodelsFromChannel.ToLink(ChannelName))));
-                    plainJson = taskResult.Result;
-                }
-
-                JsonGetJodelsFromChannel.RootObject myJodelsFromChannel =
-                    JsonConvert.DeserializeObject<JsonGetJodelsFromChannel.RootObject>(plainJson);
-                return myJodelsFromChannel.recent.Select(item => new ChannelJodel
-                {
-                    PostId = item.post_id,
-                    Message = item.message,
-                    VoteCount = item.vote_count,
-                    PinCount = item.pin_count,
-                    IsOwn = item.post_own.Equals("own")
-                }).ToList();
-            }
-        }
+        #endregion
     }
 }

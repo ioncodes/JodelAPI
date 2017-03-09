@@ -5,9 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JodelAPI", "JodelAPI\JodelAPI.csproj", "{2FE543A6-F341-49D3-9CFD-98559341C69C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JConsole", "Console\JConsole.csproj", "{B093C922-CF99-4C02-AAEB-A34F8DEF9DFC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JodelAPITests", "JodelAPITests\JodelAPITests.csproj", "{09BDDB23-563A-429B-93B0-D53394F1323D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JodelAPITests", "JodelAPITests\JodelAPITests.csproj", "{F10ED5B5-3F17-44F0-950F-2F323D9B0A48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +17,10 @@ Global
 		{2FE543A6-F341-49D3-9CFD-98559341C69C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FE543A6-F341-49D3-9CFD-98559341C69C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FE543A6-F341-49D3-9CFD-98559341C69C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B093C922-CF99-4C02-AAEB-A34F8DEF9DFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B093C922-CF99-4C02-AAEB-A34F8DEF9DFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B093C922-CF99-4C02-AAEB-A34F8DEF9DFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B093C922-CF99-4C02-AAEB-A34F8DEF9DFC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{09BDDB23-563A-429B-93B0-D53394F1323D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09BDDB23-563A-429B-93B0-D53394F1323D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09BDDB23-563A-429B-93B0-D53394F1323D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09BDDB23-563A-429B-93B0-D53394F1323D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F10ED5B5-3F17-44F0-950F-2F323D9B0A48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F10ED5B5-3F17-44F0-950F-2F323D9B0A48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F10ED5B5-3F17-44F0-950F-2F323D9B0A48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F10ED5B5-3F17-44F0-950F-2F323D9B0A48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,98 +5,63 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JodelAPI.Objects;
+using JodelAPI.Shared;
 
 namespace JodelAPI.Tests
 {
     [TestClass()]
     public class JodelTests
     {
-        public Jodel GetJodelObject()
-        {   
-            var location = Location.GetCoordinates("Baden, Aargau, Schweiz");
-            Assert.IsNotNull(location);
-            string accessToken = Account.GenerateAccessToken(location.Latitude, location.Longitude, "CH", "Baden").AccessToken;
-            Assert.IsTrue(accessToken.Length > 0);
-            User user = new User(accessToken, location.Latitude, location.Longitude, "CH", "Baden");
-            Assert.IsNotNull(user);
-            Jodel jodel = new Jodel(user);
-            Assert.IsNotNull(jodel);
-            return jodel;
+        Jodel jodel = new Jodel("Baden Aargau Schweiz", "CH", "Baden");
+
+        [TestMethod()]
+        public void GenerateAccessTokenTest()
+        {
+            Assert.IsTrue(jodel.GenerateAccessToken());
         }
 
         [TestMethod()]
-        public void GetAllJodelsTest()
+        public void RefreshAccessTokenTest()
         {
-            List<Jodels> jodels = GetJodelObject().GetAllJodels();
-            Assert.IsNotNull(jodels);
-        }
-
-        [TestMethod()]
-        public void UpvoteTest()
-        {
-            Jodel jodel = GetJodelObject();
-            jodel.Upvote(jodel.GetAllJodels()[2].PostId);
-            Random rnd = new Random();
-            jodel.PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'. Upvote Successfull");
-        }
-
-        [TestMethod()]
-        public void DownvoteTest()
-        {
-            Jodel jodel = GetJodelObject();
-            jodel.Downvote(jodel.GetAllJodels()[1].PostId);
-            Random rnd = new Random();
-            jodel.PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'. Downvoted Successfull");
-        }
-
-        [TestMethod()]
-        public void PostJodelTest()
-        {
-            Random rnd = new Random();
-            string postid = GetJodelObject().PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'");
-            Assert.IsTrue(postid.Length > 0);
-        }
-
-        [TestMethod()]
-        public void DeleteJodelTest()
-        {
-            Jodel jodel = GetJodelObject();
-            Random rnd = new Random();
-            string postid = jodel.PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'. Delete me test.");
-            try
-            {
-                jodel.DeleteJodel(postid);
-            }
-            catch (Exception ex)
-            {
-                jodel.PostJodel("Deleting failed. Fuck My Life. Error: " + ex.Message);
-            }
+            Assert.IsTrue(jodel.GenerateAccessToken());
+            Assert.IsTrue(jodel.RefreshAccessToken());
         }
 
         [TestMethod()]
         public void GetKarmaTest()
         {
-            int karma = GetJodelObject().Account.GetKarma();
-            Random rnd = new Random();
-            GetJodelObject().PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms' to get my karma: " + karma + ". I'm a poor nigger :'(");
+            Assert.IsTrue(jodel.GenerateAccessToken());
+            int karma = jodel.GetKarma();
         }
 
         [TestMethod()]
-        public void SetUserLocationTest()
+        public void GetRecommendedChannelsTest()
         {
-            var location = Location.GetCoordinates("Baden, Aargau, Schweiz");
-            GetJodelObject().Account.SetUserLocation(Account.GenerateAccessToken(location.Latitude, location.Longitude, "CH", "Baden").AccessToken);
+            Assert.IsTrue(jodel.GenerateAccessToken());
+            Assert.IsNotNull(jodel.GetRecommendedChannels());
         }
 
         [TestMethod()]
-        public void GetCommentsTest()
+        public void GetPostLocationComboTest()
         {
-            Random rnd = new Random();
-            var jodel = GetJodelObject();
-            jodel.PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'.");
-            jodel.GetComments(jodel.GetAllJodels()[10].PostId);
-            jodel.PostJodel("Unit Test successfull, took me '" + rnd.Next(100, 400) + "ms'. Got comments successfully.");
+            Assert.IsTrue(jodel.GenerateAccessToken());
+            Assert.IsNotNull(jodel.GetPostLocationCombo());
+        }
+
+        [TestMethod()]
+        public void GetCaptcha()
+        {
+            Assert.IsNotNull(jodel.GetCaptcha());
+            Console.WriteLine(jodel.GetCaptcha().ImageUrl + ":" + jodel.GetCaptcha().Key);
+        }
+
+        [TestMethod()]
+        public void SolveCaptcha()
+        {
+            var captcha = jodel.GetCaptcha();
+            Assert.IsNotNull(captcha);
+            Console.WriteLine(captcha.ImageUrl + ":" + captcha.Key);
+            Assert.IsInstanceOfType(jodel.SolveCaptcha(captcha, new[] {1}), typeof(bool));
         }
     }
 }

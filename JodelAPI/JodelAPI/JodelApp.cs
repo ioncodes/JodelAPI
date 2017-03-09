@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JodelAPI.Objects;
+using JodelAPI.Shared;
 
 namespace JodelAPI
 {
@@ -12,100 +12,91 @@ namespace JodelAPI
     /// </summary>
     public class JodelApp
     {
-        public Jodel Jodel { get; private set; }
+        #region Fileds and Properties
+
         public int Karma { get; private set; }
+        public Jodel MyJodel { get; private set; }
+        public JodelMainData JodelPosts { get; set; }
 
-        public JodelApp(string accessToken, string longitude, string latitude, string city, string countryCode, string googleApiToken = "")
-            : this(new User(accessToken, latitude, longitude, countryCode, city, googleApiToken)) { }
+        #endregion
 
-        public JodelApp(User user)
+        #region Constructor
+
+        public JodelApp(Jodel jodel)
         {
-            Jodel = new Jodel(user);
+            Karma = 0;
+            this.MyJodel = jodel;
+        }
+
+        #endregion
+
+        #region Methods
+
+        public void Start()
+        {
+            MyJodel.GetUserConfig();
+            MyJodel.GetRecommendedChannels();
+            MyJodel.SetLocation();
+            this.Karma = MyJodel.GetKarma();
+            JodelPosts = MyJodel.GetPostLocationCombo(stickies: true);
+            MyJodel.GetFollowedChannelsMeta();
+        }
+
+        public bool RefreshToken()
+        {
+            return MyJodel.RefreshAccessToken();
+        }
+
+        public bool GenerateToken()
+        {
+            return MyJodel.GenerateAccessToken();
+        }
+
+        #region Reload
+
+        public JodelMainData ReloadMain()
+        {
+            Karma = MyJodel.GetKarma();
+            JodelPosts = MyJodel.GetPostLocationCombo();
+
+            return JodelPosts;
         }
 
         /// <summary>
-        /// Does all what Jodel does on opening
+        /// Loads more Jodels
         /// </summary>
-        public void StartJodel()
+        /// <param name="postId"></param>
+        /// <returns>The loaded Posts</returns>
+        public IEnumerable<JodelPost> LoadMoreRecentPosts(string postId = "")
         {
-            //GetUserConfig
-            Jodel.GetUserConfig();
-
-            //LoadFollowedChannels
-            Jodel.LoadFollowedChannels();
-
-            //LoadRecommendedChannels
-            Jodel.GetRecommendedChannels();
-
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            //LoadFirstJodels
-            Jodel.GetFirstJodels();
+            List<JodelPost> posts = MyJodel.GetRecentPostsAfter(string.IsNullOrWhiteSpace(postId) ? JodelPosts.RecentJodels.Last().PostId : postId).ToList();
+            JodelPosts.RecentJodels.AddRange(posts);
+            return posts;
         }
 
-        public List<Jodels> ReloadInMain()
+        #endregion
+
+        #region Posts
+
+        public void Upvote(string postId)
         {
-            //LoadFirstJodels
-            var jodels = Jodel.GetFirstJodels();
-
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            return jodels;
+            MyJodel.Upvote(postId);
         }
 
-        public List<MyJodels> ReloadInMyJodels()
+        public void Downvote(string postId)
         {
-            //LoadMine
-            var jodels = Jodel.GetMyJodels();
-
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            return jodels;
+            MyJodel.Downvote(postId);
         }
 
-        public List<MyComments> ReloadInMyComments()
+        public string Post(string message, JodelPost.PostColor color = JodelPost.PostColor.Random, bool home = false)
         {
-            //LoadMyComments
-            var comments = Jodel.GetMyComments();
-
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            return comments;
+            string postId = MyJodel.Post(message, color: color, home: home);
+            JodelPosts = MyJodel.GetPostLocationCombo();
+            return postId;
         }
 
-        public List<MyVotes> ReloadInMyVotes()
-        {
-            //LoadMyResponses
-            var votes = Jodel.GetMyVotes();
+        #endregion
 
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            return votes;
-        }
-
-        public List<MyPins> ReloadInMyPins()
-        {
-            //LoadMyResponses
-            var pins = Jodel.GetMyPins();
-
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            return pins;
-        }
-
-        public List<ChannelJodel> ReloadInChannel(Jodel.Channel channel)
-        {
-            //LoadKarma
-            Karma = Jodel.Account.GetKarma();
-
-            //LoadChannelPosts
-            return channel.GetJodels();
-        }
+        #endregion
     }
 }
