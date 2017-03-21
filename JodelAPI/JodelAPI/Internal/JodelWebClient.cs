@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace JodelAPI.Internal
 {
+    [System.ComponentModel.DesignerCategory("Code")]
     internal class JodelWebClient : WebClient
     {
         protected override WebRequest GetWebRequest(Uri address)
