@@ -1,36 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Text;
-using JodelAPI.Shared;
+using static JodelAPI.Shared.JodelPost;
 
 namespace JodelAPI.Internal
 {
     internal static class Helpers
     {
-
-        //TODO: Neu implementieren
-        public static string GetColor(JodelPost.PostColor color)
+        static Dictionary<PostColor, string> Colors = new Dictionary<PostColor, string>
         {
-            switch (color)
-            {
-                case JodelPost.PostColor.Red:
-                    return "DD5F5F";
-                case JodelPost.PostColor.Orange:
-                    return "FF9908";
-                case JodelPost.PostColor.Yellow:
-                    return "FFBA00";
-                case JodelPost.PostColor.Blue:
-                    return "DD5F5F";
-                case JodelPost.PostColor.Bluegreyish:
-                    return "8ABDB0";
-                case JodelPost.PostColor.Green:
-                    return "9EC41C";
-                case JodelPost.PostColor.Random:
-                    return "FFFFFF";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(color), color, null);
-            }
-        }
+            { PostColor.Red, "DD5F5F" },
+            { PostColor.Orange, "FF9908" },
+            { PostColor.Yellow, "FFBA00" },
+            { PostColor.Blue, "DD5F5F" },
+            { PostColor.Bluegreyish, "8ABDB0" },
+            { PostColor.Green, "9EC41C" },
+            { PostColor.Random, "FFFFFF" }
+        };
+
+        public static string GetColor(PostColor color) => Colors[color];
 
         public static string GetRandomDeviceUid()
         {
