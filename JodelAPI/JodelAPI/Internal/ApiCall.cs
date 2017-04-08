@@ -62,7 +62,7 @@ namespace JodelAPI.Internal
             return json.Value<bool>("verified");
         }
 
-        internal string ExecuteRequest(User user, Dictionary<string, string> parameters = null, JsonRequest payload = null, string postId = null)
+        internal string ExecuteRequest(User user, Dictionary<string, string> parameters = null, JsonRequest payload = null, string postId = null, string proxy = null)
         {
             string plainJson = null;
             string payloadString = payload != null
@@ -100,6 +100,8 @@ namespace JodelAPI.Internal
                 Console.WriteLine("----------------------------------------------------------------");
                 Console.WriteLine(payloadString);
 #endif
+                if (proxy != null)
+                    client.Proxy = new WebProxy(proxy);
                 if (Method == HttpMethod.Get)
                 {
                     plainJson = client.DownloadString(stringifiedUrl);

@@ -251,14 +251,14 @@ namespace JodelAPI
             return JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(jsonString).posts.Select(p => new JodelPost(p));
         }
 
-        public void Upvote(string postId, JodelPost.UpvoteReason reason = JodelPost.UpvoteReason.Stub)
+        public void Upvote(string postId, JodelPost.UpvoteReason reason = JodelPost.UpvoteReason.Stub, string proxy = null)
         {
-            Links.UpvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId);
+            Links.UpvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId, proxy: proxy);
         }
 
-        public void Downvote(string postId, JodelPost.DownvoteReason reason = JodelPost.DownvoteReason.Stub)
+        public void Downvote(string postId, JodelPost.DownvoteReason reason = JodelPost.DownvoteReason.Stub, string proxy = null)
         {
-            Links.DownvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId);
+            Links.DownvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId, proxy: proxy);
         }
 
         /// <summary>
