@@ -48,9 +48,9 @@ namespace JodelAPI
 
         #region Account
 
-        public bool GenerateAccessToken()
+        public bool GenerateAccessToken(string proxy = null)
         {
-            return Account.Token.GenerateNewAccessToken();
+            return Account.Token.GenerateNewAccessToken(proxy);
         }
 
         public bool RefreshAccessToken()
