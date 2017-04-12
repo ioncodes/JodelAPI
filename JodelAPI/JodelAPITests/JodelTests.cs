@@ -75,5 +75,17 @@ namespace JodelAPI.Tests
                           && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
             Assert.IsTrue(result);
         }
+
+        [TestMethod()]
+        public void ShareUrlProperty()
+        {
+            Assert.IsTrue(jodel.GenerateAccessToken());
+            var combo = jodel.GetPostLocationCombo();
+            string url = combo.RecentJodels[1].ShareUrl;
+            Uri uriResult;
+            bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult)
+                          && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            Assert.IsTrue(result);
+        }
     }
 }
