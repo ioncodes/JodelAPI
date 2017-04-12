@@ -50,9 +50,7 @@
     <Compile Include="Internal\ApiCall.cs" />
     <Compile Include="Internal\Constants.cs" />
     <Compile Include="Internal\Helpers.cs" />
-    <Compile Include="Internal\JodelWebClient.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Internal\JodelWebClient.cs" />
     <Compile Include="Internal\Links.cs" />
     <Compile Include="Jodel.cs" />
     <Compile Include="JodelApp.cs" />
