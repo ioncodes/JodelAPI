@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JodelAPI.Json.Response;
+using Newtonsoft.Json;
 
 namespace JodelAPI.Shared
 {
@@ -38,9 +39,9 @@ namespace JodelAPI.Shared
         public string ImageHost { get; set; }
         public string ImageAuthorization { get; set; }
         public string ThumbnailUrl { get; set; }
-
         public int? Next { get; set; } = null;
         public int Remaining { get; set; } = 0;
+        public string ShareUrl { get; }
 
         #endregion
 
@@ -74,7 +75,7 @@ namespace JodelAPI.Shared
 
         internal JodelPost()
         {
-
+            
         }
 
         internal JodelPost(JsonPostJodels.Post jodel)
@@ -108,6 +109,7 @@ namespace JodelAPI.Shared
             UpdatedAt = DateTime.ParseExact(jodel.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
             UserHandle = jodel.user_handle;
             VoteCount = jodel.vote_count;
+            ShareUrl = "https://share.jodel.com/post?postId=" + PostId;
         }
 
         internal JodelPost(JsonPostDetail.RootObject jodel)
@@ -146,6 +148,7 @@ namespace JodelAPI.Shared
                 UpdatedAt = DateTime.ParseExact(jodel.details.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
                 UserHandle = jodel.details.user_handle;
                 VoteCount = jodel.details.vote_count;
+                ShareUrl = "https://share.jodel.com/post?postId=" + PostId;
             }
         }
 

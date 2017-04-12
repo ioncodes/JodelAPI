@@ -78,7 +78,7 @@ namespace JodelAPI.Shared
         /// Generates a new Accesstoken
         /// </summary>
         /// <returns>Successful</returns>
-        public bool GenerateNewAccessToken()
+        public bool GenerateNewAccessToken(string proxy = null)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace JodelAPI.Shared
                     client_id = Constants.ClientId
                 };
 
-                string jsonString = Links.GetRequestToken.ExecuteRequest(UserConfig, payload: payload);
+                string jsonString = Links.GetRequestToken.ExecuteRequest(UserConfig, payload: payload, proxy: proxy);
 
                 JsonTokens.RootObject objTokens = JsonConvert.DeserializeObject<JsonTokens.RootObject>(jsonString);
 
