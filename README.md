@@ -8,6 +8,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/2dx3f591ubmp978t?svg=true)](https://ci.appveyor.com/project/ioncodes/jodelapi)
 [![Github All Releases](https://img.shields.io/github/downloads/ioncodes/JodelAPI/total.svg)](https://github.com/ioncodes/JodelAPI/releases)
 [![Status](https://img.shields.io/badge/api-working-brightgreen.svg)]()
+[![Implementation](https://img.shields.io/badge/api--version-4.40.1-brightgreen.svg)]()
 [![Test status](http://teststatusbadge.azurewebsites.net/api/status/ioncodes/jodelapi)](https://ci.appveyor.com/project/ioncodes/jodelapi)
 [![Gitter chat](https://badges.gitter.im/ioncodes/JodelAPI.svg)](https://gitter.im/JodelAPI/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
 
@@ -17,123 +18,66 @@ This is the carefully reverse-engineered .NET Jodel API in C#. Please feel free 
 
 *This is a Swiss software product and therefore might be awesome!*
 
-***PLEASE NOTE:***
-
-**As of October 29th 2016 the API is completely non-static and should be easier to use than ever before.**
-
 ## Binaries and pre-requisites
 * [GitHub Releases](https://github.com/ioncodes/JodelAPI/releases)
 
-## Getting Started
+## Let's get right into it!
+Create a Jodel object which holds all functions needed:
+```cs
+Jodel jodel = new Jodel(string place, string countrycode, string city, bool createToken = true);
+```
+Where 'place' is the place how you would enter the location in Google Maps, 'countrycode' and 'city' are the values that are sent to Jodel! You might have your own token, in that case you can set createToken to false. If you do this, make sure to set the data found in the AccessToken (Account.AccessToken) class:
+```cs
+jodel.Account.AccessToken.Token = "";
+jodel.Account.AccessToken.RefreshToken = "";
+```
 
-### Initial Setup
-In order to set your location and start interacting with the various methods of the API you must first set up a few objects.
-Namely, you will need a new User object, the Account class as well as a Jodel object. You will also need to generate your
-own arsenal of access tokens by using the ```Account.GenerateAccessToken()``` method. (This generates up to 60 access tokens per IP, please be careful to not get yourself banned!)
-
-```csharp
-using JodelAPI; // add namespace
+Your data is stored in the 'Account' field, which comes from the 'User' class. You can defined a 'User' object yourself and pass it to the Jodel constructor. This gives you extra options, such as setting the 'Location' object yourself (Latitude, Longitude), etc:
+```cs
+User user = new User();
+user.Location.Longitude = 13.37;
 // ...
-
-User user = new User(string.Empty, MyLoc.Latitude, MyLoc.Longitude, MyLoc.CountryCode, MyLoc.City);
-
-Tokens myAccessToken = Account.GenerateAccessToken(user);
-user.AccessToken = myAccessToken;
-
 Jodel jodel = new Jodel(user);
-jodel.Account.SetUserLocation(myAccessToken);
 ```
 
-## Jodel
-The class 'Jodel' contains all functions for getting, deleting, posting, etc Jodels.
+After creating your 'Jodel' object, you will find all methods you need in there. Here is a list:
+```cs
+// Fields and Properties
+Account:User
 
-### Getting the Jodels
-To get the Jodels call 
-```csharp
-GetAllJodels()
+// Constructor
+Jodel(User user)
+Jodel(string place, string countrCode, string cityName, bool createToken)
+
+/* Methods */
+// Account
+GenerateAccessToken(string proxy):bool
+RefreshAccessToken():bool
+GetUserConfig():void
+GetKarma():int
+SetLocation():void
+GetCaptcha(bool advanced):Captcha
+SolveCaptcha(Captcha captcha, int[] answer):bool
+VerifyAutomatically():bool
+
+// Channels
+GetRecommendedChannels():IEnumerable<Channel>
+GetFollowedChannelsMeta(bool home):IEnumerable<Channel>
+
+// Jodels
+GetPostLocationCombo(bool stickies, bool home):JodelMainData
+GetPostHashtagCombo(string hashtag, bool home):JodelMainData
+GetPostChannelCombo(string channel, bool home):JodelMainData
+GetRecentPostsAfter(string afterPostId, bool home):IEnumerable<JodelPost>
+Upvote(string postId, UpvoteReason reason, string proxy):void
+Downvote(string postId, DownvoteReason reason, string proxy):void
+Post(string message, string parentPostId, PostColor color, bool home):string
+GetPost(string postId):JodelPost
+GetPostDetails(string postId, bool details, bool reversed, int next):JodelPost
+SharePost(string postId):string
 ```
 
-**Returns:**
-```csharp
-List<Jodels>
-```
+If you have questions or requests, feel free to create issues, open PRs or ask me via Gitter!
+This API should always have all endpoints implemented. The version of the currently implemented API can be found on the top of the README.
 
-**Properties:**
-```csharp
-public string PostId { get; set; }
-public string Message { get; set; }
-public DateTime CreatedAt { get; set; }
-public DateTime UpdatedAt { get; set; }
-public int PinCount { get; set; }
-public string HexColor { get; set; }
-public bool IsNotificationEnabled { get; set; }
-public string PostOwn { get; set; }
-public int Distance { get; set; }
-public int ChildCount { get; set; }
-public bool IsImage { get; set; }
-public int VoteCount { get; set; }
-public int CommentsCount { get; set; }
-public string LocationName { get; set; }
-public string UserHandle { get; set; }
-public string ImageUrl { get; set; }
-```
-
-### Upvoting & Downvoting
-To down-/upvote a Jodel use ```UpvoteJodel(string postId)``` or ```DownvoteJodel(string postId)```.
-It takes the post id of the Jodel.
-
-### Posting
-To post a Jodel with a message use
-```PostJodel(string message, PostColor colorParam = PostColor.Random, string postId = null)```.
-
-To post an image use 
-```PostJodel(Image image, PostColor colorParam = PostColor.Random, string postId = null)```
-
-*Please note that posting images is still in the works!*
-
-**Arguments:**
-* message, image: the post content.
-* colorParam: PostColor enum which sets the post color.
-* postId: the original Jodel post id (optional)
-
-PostColor is defined as follows:
-```csharp
-public enum PostColor
-{
-    Orange,
-    Yellow,
-    Red,
-    Blue,
-    Bluegreyish,
-    Green,
-    Random
-}
-```
-
-### Getting comments
-To get the comments from an Jodel you can use ```GetComments(string postId)```.
-
-**Arguments:**
-* postId: the Jodel postId
-
-**Returns:**
-```csharp
-List<Comments>
-```
-
-**Properties:**
-
-```csharp
-public string PostId { get; set; }
-public string Message { get; set; }
-public string UserHandle { get; set; }
-public int VoteCount { get; set; }
-public DateTime CreatedAt { get; set; }
-public DateTime UpdatedAt { get; set; }
-public bool IsImage { get; set; }
-public string ImageUrl { get; set; }
-```
-
-### My Jodels, Comments and Votes
-
-**To be completed ...**
+A plain list of all supported endpoints can be found [here](https://github.com/ioncodes/JodelAPI/blob/master/JodelAPI/JodelAPI/Internal/Links.cs)
