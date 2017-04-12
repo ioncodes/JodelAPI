@@ -70,8 +70,9 @@ namespace JodelAPI.Tests
             Assert.IsTrue(jodel.GenerateAccessToken());
             var combo = jodel.GetPostLocationCombo();
             string url = jodel.SharePost(combo.RecentJodels[1].PostId);
-            bool result = Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
-              && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            Uri uriResult;
+            bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult)
+                          && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
             Assert.IsTrue(result);
         }
     }
