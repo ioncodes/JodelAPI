@@ -12,7 +12,7 @@ namespace JodelAPI.Tests
     [TestClass()]
     public class JodelTests
     {
-        Jodel jodel = new Jodel("Baden Aargau Schweiz", "CH", "Baden");
+        Jodel jodel = new Jodel("Zuerich  Schweiz", "CH", "Zuerich");
 
         [TestMethod()]
         public void GenerateAccessTokenTest()
@@ -62,6 +62,17 @@ namespace JodelAPI.Tests
             Assert.IsNotNull(captcha);
             Console.WriteLine(captcha.ImageUrl + ":" + captcha.Key);
             Assert.IsInstanceOfType(jodel.SolveCaptcha(captcha, new[] {1}), typeof(bool));
+        }
+
+        [TestMethod()]
+        public void SharePost()
+        {
+            Assert.IsTrue(jodel.GenerateAccessToken());
+            var combo = jodel.GetPostLocationCombo();
+            string url = jodel.SharePost(combo.RecentJodels[1].PostId);
+            bool result = Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
+              && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            Assert.IsTrue(result);
         }
     }
 }

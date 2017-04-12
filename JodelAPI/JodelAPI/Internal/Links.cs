@@ -62,7 +62,8 @@ namespace JodelAPI.Internal
         public static readonly ApiCall FlagPost = new ApiCall(HttpMethod.Put, "/posts/", "v2", "/flag");
         public static readonly ApiCall GiveThanks = new ApiCall(HttpMethod.Post, "/posts/", postAction: "/giveThanks");
         public static readonly ApiCall HidePost = new ApiCall(HttpMethod.Put, "/posts/", postAction: "/hide");
-
+        public static readonly ApiCall GetShareUrl = new ApiCall(HttpMethod.Post, "/posts/", postAction: "/share");
+        
         #endregion
 
         #region Channels

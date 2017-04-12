@@ -12,6 +12,7 @@ using JodelAPI.Json.Request;
 using JodelAPI.Json.Response;
 using JodelAPI.Shared;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace JodelAPI
 {
@@ -307,6 +308,12 @@ namespace JodelAPI
 
             string jsonString = Links.GetPostDetails.ExecuteRequest(Account, postId: postId, parameters: parameters);
             return new JodelPost(JsonConvert.DeserializeObject<JsonPostDetail.RootObject>(jsonString));
+        }
+
+        public string SharePost(string postId)
+        {
+            string jsonString = Links.GetShareUrl.ExecuteRequest(Account, postId: postId);
+            return JObject.Parse(jsonString).GetValue("url").ToString();
         }
 
         #endregion
