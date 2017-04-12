@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using JodelAPI.Internal;
 using JodelAPI.Json;
 using JodelAPI.Json.Request;
