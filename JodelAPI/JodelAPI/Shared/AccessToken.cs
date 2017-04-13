@@ -108,7 +108,7 @@ namespace JodelAPI.Shared
 
                 JsonTokens.RootObject objTokens = JsonConvert.DeserializeObject<JsonTokens.RootObject>(jsonString);
 
-                this.Token = objTokens.access_token; 
+                this.Token = objTokens.access_token;
                 this.DistinctId = objTokens.distinct_id;
                 this.ExpirationDate = objTokens.expiration_date;
                 this.TokenType = objTokens.token_type;

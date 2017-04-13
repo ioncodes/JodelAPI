@@ -54,11 +54,11 @@ namespace JodelAPI.Internal
         {
             string url = "https://" + Links.ApiBaseUrl + "/api/" + Version + Url + user.Token.Token;
             string an =  string.Join(",", answer ?? new int[0]);
-            
+
             string payload = @"{""key"":"""+captcha.Key+@""",""answer"":["+an+"]}";
             var myClient = new WebClient();
-			myClient.Headers.Add("Content-Type", "application/json");
-			var json = JObject.Parse(myClient.UploadString(url, payload));
+            myClient.Headers.Add("Content-Type", "application/json");
+            var json = JObject.Parse(myClient.UploadString(url, payload));
             return json.Value<bool>("verified");
         }
 
