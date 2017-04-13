@@ -16,10 +16,10 @@ namespace JodelAPI.Json.Request
         {
             public string City { get; set; }
             public double loc_accuracy { get; set; }
-            public Coordiantes loc_coordinates { get; set; }
+            public Coordinates loc_coordinates { get; set; }
             public string country { get; set; }
 
-            public class Coordiantes
+            public class Coordinates
             {
                 public double lat { get; set; }
                 public double lng { get; set; }

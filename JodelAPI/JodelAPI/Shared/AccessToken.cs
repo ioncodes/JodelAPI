@@ -50,7 +50,7 @@ namespace JodelAPI.Shared
 
         public AccessToken(User user)
         {
-            DeviceUid = String.Empty;
+            DeviceUid = string.Empty;
             UserConfig = user;
         }
 
@@ -95,7 +95,7 @@ namespace JodelAPI.Shared
                         City = UserConfig.CityName,
                         country = UserConfig.CountryCode,
                         loc_accuracy = 0,
-                        loc_coordinates = new JsonRequestGenerateAccessToken.Location.Coordiantes
+                        loc_coordinates = new JsonRequestGenerateAccessToken.Location.Coordinates
                         {
                             lat = UserConfig.Place.Latitude,
                             lng = UserConfig.Place.Longitude

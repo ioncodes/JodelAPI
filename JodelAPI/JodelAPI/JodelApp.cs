@@ -12,7 +12,7 @@ namespace JodelAPI
     /// </summary>
     public class JodelApp
     {
-        #region Fileds and Properties
+        #region Fields and Properties
 
         public int Karma { get; private set; }
         public Jodel MyJodel { get; private set; }
