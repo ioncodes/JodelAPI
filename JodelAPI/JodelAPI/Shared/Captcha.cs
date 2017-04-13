@@ -16,10 +16,8 @@ namespace JodelAPI.Shared
         }
 
         public Captcha(byte[] image, string key, string imageUrl, int imageSize)
+            : this(image, key, imageUrl)
         {
-            Image = image;
-            Key = key;
-            ImageUrl = imageUrl;
             ImageSize = imageSize;
         }
 
