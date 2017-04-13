@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -267,25 +268,29 @@ namespace JodelAPI
         /// <param name="message">Text to post to Jodel</param>
         /// <param name="parentPostId">Comment to this post</param>
         /// <param name="color">Color of Jodel</param>
+        /// <param name="image">Image to be sent</param>
         /// <param name="home">Post at home</param>
         /// <returns>PostId</returns>
-        public string Post(string message, string parentPostId = null, JodelPost.PostColor color = JodelPost.PostColor.Random, bool home = false)
+        public string Post(string message, string parentPostId = null, JodelPost.PostColor color = JodelPost.PostColor.Random, byte[] image = null, bool home = false)
         {
             JsonRequestPostJodel payload = new JsonRequestPostJodel
             {
-                location = {
+                location =
+                {
                     city = Account.CityName,
                     name = Account.CityName,
                     country = Account.CountryCode,
-                    loc_coordinates = {
+                    loc_coordinates =
+                    {
                         lat = Account.Place.Latitude,
                         lng = Account.Place.Longitude
-                    },
+                    }
                 },
                 color = color.ToString(),
                 message = message,
                 ancestor = parentPostId,
-                to_home = home
+                to_home = home,
+                image = image == null ? null : Convert.ToBase64String(image)
             };
             string jsonString = Links.SendPost.ExecuteRequest(Account, payload: payload);
             JsonPostJodel.RootObject data = JsonConvert.DeserializeObject<JsonPostJodel.RootObject>(jsonString);
