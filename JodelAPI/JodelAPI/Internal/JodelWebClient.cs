@@ -35,7 +35,7 @@ namespace JodelAPI.Internal
             hmacsha1.ComputeHash(Encoding.UTF8.GetBytes(stringifiedPayload));
 
             headers.Add("X-Timestamp", $"{time:s}Z");
-            headers.Add("X-Authorization", "HMAC " + hmacsha1.Hash.Aggregate("", (current, t) => current + t.ToString("X2")));
+            headers.Add("X-Authorization", "HMAC " + hmacsha1.Hash.Aggregate(string.Empty, (current, t) => current + t.ToString("X2")));
 
             if (addBearer)
             {

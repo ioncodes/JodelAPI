@@ -31,7 +31,7 @@ namespace JodelAPI.Internal
             using (SHA256 hash = SHA256.Create())
             {
                 byte[] result = hash.ComputeHash(tokenData);
-                return BitConverter.ToString(result).Replace("-", "").ToLower();
+                return BitConverter.ToString(result).Replace("-", string.Empty).ToLower();
             }
         }
     }
