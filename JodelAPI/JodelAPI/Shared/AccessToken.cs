@@ -50,7 +50,7 @@ namespace JodelAPI.Shared
 
         public AccessToken(User user)
         {
-            DeviceUid = String.Empty;
+            DeviceUid = string.Empty;
             UserConfig = user;
         }
 
