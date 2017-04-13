@@ -16,7 +16,7 @@ namespace JodelAPI.Internal
 {
     internal class ApiCall
     {
-        public System.Net.Http.HttpMethod Method { get; }
+        public HttpMethod Method { get; }
 
         public string Url { get; }
 
@@ -66,10 +66,10 @@ namespace JodelAPI.Internal
         {
             string plainJson = null;
             string payloadString = payload != null
-                ? Newtonsoft.Json.JsonConvert.SerializeObject(payload, Newtonsoft.Json.Formatting.None,
-                    new Newtonsoft.Json.JsonSerializerSettings
+                ? JsonConvert.SerializeObject(payload, Formatting.None,
+                    new JsonSerializerSettings
                     {
-                        NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore
+                        NullValueHandling = NullValueHandling.Ignore
                     })
                 : null;
             DateTime dt = DateTime.Now;

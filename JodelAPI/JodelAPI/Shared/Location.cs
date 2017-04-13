@@ -26,7 +26,7 @@ namespace JodelAPI.Shared
 
         internal Location(string place)
         {
-            this.Place = place;
+            Place = place;
 
             FindCoordinates();
         }
@@ -37,7 +37,7 @@ namespace JodelAPI.Shared
 
         public void SetNewPlace(string place)
         {
-            this.Place = place;
+            Place = place;
             FindCoordinates();
         }
 
