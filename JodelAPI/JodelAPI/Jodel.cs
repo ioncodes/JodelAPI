@@ -27,7 +27,7 @@ namespace JodelAPI
 
         public Jodel(User user)
         {
-            this.Account = user;
+            Account = user;
         }
 
         public Jodel(string place, string countrCode, string cityName, bool createToken = true)

@@ -32,7 +32,7 @@ namespace JodelAPI.Shared
         {
             get
             {
-                DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+                DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
                 dateTime = dateTime.AddSeconds(ExpirationDate);
                 return dateTime;
             }
@@ -50,24 +50,24 @@ namespace JodelAPI.Shared
 
         public AccessToken(User user)
         {
-            this.DeviceUid = String.Empty;
-            this.UserConfig = user;
+            DeviceUid = String.Empty;
+            UserConfig = user;
         }
 
         public AccessToken(User user, string deviceUid, string token)
             : this(user)
         {
-            this.DeviceUid = deviceUid;
-            this.Token = token;
+            DeviceUid = deviceUid;
+            Token = token;
         }
 
         public AccessToken(User user, string deviceUid, string token, int expirationDate, string distinctId, string tokenType, string refreshToken)
             : this(user, deviceUid, token)
         {
-            this.ExpirationDate = expirationDate;
-            this.DistinctId = distinctId;
-            this.TokenType = tokenType;
-            this.RefreshToken = refreshToken;
+            ExpirationDate = expirationDate;
+            DistinctId = distinctId;
+            TokenType = tokenType;
+            RefreshToken = refreshToken;
         }
 
         #endregion
@@ -108,11 +108,11 @@ namespace JodelAPI.Shared
 
                 JsonTokens.RootObject objTokens = JsonConvert.DeserializeObject<JsonTokens.RootObject>(jsonString);
 
-                this.Token = objTokens.access_token;
-                this.DistinctId = objTokens.distinct_id;
-                this.ExpirationDate = objTokens.expiration_date;
-                this.TokenType = objTokens.token_type;
-                this.RefreshToken = objTokens.refresh_token;
+                Token = objTokens.access_token;
+                DistinctId = objTokens.distinct_id;
+                ExpirationDate = objTokens.expiration_date;
+                TokenType = objTokens.token_type;
+                RefreshToken = objTokens.refresh_token;
             }
             catch (Exception)
             {
@@ -136,9 +136,9 @@ namespace JodelAPI.Shared
                 JsonRefreshTokens.RootObject obj =
                     JsonConvert.DeserializeObject<JsonRefreshTokens.RootObject>(plainJson);
 
-                this.Token = obj.access_token;
-                this.ExpirationDate = obj.expiration_date;
-                this.TokenType = obj.token_type;
+                Token = obj.access_token;
+                ExpirationDate = obj.expiration_date;
+                TokenType = obj.token_type;
             }
             catch(Exception)
             {
