@@ -29,8 +29,8 @@ namespace JodelAPI.Shared
 
         public Channel(string channelName, bool following = false)
         {
-            this.ChannelName = channelName;
-            this.Following = following;
+            ChannelName = channelName;
+            Following = following;
         }
 
         #endregion
@@ -39,15 +39,15 @@ namespace JodelAPI.Shared
 
         internal Channel UpdateProperties(string imageUrl, int followers)
         {
-            this.ImageUrl = imageUrl;
-            this.Followers = followers;
+            ImageUrl = imageUrl;
+            Followers = followers;
             return this;
         }
         internal Channel UpdateProperties(int followers, bool sponsored, bool unread)
         {
-            this.Unread = unread;
-            this.Followers = followers;
-            this.Sponsored = sponsored;
+            Unread = unread;
+            Followers = followers;
+            Sponsored = sponsored;
             return this;
         }
 

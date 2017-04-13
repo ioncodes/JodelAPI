@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using JodelAPI.Internal;
 using JodelAPI.Json;
 using JodelAPI.Json.Request;
@@ -28,7 +27,7 @@ namespace JodelAPI
 
         public Jodel(User user)
         {
-            this.Account = user;
+            Account = user;
         }
 
         public Jodel(string place, string countrCode, string cityName, bool createToken = true)
