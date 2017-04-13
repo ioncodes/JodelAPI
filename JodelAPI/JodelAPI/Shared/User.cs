@@ -39,17 +39,17 @@ namespace JodelAPI.Shared
 
         public User()
         {
-            this.Token = new AccessToken(this);
+            Token = new AccessToken(this);
         }
 
         public User(string deviceUid, string accessToken)
         {
-            this.Token = new AccessToken(this, deviceUid, accessToken);
+            Token = new AccessToken(this, deviceUid, accessToken);
         }
 
         public User(AccessToken token)
         {
-            this.Token = token;
+            Token = token;
         }
 
         #endregion
@@ -70,9 +70,9 @@ namespace JodelAPI.Shared
 
             internal Experiment(string name, string group, List<string> features)
             {
-                this.Name = name;
-                this.Group = group;
-                this.Features = features;
+                Name = name;
+                Group = group;
+                Features = features;
             }
 
             #endregion

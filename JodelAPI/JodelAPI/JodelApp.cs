@@ -25,7 +25,7 @@ namespace JodelAPI
         public JodelApp(Jodel jodel)
         {
             Karma = 0;
-            this.MyJodel = jodel;
+            MyJodel = jodel;
         }
 
         #endregion
@@ -37,7 +37,7 @@ namespace JodelAPI
             MyJodel.GetUserConfig();
             MyJodel.GetRecommendedChannels();
             MyJodel.SetLocation();
-            this.Karma = MyJodel.GetKarma();
+            Karma = MyJodel.GetKarma();
             JodelPosts = MyJodel.GetPostLocationCombo(stickies: true);
             MyJodel.GetFollowedChannelsMeta();
         }

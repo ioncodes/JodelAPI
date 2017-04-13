@@ -16,7 +16,7 @@ namespace JodelAPI.Internal
 {
     internal class ApiCall
     {
-        public System.Net.Http.HttpMethod Method { get; }
+        public HttpMethod Method { get; }
 
         public string Url { get; }
 
@@ -54,11 +54,11 @@ namespace JodelAPI.Internal
         {
             string url = "https://" + Links.ApiBaseUrl + "/api/" + Version + Url + user.Token.Token;
             string an =  string.Join(",", answer ?? new int[0]);
-            
+
             string payload = @"{""key"":"""+captcha.Key+@""",""answer"":["+an+"]}";
             var myClient = new WebClient();
-			myClient.Headers.Add("Content-Type", "application/json");
-			var json = JObject.Parse(myClient.UploadString(url, payload));
+            myClient.Headers.Add("Content-Type", "application/json");
+            var json = JObject.Parse(myClient.UploadString(url, payload));
             return json.Value<bool>("verified");
         }
 
@@ -66,10 +66,10 @@ namespace JodelAPI.Internal
         {
             string plainJson = null;
             string payloadString = payload != null
-                ? Newtonsoft.Json.JsonConvert.SerializeObject(payload, Newtonsoft.Json.Formatting.None,
-                    new Newtonsoft.Json.JsonSerializerSettings
+                ? JsonConvert.SerializeObject(payload, Formatting.None,
+                    new JsonSerializerSettings
                     {
-                        NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore
+                        NullValueHandling = NullValueHandling.Ignore
                     })
                 : null;
             DateTime dt = DateTime.Now;
