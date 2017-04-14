@@ -15,12 +15,22 @@ namespace JodelAPI.Json.Request
         public Location location { get; set; } = new Location();
         public string message { get; set; }
         public bool to_home { get; set; }
+        public string image { get; set; }
 
         #endregion
 
-        #region internal classes
+        #region Methods
 
-        internal class Location
+        public bool ShouldSerializeImage()
+        {
+            return image != null;
+        }
+
+        #endregion
+
+    #region internal classes
+
+    internal class Location
         {
             #region Fields and Properties
 

@@ -83,7 +83,7 @@ namespace JodelAPI.Shared
             ColorHex = int.Parse(jodel.color, NumberStyles.HexNumber);
             ChildCount = jodel.child_count ?? 0;
             Children = jodel.children?.Select(c => new JodelPost(c)).ToList();
-            CreatedAt = DateTime.ParseExact(jodel.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
+            CreatedAt = DateTime.ParseExact(jodel.created_at.Replace("Z", string.Empty).Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
             Discovered = jodel.discovered;
             DiscoveredBy = jodel.discovered_by;
             Distance = jodel.distance;
@@ -106,7 +106,7 @@ namespace JodelAPI.Shared
             PostId = jodel.post_id;
             PostOwn = jodel.post_own;
             ThumbnailUrl = jodel.thumbnail_url;
-            UpdatedAt = DateTime.ParseExact(jodel.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
+            UpdatedAt = DateTime.ParseExact(jodel.updated_at.Replace("Z", string.Empty).Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
             UserHandle = jodel.user_handle;
             VoteCount = jodel.vote_count;
             ShareUrl = "https://share.jodel.com/post?postId=" + PostId;
@@ -122,7 +122,7 @@ namespace JodelAPI.Shared
             {
                 ColorHex = int.Parse(jodel.details.color, NumberStyles.HexNumber);
                 ChildCount = jodel.details.child_count ?? 0;
-                CreatedAt = DateTime.ParseExact(jodel.details.created_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
+                CreatedAt = DateTime.ParseExact(jodel.details.created_at.Replace("Z", string.Empty).Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
                 Discovered = jodel.details.discovered;
                 DiscoveredBy = jodel.details.discovered_by;
                 Distance = jodel.details.distance;
@@ -145,7 +145,7 @@ namespace JodelAPI.Shared
                 PostId = jodel.details.post_id;
                 PostOwn = jodel.details.post_own;
                 ThumbnailUrl = jodel.details.thumbnail_url;
-                UpdatedAt = DateTime.ParseExact(jodel.details.updated_at.Replace("Z", "").Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
+                UpdatedAt = DateTime.ParseExact(jodel.details.updated_at.Replace("Z", string.Empty).Replace("T", " "), "yyyy-MM-dd HH:mm:ss.fff", null);
                 UserHandle = jodel.details.user_handle;
                 VoteCount = jodel.details.vote_count;
                 ShareUrl = "https://share.jodel.com/post?postId=" + PostId;
