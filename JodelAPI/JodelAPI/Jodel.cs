@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using JodelAPI.Internal;
@@ -251,12 +252,12 @@ namespace JodelAPI
             return JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(jsonString).posts.Select(p => new JodelPost(p));
         }
 
-        public void Upvote(string postId, JodelPost.UpvoteReason reason = JodelPost.UpvoteReason.Stub, string proxy = null)
+        public void Upvote(string postId, JodelPost.UpvoteReason reason = JodelPost.UpvoteReason.Stub, WebProxy proxy = null)
         {
             Links.UpvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId, proxy: proxy);
         }
 
-        public void Downvote(string postId, JodelPost.DownvoteReason reason = JodelPost.DownvoteReason.Stub, string proxy = null)
+        public void Downvote(string postId, JodelPost.DownvoteReason reason = JodelPost.DownvoteReason.Stub, WebProxy proxy = null)
         {
             Links.DownvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId, proxy: proxy);
         }
@@ -270,7 +271,7 @@ namespace JodelAPI
         /// <param name="image">Image to be sent</param>
         /// <param name="home">Post at home</param>
         /// <returns>PostId</returns>
-        public string Post(string message, string parentPostId = null, JodelPost.PostColor color = JodelPost.PostColor.Random, byte[] image = null, bool home = false, string proxy = null)
+        public string Post(string message, string parentPostId = null, JodelPost.PostColor color = JodelPost.PostColor.Random, byte[] image = null, bool home = false, WebProxy proxy = null)
         {
             JsonRequestPostJodel payload = new JsonRequestPostJodel
             {
