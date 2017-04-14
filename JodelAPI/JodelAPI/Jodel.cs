@@ -50,7 +50,7 @@ namespace JodelAPI
 
         #region Account
 
-        public bool GenerateAccessToken(string proxy = null)
+        public bool GenerateAccessToken(WebProxy proxy = null)
         {
             return Account.Token.GenerateNewAccessToken(proxy);
         }
