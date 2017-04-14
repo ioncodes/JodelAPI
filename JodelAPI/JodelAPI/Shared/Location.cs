@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using JodelAPI.Json.Response;
 using Newtonsoft.Json;
 
@@ -26,9 +27,7 @@ namespace JodelAPI.Shared
 
         internal Location(string place)
         {
-            Place = place;
-
-            FindCoordinates();
+            SetNewPlace(place);
         }
 
         #endregion
@@ -41,7 +40,7 @@ namespace JodelAPI.Shared
             FindCoordinates();
         }
 
-        public void SetNewPlace(double lat,double lng)
+        public void SetNewPlace(double lat, double lng)
         {
             Latitude = lat;
             Longitude = lng;
@@ -49,19 +48,20 @@ namespace JodelAPI.Shared
 
         private void FindCoordinates()
         {
-            string api = "https://maps.googleapis.com/maps/api/geocode/json?address=" + Place.Replace(" ", "+");
+            string api = "https://maps.googleapis.com/maps/api/geocode/json?address=" + HttpUtility.UrlEncode(Place);
 
             WebClient client = new WebClient
             {
                 Encoding = Encoding.UTF8
             };
+
             string stringJson = client.DownloadString(api);
 
             var gCoords = JsonConvert.DeserializeObject<JsonGCoordinates.RootObject>(stringJson);
 
             if (gCoords.status == "ZERO_RESULTS")
             {
-                throw new LocationNotFoundException("Location has not been found.");
+                throw new LocationNotFoundException($"Location '{Place}' has not been found.");
             }
 
             Latitude = gCoords.results[0].geometry.location.lat;

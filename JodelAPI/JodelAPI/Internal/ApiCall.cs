@@ -122,8 +122,7 @@ namespace JodelAPI.Internal
 
         private string ParamsToString(Dictionary<string, string> parameters)
         {
-            if (parameters == null) return string.Empty;
-            return "?" + string.Join("&", parameters.Select(p => p.Key + "=" + p.Value));
+            return parameters == null ? string.Empty : "?" + string.Join("&", parameters.Select(p => $"{p.Key}={p.Value}"));
         }
     }
 }
