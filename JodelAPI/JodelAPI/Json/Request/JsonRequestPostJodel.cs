@@ -21,7 +21,7 @@ namespace JodelAPI.Json.Request
 
         #region Methods
 
-        public bool ShouldSerializeimage()
+        public bool ShouldSerializeImage()
         {
             return image != null;
         }
