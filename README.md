@@ -26,10 +26,10 @@ Create a Jodel object which holds all functions needed:
 ```cs
 Jodel jodel = new Jodel(string place, string countrycode, string city, bool createToken = true);
 ```
-Where 'place' is the place how you would enter the location in Google Maps, 'countrycode' and 'city' are the values that are sent to Jodel! You might have your own token, in that case you can set createToken to false. If you do this, make sure to set the data found in the AccessToken (Account.AccessToken) class:
+Where 'place' is the place how you would enter the location in Google Maps, 'countrycode' and 'city' are the values that are sent to Jodel! You might have your own token, in that case you can set createToken to false. If you do this, make sure to set the data found in the AccessToken (Account.Token) class:
 ```cs
-jodel.Account.AccessToken.Token = "";
-jodel.Account.AccessToken.RefreshToken = "";
+jodel.Account.Token.Token = "";
+jodel.Account.Token.RefreshToken = "";
 ```
 
 Your data is stored in the 'Account' field, which comes from the 'User' class. You can defined a 'User' object yourself and pass it to the Jodel constructor. This gives you extra options, such as setting the 'Location' object yourself (Latitude, Longitude), etc:
@@ -71,7 +71,7 @@ GetPostChannelCombo(string channel, bool home):JodelMainData
 GetRecentPostsAfter(string afterPostId, bool home):IEnumerable<JodelPost>
 Upvote(string postId, UpvoteReason reason, string proxy):void
 Downvote(string postId, DownvoteReason reason, string proxy):void
-Post(string message, string parentPostId, PostColor color, bool home):string
+Post(string message, string parentPostId, PostColor color, byte[] image, bool home):string
 GetPost(string postId):JodelPost
 GetPostDetails(string postId, bool details, bool reversed, int next):JodelPost
 SharePost(string postId):string
