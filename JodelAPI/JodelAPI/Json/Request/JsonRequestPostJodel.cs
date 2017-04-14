@@ -28,9 +28,9 @@ namespace JodelAPI.Json.Request
 
         #endregion
 
-    #region internal classes
+        #region internal classes
 
-    internal class Location
+        internal class Location
         {
             #region Fields and Properties
 
