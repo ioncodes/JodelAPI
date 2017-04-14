@@ -304,8 +304,8 @@ namespace JodelAPI
 
         public JodelPost GetPostDetails(string postId, bool details = true, bool reversed = false, int next = 0)
         {
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add("details", details.ToString().ToLower());
+            Dictionary<string, string> parameters =
+                new Dictionary<string, string> {{"details", details.ToString().ToLower()}};
             if (next > 0) parameters.Add("reply", next.ToString());
             parameters.Add("reversed", reversed.ToString().ToLower());
 
