@@ -136,7 +136,6 @@ namespace JodelAPI
                 sb.Append(t.ToString("x2"));
             }
             string hash = sb.ToString();
-            Console.WriteLine(hash);
             int[] answer = Captcha.Solutions.FirstOrDefault(t => t.Key == hash).Value;
             return SolveCaptcha(captcha, answer);
         }
@@ -271,7 +270,7 @@ namespace JodelAPI
         /// <param name="image">Image to be sent</param>
         /// <param name="home">Post at home</param>
         /// <returns>PostId</returns>
-        public string Post(string message, string parentPostId = null, JodelPost.PostColor color = JodelPost.PostColor.Random, byte[] image = null, bool home = false)
+        public string Post(string message, string parentPostId = null, JodelPost.PostColor color = JodelPost.PostColor.Random, byte[] image = null, bool home = false, string proxy = null)
         {
             JsonRequestPostJodel payload = new JsonRequestPostJodel
             {
@@ -292,7 +291,7 @@ namespace JodelAPI
                 to_home = home,
                 image = image == null ? null : Convert.ToBase64String(image)
             };
-            string jsonString = Links.SendPost.ExecuteRequest(Account, payload: payload);
+            string jsonString = Links.SendPost.ExecuteRequest(Account, payload: payload, proxy: proxy);
             JsonPostJodel.RootObject data = JsonConvert.DeserializeObject<JsonPostJodel.RootObject>(jsonString);
             return data.post_id;
         }
