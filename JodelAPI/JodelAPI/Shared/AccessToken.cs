@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -78,7 +79,7 @@ namespace JodelAPI.Shared
         /// Generates a new Accesstoken
         /// </summary>
         /// <returns>Successful</returns>
-        public bool GenerateNewAccessToken(string proxy = null)
+        public bool GenerateNewAccessToken(WebProxy proxy = null)
         {
             try
             {
