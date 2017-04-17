@@ -7,6 +7,7 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/2dx3f591ubmp978t?svg=true)](https://ci.appveyor.com/project/ioncodes/jodelapi)
 [![Github All Releases](https://img.shields.io/github/downloads/ioncodes/JodelAPI/total.svg)](https://github.com/ioncodes/JodelAPI/releases)
+[![NuGet](https://img.shields.io/nuget/v/JodelAPI.svg)](https://www.nuget.org/packages/JodelAPI/)
 [![Status](https://img.shields.io/badge/api-working-brightgreen.svg)]()
 [![Implementation](https://img.shields.io/badge/api--version-4.41.0-brightgreen.svg)]()
 [![Test status](http://teststatusbadge.azurewebsites.net/api/status/ioncodes/jodelapi)](https://ci.appveyor.com/project/ioncodes/jodelapi)
@@ -19,7 +20,7 @@ This is the carefully reverse-engineered .NET Jodel API in C#. Please feel free 
 *This is a Swiss software product and therefore might be awesome!*
 
 ## Binaries and pre-requisites
-* [GitHub Releases](https://github.com/ioncodes/JodelAPI/releases)
+* [GitHub Releases](https://github.com/ioncodes/JodelAPI/releases) or from Nuget
 
 ## Let's get right into it!
 Create a Jodel object which holds all functions needed:
