@@ -12,7 +12,7 @@ namespace JodelAPI.Tests
     [TestClass()]
     public class JodelTests
     {
-        Jodel jodel = new Jodel("Zuerich  Schweiz", "CH", "Zuerich");
+        Jodel jodel = new Jodel("Zuerich Schweiz", "CH", "Zuerich");
 
         [TestMethod()]
         public void GenerateAccessTokenTest()
