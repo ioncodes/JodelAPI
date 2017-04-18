@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>JodelAPI</id>
+        <version>4.41.0.2</version>
+        <authors>Luca Marcelli</authors>
+        <owners>Luca Marcelli</owners>
+        <projectUrl>https://github.com/ioncodes/JodelAPI</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A .NET wrapper for the Jodel API.</description>
+        <summary>A .NET wrapper for the Jodel API.</summary>
+        <releaseNotes />
+        <dependencies>
+            <dependency id="Newtonsoft.Json" version="10.0.2" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Release\JodelAPI.dll" target="JodelAPI.dll" />
+    </files>
+</package>
