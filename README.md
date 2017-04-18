@@ -27,7 +27,7 @@ Create a Jodel object which holds all functions needed:
 ```cs
 Jodel jodel = new Jodel(string place, string countrycode, string city, bool createToken = true);
 ```
-'place', 'countrycode' and 'city' are the values that are sent to Jodel! You might have your own token, in that case you can set createToken to false. If you do this, make sure to set the data found in the AccessToken (Account.Token) class:
+Where 'place' is the location how you would enter it on Google Maps, 'countrycode' and 'city' are the values that are sent to Jodel! You might have your own token, in that case you can set createToken to false. If you do this, make sure to set the data found in the AccessToken (Account.Token) class:
 ```cs
 jodel.Account.Token.Token = "";
 jodel.Account.Token.RefreshToken = "";

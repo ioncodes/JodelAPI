@@ -32,10 +32,10 @@ namespace JodelAPI
             Account = user;
         }
 
-        public Jodel(string place, string countrCode, string cityName, bool createToken = true)
+        public Jodel(string place, string countryCode, string cityName, bool createToken = true)
             : this(new User
             {
-                CountryCode = countrCode,
+                CountryCode = countryCode,
                 CityName = cityName,
                 Place = new Location(place),
             })
