@@ -270,6 +270,7 @@ namespace JodelAPI
         /// <param name="color">Color of Jodel</param>
         /// <param name="image">Image to be sent</param>
         /// <param name="home">Post at home</param>
+        /// <param name="proxy">The proxy to use</param>
         /// <returns>PostId</returns>
         public string Post(string message, string parentPostId = null, JodelPost.PostColor color = JodelPost.PostColor.Random, byte[] image = null, bool home = false, WebProxy proxy = null)
         {
