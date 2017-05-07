@@ -46,7 +46,7 @@ namespace JodelAPI.Shared
             Longitude = lng;
         }
 
-        private void FindCoordinates()
+        void FindCoordinates()
         {
             string api = "https://maps.googleapis.com/maps/api/geocode/json?address=" + HttpUtility.UrlEncode(Place);
 
