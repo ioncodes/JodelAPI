@@ -120,7 +120,7 @@ namespace JodelAPI.Internal
             return plainJson;
         }
 
-        private string ParamsToString(Dictionary<string, string> parameters)
+        string ParamsToString(Dictionary<string, string> parameters)
         {
             return parameters == null ? string.Empty : "?" + string.Join("&", parameters.Select(p => $"{p.Key}={p.Value}"));
         }
