@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>JodelAPI</id>
-        <version>4.43.1.0</version>
+        <version>4.44.1.0</version>
         <authors>Luca Marcelli</authors>
         <owners>Luca Marcelli</owners>
         <projectUrl>https://github.com/ioncodes/JodelAPI</projectUrl>
