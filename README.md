@@ -9,9 +9,13 @@
 [![Github All Releases](https://img.shields.io/github/downloads/ioncodes/JodelAPI/total.svg)](https://github.com/ioncodes/JodelAPI/releases)
 [![NuGet](https://img.shields.io/nuget/v/JodelAPI.svg)](https://www.nuget.org/packages/JodelAPI/)
 [![Status](https://img.shields.io/badge/api-working-brightgreen.svg)]()
-[![Implementation](https://img.shields.io/badge/api--version-4.47.0-brightgreen.svg)]()
+[![Implementation](https://img.shields.io/badge/api--version-4.48.0-brightgreen.svg)]()
 [![Test status](http://teststatusbadge.azurewebsites.net/api/status/ioncodes/jodelapi)](https://ci.appveyor.com/project/ioncodes/jodelapi)
 [![Gitter chat](https://badges.gitter.im/ioncodes/JodelAPI.svg)](https://gitter.im/JodelAPI/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
+
+## 4.48.0
+
+Since 4.48.0 the captcha system has been changed, which means you wont be able to solve captchas/verify tokens. I'm working on a solution for it.
 
 ## Introduction
 
