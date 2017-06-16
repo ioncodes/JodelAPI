@@ -12,6 +12,11 @@
 [![Implementation](https://img.shields.io/badge/api--version-4.48.0-brightgreen.svg)]()
 [![Test status](http://teststatusbadge.azurewebsites.net/api/status/ioncodes/jodelapi)](https://ci.appveyor.com/project/ioncodes/jodelapi)
 [![Gitter chat](https://badges.gitter.im/ioncodes/JodelAPI.svg)](https://gitter.im/JodelAPI/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4JTJ7KE332VBE)
+
+## Support
+
+You can show me your love by paying me a coffee :) You can find the PayPal page at the badge bar.
 
 ## 4.48.0
 
