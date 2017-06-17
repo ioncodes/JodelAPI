@@ -14,6 +14,11 @@
 [![Gitter chat](https://badges.gitter.im/ioncodes/JodelAPI.svg)](https://gitter.im/JodelAPI/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4JTJ7KE332VBE)
 
+## INFO
+
+* Jodel dropped the captcha support, which means you wont be able to verify new accounts. If you have verified accounts, they will continue to work on 4.47.0, but if you use the 4.48.0 version, they will get unverified again, so use the 4.48.0 branch with caution!
+* The new auth is via Google, I'm working on it.
+
 ## Support
 
 You can show me your love by paying me a coffee :) You can find the PayPal page at the badge bar.
