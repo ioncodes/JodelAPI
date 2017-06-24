@@ -14,6 +14,11 @@
 [![Gitter chat](https://badges.gitter.im/ioncodes/JodelAPI.svg)](https://gitter.im/JodelAPI/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4JTJ7KE332VBE)
 
+## READ THIS FIRST
+
+I received a message from the Jodel Team, and they would like me to close this repo. We are currently in a discussion with them, if it's possible to let this repo open for educational purposes.
+**However, I'm not allowed to work on this library until I receive their permission**
+
 ## INFO
 
 * Jodel dropped the captcha support, which means you wont be able to verify new accounts. If you have verified accounts, they will continue to work on 4.47.0, but if you use the 4.48.0 version, they will get unverified again, so use the 4.48.0 branch with caution!
