@@ -43,25 +43,6 @@ namespace JodelAPI.Internal
             Authorize = authorize;
         }
 
-        internal JsonCaptcha.RootObject GetCaptcha(User user)
-        {
-            string url = "https://" + Links.ApiBaseUrl + "/api/" + Version + Url + user.Token.Token;
-            var json = JsonConvert.DeserializeObject<JsonCaptcha.RootObject>(new WebClient().DownloadString(url));
-            return json;
-        }
-
-        internal bool PostCaptcha(User user, Captcha captcha, int[] answer)
-        {
-            string url = "https://" + Links.ApiBaseUrl + "/api/" + Version + Url + user.Token.Token;
-            string an =  string.Join(",", answer ?? new int[0]);
-
-            string payload = @"{""key"":"""+captcha.Key+@""",""answer"":["+an+"]}";
-            var myClient = new WebClient();
-            myClient.Headers.Add("Content-Type", "application/json");
-            var json = JObject.Parse(myClient.UploadString(url, payload));
-            return json.Value<bool>("verified");
-        }
-
         internal string ExecuteRequest(User user, Dictionary<string, string> parameters = null, JsonRequest payload = null, string postId = null, WebProxy proxy = null)
         {
             string plainJson = null;

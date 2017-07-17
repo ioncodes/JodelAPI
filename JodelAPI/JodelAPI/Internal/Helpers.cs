@@ -19,20 +19,5 @@ namespace JodelAPI.Internal
         };
 
         public static string GetColor(PostColor color) => Colors[color];
-
-        public static string GetRandomDeviceUid()
-        {
-            byte[] tokenData = new byte[64];
-            using (RandomNumberGenerator rng = new RNGCryptoServiceProvider())
-            {
-                rng.GetBytes(tokenData);
-            }
-
-            using (SHA256 hash = SHA256.Create())
-            {
-                byte[] result = hash.ComputeHash(tokenData);
-                return BitConverter.ToString(result).Replace("-", string.Empty).ToLower();
-            }
-        }
     }
 }

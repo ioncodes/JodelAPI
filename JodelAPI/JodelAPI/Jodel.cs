@@ -40,8 +40,6 @@ namespace JodelAPI
                 Place = new Location(place),
             })
         {
-            if (createToken)
-                GenerateAccessToken();
         }
 
         #endregion
@@ -49,16 +47,6 @@ namespace JodelAPI
         #region Methods
 
         #region Account
-
-        public bool GenerateAccessToken(WebProxy proxy = null)
-        {
-            return Account.Token.GenerateNewAccessToken(proxy);
-        }
-
-        public bool RefreshAccessToken()
-        {
-            return Account.Token.RefreshAccessToken();
-        }
 
         public void GetUserConfig()
         {
@@ -93,53 +81,6 @@ namespace JodelAPI
             return karma.karma;
         }
 
-        public void SetLocation()
-        {
-            JsonRequestSetLocation payload = new JsonRequestSetLocation
-            {
-                location =
-                {
-                    city = Account.CityName,
-                    country = Account.CountryCode,
-                    loc_accuracy = 0.0,
-                    name = Account.CityName,
-                    loc_coordinates =
-                    {
-                        lat = Account.Place.Latitude,
-                        lng = Account.Place.Longitude
-                    }
-                }
-            };
-
-            Links.SendUserLocation.ExecuteRequest(Account, payload: payload);
-        }
-
-        public Captcha GetCaptcha(bool advanced = false)
-        {
-            var captchaRoot = Links.GetCaptcha.GetCaptcha(Account);
-            return advanced ? new Captcha(new JodelWebClient().DownloadData(captchaRoot.image_url), captchaRoot.key, captchaRoot.image_url, captchaRoot.image_size) : new Captcha(new JodelWebClient().DownloadData(captchaRoot.image_url), captchaRoot.key, captchaRoot.image_url);
-        }
-
-        public bool SolveCaptcha(Captcha captcha, int[] answer)
-        {
-            return Links.VerifyCaptcha.PostCaptcha(Account, captcha, answer);
-        }
-
-        public bool VerifyAutomatically()
-        {
-            var captcha = GetCaptcha();
-            MD5 md5 = MD5.Create();
-            byte[] bhash = md5.ComputeHash(captcha.Image);
-            File.WriteAllBytes("test.png", captcha.Image);
-            StringBuilder sb = new StringBuilder();
-            foreach (byte t in bhash)
-            {
-                sb.Append(t.ToString("x2"));
-            }
-            string hash = sb.ToString();
-            int[] answer = Captcha.Solutions.FirstOrDefault(t => t.Key == hash).Value;
-            return SolveCaptcha(captcha, answer);
-        }
 
         #endregion
 
@@ -252,51 +193,7 @@ namespace JodelAPI
             return JsonConvert.DeserializeObject<JsonPostJodels.RootObject>(jsonString).posts.Select(p => new JodelPost(p));
         }
 
-        public void Upvote(string postId, JodelPost.UpvoteReason reason = JodelPost.UpvoteReason.Stub, WebProxy proxy = null)
-        {
-            Links.UpvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId, proxy: proxy);
-        }
 
-        public void Downvote(string postId, JodelPost.DownvoteReason reason = JodelPost.DownvoteReason.Stub, WebProxy proxy = null)
-        {
-            Links.DownvotePost.ExecuteRequest(Account, payload: new JsonRequestUpDownVote { reason_code = (int)reason }, postId: postId, proxy: proxy);
-        }
-
-        /// <summary>
-        /// Posts a Jodel and returns the PostId
-        /// </summary>
-        /// <param name="message">Text to post to Jodel</param>
-        /// <param name="parentPostId">Comment to this post</param>
-        /// <param name="color">Color of Jodel</param>
-        /// <param name="image">Image to be sent</param>
-        /// <param name="home">Post at home</param>
-        /// <param name="proxy">The proxy to use</param>
-        /// <returns>PostId</returns>
-        public string Post(string message, string parentPostId = null, JodelPost.PostColor color = JodelPost.PostColor.Random, byte[] image = null, bool home = false, WebProxy proxy = null)
-        {
-            JsonRequestPostJodel payload = new JsonRequestPostJodel
-            {
-                location =
-                {
-                    city = Account.CityName,
-                    name = Account.CityName,
-                    country = Account.CountryCode,
-                    loc_coordinates =
-                    {
-                        lat = Account.Place.Latitude,
-                        lng = Account.Place.Longitude
-                    }
-                },
-                color = color.ToString(),
-                message = message,
-                ancestor = parentPostId,
-                to_home = home,
-                image = image == null ? null : Convert.ToBase64String(image)
-            };
-            string jsonString = Links.SendPost.ExecuteRequest(Account, payload: payload, proxy: proxy);
-            JsonPostJodel.RootObject data = JsonConvert.DeserializeObject<JsonPostJodel.RootObject>(jsonString);
-            return data.post_id;
-        }
 
         public JodelPost GetPost(string postId)
         {

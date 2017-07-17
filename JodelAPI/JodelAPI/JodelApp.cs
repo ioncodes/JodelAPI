@@ -36,21 +36,12 @@ namespace JodelAPI
         {
             MyJodel.GetUserConfig();
             MyJodel.GetRecommendedChannels();
-            MyJodel.SetLocation();
             Karma = MyJodel.GetKarma();
             JodelPosts = MyJodel.GetPostLocationCombo(stickies: true);
             MyJodel.GetFollowedChannelsMeta();
         }
 
-        public bool RefreshToken()
-        {
-            return MyJodel.RefreshAccessToken();
-        }
 
-        public bool GenerateToken()
-        {
-            return MyJodel.GenerateAccessToken();
-        }
 
         #region Reload
 
@@ -78,22 +69,7 @@ namespace JodelAPI
 
         #region Posts
 
-        public void Upvote(string postId)
-        {
-            MyJodel.Upvote(postId);
-        }
 
-        public void Downvote(string postId)
-        {
-            MyJodel.Downvote(postId);
-        }
-
-        public string Post(string message, JodelPost.PostColor color = JodelPost.PostColor.Random, bool home = false)
-        {
-            string postId = MyJodel.Post(message, color: color, home: home);
-            JodelPosts = MyJodel.GetPostLocationCombo();
-            return postId;
-        }
 
         #endregion
 
