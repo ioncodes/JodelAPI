@@ -38,17 +38,6 @@ namespace JodelAPI.Internal
         public static readonly ApiCall GetMostDiscussedPosts = new ApiCall(HttpMethod.Get, "/posts/location/discussed/", "v2");
         public static readonly ApiCall GetPost = new ApiCall(HttpMethod.Get, "/posts/", "v2");
         public static readonly ApiCall GetPostDetails = new ApiCall(HttpMethod.Get, "/posts/", postAction: "/details");
-        public static readonly ApiCall PinPost = new ApiCall(HttpMethod.Put, "/posts/", version: "v2", postAction: "/pin/");
-        public static readonly ApiCall UnpinPost = new ApiCall(HttpMethod.Put, "/posts/", version: "v2", postAction: "/unpin/");
-        public static readonly ApiCall EnablePostNotification = new ApiCall(HttpMethod.Put, "/posts/", "v2", "/notifications/enable");
-        public static readonly ApiCall DisablePostNotification = new ApiCall(HttpMethod.Put, "/posts/", "v2", "/notifications/disable");
-        public static readonly ApiCall DismissStickyPost = new ApiCall(HttpMethod.Put, "/stickyposts/", postAction: "/dismiss");
-        public static readonly ApiCall UpvoteStickyPost = new ApiCall(HttpMethod.Put, "/stickyposts/", postAction: "/up");
-        public static readonly ApiCall DownvoteStickyPost = new ApiCall(HttpMethod.Put, "/stickyposts/", postAction: "/down");
-        public static readonly ApiCall FlagPost = new ApiCall(HttpMethod.Put, "/posts/", "v2", "/flag");
-        public static readonly ApiCall GiveThanks = new ApiCall(HttpMethod.Post, "/posts/", postAction: "/giveThanks");
-        public static readonly ApiCall HidePost = new ApiCall(HttpMethod.Put, "/posts/", postAction: "/hide");
-        public static readonly ApiCall GetShareUrl = new ApiCall(HttpMethod.Post, "/posts/", postAction: "/share");
         
         #endregion
 
@@ -58,11 +47,8 @@ namespace JodelAPI.Internal
         public static readonly ApiCall GetPopularChannelPosts = new ApiCall(HttpMethod.Get, "/posts/channel/popular");
         public static readonly ApiCall GetDiscussedChannelPosts = new ApiCall(HttpMethod.Get, "/posts/channel/discussed");
         public static readonly ApiCall GetRecentChannelPosts = new ApiCall(HttpMethod.Get, "/posts/channel");
-        public static readonly ApiCall FollowChannel = new ApiCall(HttpMethod.Put, "/user/followChannel/");
-        public static readonly ApiCall UnfollowChannel = new ApiCall(HttpMethod.Put, "/user/unfollowChannel/");
         public static readonly ApiCall GetRecommendedChannels = new ApiCall(HttpMethod.Get, "/user/recommendedChannels");
         public static readonly ApiCall GetChannelMeta = new ApiCall(HttpMethod.Get, "/user/channelMeta");
-        public static readonly ApiCall GetFollowedChannelsMeta = new ApiCall(HttpMethod.Post, "/user/followedChannelsMeta");
 
         #endregion
 
@@ -78,13 +64,10 @@ namespace JodelAPI.Internal
         #region Moderation
 
         public static readonly ApiCall GetModerationFeed = new ApiCall(HttpMethod.Get, "/moderation");
-        public static readonly ApiCall SendModerationResult = new ApiCall(HttpMethod.Post, "/moderation");
 
         #endregion
 
         #region Misc
-
-        public static readonly ApiCall SendLogs = new ApiCall(HttpMethod.Put, "/investigate");
 
         #endregion
 

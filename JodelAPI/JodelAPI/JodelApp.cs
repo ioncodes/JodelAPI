@@ -38,7 +38,6 @@ namespace JodelAPI
             MyJodel.GetRecommendedChannels();
             Karma = MyJodel.GetKarma();
             JodelPosts = MyJodel.GetPostLocationCombo(stickies: true);
-            MyJodel.GetFollowedChannelsMeta();
         }
 
 

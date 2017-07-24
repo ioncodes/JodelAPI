@@ -109,23 +109,6 @@ namespace JodelAPI
             return recommendedChannels;
         }
 
-        public IEnumerable<Channel> GetFollowedChannelsMeta(bool home = false)
-        {
-            JsonRequestFollowedChannelMeta payload = new JsonRequestFollowedChannelMeta();
-            foreach (Channel channel in Account.FollowedChannels.Where(x => x.Following))
-            {
-                payload.Values.Add(channel.ChannelName, -1);
-            }
-            string jsonString = Links.GetFollowedChannelsMeta.ExecuteRequest(Account, new Dictionary<string, string> { { "home", home.ToString().ToLower() } }, payload);
-
-            JsonFollowedChannelsMeta.RootObject data = JsonConvert.DeserializeObject<JsonFollowedChannelsMeta.RootObject>(jsonString);
-            
-            return data.channels.Select(channel => Account.FollowedChannels
-                .FirstOrDefault(x => x.ChannelName == channel.channel)?
-                .UpdateProperties(channel.followers, channel.sponsored, channel.unread))
-                .Where(c => c != null);
-        }
-
         #endregion
 
         #region Jodels
@@ -210,12 +193,6 @@ namespace JodelAPI
 
             string jsonString = Links.GetPostDetails.ExecuteRequest(Account, postId: postId, parameters: parameters);
             return new JodelPost(JsonConvert.DeserializeObject<JsonPostDetail.RootObject>(jsonString));
-        }
-
-        public string SharePost(string postId)
-        {
-            string jsonString = Links.GetShareUrl.ExecuteRequest(Account, postId: postId);
-            return JObject.Parse(jsonString).GetValue("url").ToString();
         }
 
         #endregion

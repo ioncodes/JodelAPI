@@ -1,4 +1,4 @@
-# JodelAPI
+# JodelAPI (Not working on this anymore)
 [![forthebadge](http://forthebadge.com/images/badges/built-with-swag.svg)](http://forthebadge.com)
 [![forthebadge](http://forthebadge.com/images/badges/gluten-free.svg)](http://forthebadge.com)
 [![forthebadge](http://forthebadge.com/images/badges/certified-snoop-lion.svg)](http://forthebadge.com)
@@ -17,12 +17,12 @@
 ## READ THIS FIRST
 
 I received a message from the Jodel Team, and they would like me to close this repo. We are currently in a discussion with them, if it's possible to let this repo open for educational purposes.
-**However, I'm not allowed to work on this library until I receive their permission**
+**However, I'm not allowed to work on this library until I receive their permission**  
+**All GET requests are ok to use.**
 
 ## INFO
 
 * Jodel dropped the captcha support, which means you wont be able to verify new accounts. If you have verified accounts, they will continue to work on 4.47.0, but if you use the 4.48.0 version, they will get unverified again, so use the 4.48.0 branch with caution!
-* The new auth is via Google, I'm working on it.
 
 ## Support
 
@@ -40,9 +40,9 @@ This is the carefully reverse-engineered .NET Jodel API in C#. Please feel free 
 ## Let's get right into it!
 Create a Jodel object which holds all functions needed:
 ```cs
-Jodel jodel = new Jodel(string place, string countrycode, string city, bool createToken = true);
+Jodel jodel = new Jodel(string place, string countrycode, string city, bool createToken = false); // YOU HAVE TO SET YOUR OWN TOKEN
 ```
-Where 'place' is the place how you would enter the location in Google Maps, 'countrycode' and 'city' are the values that are sent to Jodel! You might have your own token, in that case you can set createToken to false. If you do this, make sure to set the data found in the AccessToken (Account.AccessToken) class:
+Where 'place' is the place how you would enter the location in Google Maps, 'countrycode' and 'city' are the values that are sent to Jodel! You might have your own token, in that case you can set createToken to false (You have to). If you do this, make sure to set the data found in the AccessToken (Account.AccessToken) class:
 ```cs
 jodel.Account.Token.Token = "";
 jodel.Account.Token.RefreshToken = "";
@@ -56,107 +56,6 @@ user.Location.Longitude = 13.37;
 Jodel jodel = new Jodel(user);
 ```
 
-To set your location, you need to call 'SetLocation' and it's variants:
-```cs
-jodel.Account.Place.SetNewPlace(47.213, 8.1233333); // Lat, Lng
-// OR
-jodel.Account.Place.SetNewPlace($"Deutschland Berlin"); // GoogleMaps Query string
-// THEN
-jodel.SetLocation(); // Set the location applied via SetNewPlace or via Longitude and Latitude.
-```
-
-After creating your 'Jodel' object, you will find all methods you need in there. Here is a list:
-```cs
-// Fields and Properties
-Account:User
-
-// Constructor
-Jodel(User user)
-Jodel(string place, string countrCode, string cityName, bool createToken)
-
-/* Methods */
-// Account
-GenerateAccessToken(string proxy):bool
-RefreshAccessToken():bool
-GetUserConfig():void
-GetKarma():int
-SetLocation():void
-GetCaptcha(bool advanced):Captcha
-SolveCaptcha(Captcha captcha, int[] answer):bool
-VerifyAutomatically():bool
-
-// Channels
-GetRecommendedChannels():IEnumerable<Channel>
-GetFollowedChannelsMeta(bool home):IEnumerable<Channel>
-
-// Jodels
-GetPostLocationCombo(bool stickies, bool home):JodelMainData
-GetPostHashtagCombo(string hashtag, bool home):JodelMainData
-GetPostChannelCombo(string channel, bool home):JodelMainData
-GetRecentPostsAfter(string afterPostId, bool home):IEnumerable<JodelPost>
-Upvote(string postId, UpvoteReason reason, string proxy):void
-Downvote(string postId, DownvoteReason reason, string proxy):void
-Post(string message, string parentPostId, PostColor color, byte[] image, bool home):string
-GetPost(string postId):JodelPost
-GetPostDetails(string postId, bool details, bool reversed, int next):JodelPost
-SharePost(string postId):string
-```
-
-The Account object (User class) contains this:
-```cs
-/* User */
-// Fields and Properties
-Place:Location
-CountryCode:string
-CityName:string
-Token:AccessToken
-
-// UserProperties
-Moderator:bool
-UserType:object
-Experiments:List<Experiment>
-FollowedChannels:List<Channel>
-FollowedHashtags:List<string>
-ChannelsFollowLimit:int
-TripleFeedEnabled:bool
-HomeName:string
-HomeSet:bool
-Location:string
-Verified:bool
-  
-// Constructor
-User()
-User(string deviceUid, string accessToken)
-User(AccessToken token)
-
-/* Experiment */
-// Fields and Properties
-Name:string
-Group:string
-Features:List<string>
-
-// Constructor
-Experiment(string name, string group, List<string> features)
-```
-
-This is the definition of the Place field (Location class):
-```cs
-/* Location */
-// Fields and Properties
-Place:string
-Longitude:double
-Latitude:double
-
-// Constructor
-Location(string place)
-
-// Methods
-SetNewPlace(string place):void
-SetNewPlace(double lat, double lng):void
-FindCoordinates():void
-```
-
-If you have questions or requests, feel free to create issues, open PRs or ask me via Gitter!
-This API should always have all endpoints implemented. The version of the currently implemented API can be found on the top of the README.
+After creating your 'Jodel' object, you will find all methods you need in there.
 
 A plain list of all supported endpoints can be found [here](https://github.com/ioncodes/JodelAPI/blob/master/JodelAPI/JodelAPI/Internal/Links.cs)
